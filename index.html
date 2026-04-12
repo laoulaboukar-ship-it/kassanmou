@@ -2902,22 +2902,43 @@ function sendEmailAuto(data, type){
 }
 
 function buildEmailProduit(d){
+  var baseUrl = 'https://laoulaboukar-ship-it.github.io/kassanmou';
+  var validationUrl = baseUrl + '/?valider=' + (d.code||'') + '&action=valider';
+  var refusUrl      = baseUrl + '/?valider=' + (d.code||'') + '&action=refuser';
+  
+  var photoLines = '';
+  if(d.photosUrls && d.photosUrls.length > 0){
+    photoLines = '\n--- PHOTOS (' + d.photosUrls.length + ') ---\n';
+    d.photosUrls.forEach(function(url, i){
+      photoLines += 'Photo ' + (i+1) + ' : ' + url + '\n';
+    });
+  } else {
+    photoLines = '\nPhotos : ' + (d.photos||0) + ' photo(s) soumise(s) (voir WhatsApp)\n';
+  }
+
   return [
     '=== KASSAN\'MOU — NOUVEAU PRODUIT À VALIDER ===',
-    'Produit : ' + d.nom,
-    'Type : ' + d.sellerType,
-    'Catégorie : ' + d.categorie,
-    'Prix : ' + d.prix + ' ' + d.unite,
-    'Origine : ' + d.origine,
-    'Quantité : ' + d.quantite,
-    'Contact : ' + d.email + ' / ' + d.phone,
-    'Code de validation : ' + d.code,
-    'Pack : ' + d.pack + ' FCFA',
-    'Export : ' + (d.exportable ? 'OUI' : 'NON'),
-    'Photos : ' + d.photos,
-    'Soumis le : ' + d.soumisLe,
-    '---',
-    'Description : ' + d.description
+    '',
+    'Produit    : ' + (d.nom||'—'),
+    'Type       : ' + (d.sellerType||'—'),
+    'Catégorie  : ' + (d.categorie||'—'),
+    'Prix       : ' + (d.prix||'—') + ' ' + (d.unite||''),
+    'Quantité   : ' + (d.quantite||'—'),
+    'Région     : ' + (d.origine||'—'),
+    'Pack       : ' + (d.pack||'—') + ' FCFA',
+    'Export     : ' + (d.exportable ? 'OUI ✓' : 'NON'),
+    'Contact    : ' + (d.email||'—') + ' / ' + (d.phone||'—'),
+    'Code       : ' + (d.code||'—'),
+    'Soumis le  : ' + (d.soumisLe||'—'),
+    photoLines,
+    '--- ACTIONS ---',
+    '✅ VALIDER   : ' + validationUrl,
+    '❌ REFUSER   : ' + refusUrl,
+    '',
+    '--- DESCRIPTION ---',
+    (d.description||'—'),
+    '',
+    '--- Kassan\'Mou · Business Bridge Niger ---'
   ].join('\n');
 }
 
@@ -3648,10 +3669,15 @@ function wirePhotoUpload(){
     function addPhotos(files){
       for(var i=0;i<files.length;i++){
         if(uploadedPhotos.length>=5)break;
-        var url=URL.createObjectURL(files[i]);
-        uploadedPhotos.push({url:url,name:files[i].name});
+        (function(file){
+          var reader=new FileReader();
+          reader.onload=function(e){
+            uploadedPhotos.push({url:e.target.result,name:file.name,base64:e.target.result});
+            renderPhotoPreview();
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
       }
-      renderPhotoPreview();
     }
     function renderPhotoPreview(){
       if(!preview)return;
@@ -3726,7 +3752,7 @@ function submitProduct(modes){
     region: prodData.origine,
     ville: prodData.origine,
     description: prodData.description,
-    photos: uploadedPhotos,
+    photosData: uploadedPhotos,
     pack: ({'2000':'7jours','5000':'30jours','15000':'90jours','50000':'annuel'}[prodData.pack]||'30jours'),
     code: prodCode,
     typeVendeur: prodData.sellerType,
@@ -3734,7 +3760,13 @@ function submitProduct(modes){
     tel: prodData.phone,
     exportInternational: prodData.exportable
   }).then(function(saved){
-    if(saved) console.log('[KM-DB] Produit en base. Code:', saved.code_validation);
+    if(saved){
+      console.log('[KM-DB] Produit en base. Code:', saved.code_validation);
+      /* Mettre à jour l'email avec les vraies URLs photos */
+      if(saved.photos && saved.photos.length > 0){
+        prodData.photosUrls = saved.photos;
+      }
+    }
   });
 
   /* ENVOI EMAIL AUTOMATIQUE à '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' */
@@ -4677,9 +4709,41 @@ async function kmLoadProduits() {
   } catch(e) { console.warn('[KM-DB]', e); }
 }
 
+async function kmUploadPhoto(base64data, filename, prodCode) {
+  if (!kmDB || !base64data) return null;
+  try {
+    var arr = base64data.split(',');
+    var mime = arr[0].match(/:(.*?);/)[1];
+    var bstr = atob(arr[1]);
+    var n = bstr.length;
+    var u8arr = new Uint8Array(n);
+    while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+    var ext = mime.split('/')[1] || 'jpg';
+    var path = prodCode + '/' + filename.replace(/[^a-z0-9.]/gi,'_') + '.' + ext;
+    var blob = new Blob([u8arr], {type: mime});
+    var res = await kmDB.storage.from('produits-photos').upload(path, blob, {upsert: true});
+    if (res.error) { console.warn('[KM-STORAGE]', res.error.message); return null; }
+    var pub = kmDB.storage.from('produits-photos').getPublicUrl(path);
+    return pub.data ? pub.data.publicUrl : null;
+  } catch(e) { console.warn('[KM-STORAGE]', e); return null; }
+}
+
 async function kmSaveProduit(d) {
   if (!kmDB) return null;
   try {
+    /* Upload photos vers Supabase Storage */
+    var photoUrls = [];
+    if (d.photosData && d.photosData.length > 0) {
+      for (var i = 0; i < d.photosData.length; i++) {
+        var p = d.photosData[i];
+        if (p && p.base64) {
+          var url = await kmUploadPhoto(p.base64, 'photo_' + i, d.code || 'tmp');
+          if (url) photoUrls.push(url);
+        }
+      }
+    }
+    d.photos = photoUrls;
+
     var vRes = await kmDB.from('vendeurs').insert({
       nom:d.vendeurNom||'Vendeur', telephone:d.tel||'', whatsapp:d.tel||'',
       type_vendeur:d.typeVendeur||'Vendeur', region:d.region||'', ville:d.ville||''
@@ -4824,10 +4888,33 @@ document.addEventListener('DOMContentLoaded', function(){
     if(page === 'livraison'){ renderLivreursPage(); }
   };
 
-  /* ── 9. ACTIVATION DEPUIS URL ?valider=CODE ── */
+  /* ── 9. ACTIVATION DEPUIS URL ?valider=CODE&action=valider|refuser ── */
   try {
     var urlParams = new URLSearchParams(window.location.search);
-    var codeVal = urlParams.get('valider');
+    var codeVal   = urlParams.get('valider');
+    var codeAction= urlParams.get('action') || 'valider';
+    if(codeVal && kmDB){
+      if(codeAction === 'valider'){
+        kmDB.from('produits')
+          .update({statut:'validé', date_validation: new Date().toISOString()})
+          .eq('code_validation', codeVal.toUpperCase())
+          .then(function(res){
+            if(res.error){ toast('Erreur : ' + res.error.message, true); }
+            else {
+              toast('✅ Produit ' + codeVal + ' validé et mis en ligne !');
+              kmLoadProduits();
+              goTo('marketplace');
+            }
+          });
+      } else if(codeAction === 'refuser'){
+        kmDB.from('produits')
+          .update({statut:'refusé'})
+          .eq('code_validation', codeVal.toUpperCase())
+          .then(function(res){
+            toast('❌ Produit ' + codeVal + ' refusé.');
+          });
+      }
+    }
     if(codeVal){
       var found = false;
       PENDING_PRODUCTS.forEach(function(p){
@@ -4835,10 +4922,8 @@ document.addEventListener('DOMContentLoaded', function(){
           found = true;
           p.statut = 'valide';
           ONLINE_PRODUCTS.push(p);
-          VALIDATION_CODES[p.code] = true;
-          toast('✅ Produit "' + p.nom + '" validé et mis en ligne !');
+          toast('✅ Produit mis en ligne !');
           renderProdsPremium();
-          renderFeaturedStrip();
           goTo('marketplace');
         }
       });
