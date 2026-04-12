@@ -1,0 +1,59 @@
+{
+  "name": "Kassan'Mou — Marketplace Niger",
+  "short_name": "Kassan'Mou",
+  "description": "Marketplace locale nigérienne. Achetez, vendez, exportez. Sésame, paprika, maraîchage et bien plus.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F1F0A",
+  "theme_color": "#0F1F0A",
+  "lang": "fr",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Kassan'Mou Marketplace"
+    }
+  ],
+  "categories": ["shopping", "business", "food"],
+  "shortcuts": [
+    {
+      "name": "Poster un produit",
+      "short_name": "Poster",
+      "description": "Publier un nouveau produit rapidement",
+      "url": "/?page=poster",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Marketplace",
+      "short_name": "Acheter",
+      "description": "Voir tous les produits disponibles",
+      "url": "/?page=marketplace",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Suivi commande",
+      "short_name": "Suivi",
+      "description": "Suivre ma commande en cours",
+      "url": "/?page=tracking",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

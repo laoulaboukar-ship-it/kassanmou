@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kassan'Mou — Test Connexions</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; }
+.card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+h1 { color: #0F1F0A; font-size: 20px; margin-bottom: 4px; }
+h2 { font-size: 15px; margin-bottom: 12px; color: #333; }
+.subtitle { color: #888; font-size: 13px; margin-bottom: 20px; }
+button {
+  width: 100%; padding: 14px; border-radius: 10px; border: none;
+  font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 10px;
+  font-family: Arial, sans-serif;
+}
+.btn-email { background: #C84B2F; color: white; }
+.btn-supabase { background: #2D5A1B; color: white; }
+.btn-both { background: #0F1F0A; color: #C49A3C; }
+.result {
+  padding: 12px; border-radius: 8px; font-size: 13px;
+  margin-top: 8px; line-height: 1.6; display: none;
+  white-space: pre-wrap; word-break: break-all;
+}
+.ok { background: #EBF4E4; color: #1E3F10; border-left: 4px solid #2D5A1B; }
+.err { background: #FDF0EC; color: #A33820; border-left: 4px solid #C84B2F; }
+.loading { background: #FBF4E4; color: #8A6E28; border-left: 4px solid #B8963E; }
+.step { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dot-wait { background: #ccc; }
+.dot-ok { background: #2D5A1B; }
+.dot-err { background: #C84B2F; }
+.dot-load { background: #B8963E; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>🔧 Kassan'Mou — Diagnostic</h1>
+  <p class="subtitle">Cliquez les boutons pour tester chaque connexion</p>
+
+  <!-- STATUT EN DIRECT -->
+  <div class="step"><div class="dot dot-wait" id="dot-ejs"></div><span id="txt-ejs">EmailJS — en attente</span></div>
+  <div class="step"><div class="dot dot-wait" id="dot-db"></div><span id="txt-db">Supabase — en attente</span></div>
+  <div class="step" style="border:none"><div class="dot dot-wait" id="dot-mail"></div><span id="txt-mail">Email envoi — en attente</span></div>
+</div>
+
+<!-- TEST 1 : EMAIL -->
+<div class="card">
+  <h2>📧 Test 1 — Envoyer un email</h2>
+  <button class="btn-email" onclick="testEmail()">Envoyer email test à kassanmou@gmail.com</button>
+  <div class="result" id="res-email"></div>
+</div>
+
+<!-- TEST 2 : SUPABASE -->
+<div class="card">
+  <h2>🗄️ Test 2 — Sauvegarder dans Supabase</h2>
+  <button class="btn-supabase" onclick="testSupabase()">Enregistrer un produit test</button>
+  <div class="result" id="res-supabase"></div>
+</div>
+
+<!-- TEST 3 : LES DEUX -->
+<div class="card">
+  <h2>🚀 Test 3 — Tout en même temps</h2>
+  <button class="btn-both" onclick="testTout()">Tester Email + Supabase ensemble</button>
+  <div class="result" id="res-tout"></div>
+</div>
+
+<script>
+/* ── CONFIG ── */
+var SUPABASE_URL = 'https://nifnobbeictkbprsixxe.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_xTHizuii8kXP1RNam9qvzg_HejUYPcT';
+var EJS_KEY      = 'qm379MRdiK-Ez0yPq';
+var EJS_SERVICE  = 'service_5sapdz7';
+var EJS_TEMPLATE = 'template_6sdif0e';
+var ADMIN_EMAIL  = atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==');
+
+/* ── INIT ── */
+var kmDB = null;
+try {
+  emailjs.init(EJS_KEY);
+  setDot('ejs', 'ok', 'EmailJS initialisé ✅');
+} catch(e) {
+  setDot('ejs', 'err', 'EmailJS ERREUR : ' + e);
+}
+
+try {
+  kmDB = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  setDot('db', 'ok', 'Supabase connecté ✅');
+} catch(e) {
+  setDot('db', 'err', 'Supabase ERREUR : ' + e);
+}
+
+/* ── HELPERS ── */
+function setDot(id, state, txt) {
+  var d = document.getElementById('dot-' + id);
+  var t = document.getElementById('txt-' + id);
+  if(d) d.className = 'dot dot-' + state;
+  if(t) t.textContent = txt;
+}
+
+function showResult(id, type, msg) {
+  var el = document.getElementById(id);
+  el.className = 'result ' + type;
+  el.style.display = 'block';
+  el.textContent = msg;
+}
+
+/* ── TEST EMAIL ── */
+function testEmail() {
+  showResult('res-email', 'loading', '⏳ Envoi en cours...');
+  setDot('mail', 'load', 'Email — envoi en cours...');
+
+  var params = {
+    to_email:        ADMIN_EMAIL,
+    from_name:       "Kassan'Mou Test",
+    reply_to:        ADMIN_EMAIL,
+    nom_produit:     'PRODUIT TEST',
+    categorie:       'Test Diagnostic',
+    prix:            '1000 FCFA',
+    region:          'Niamey',
+    vendeur_nom:     'Test Automatique',
+    vendeur_tel:     '+227 XX XX XX XX',
+    pack:            '30jours',
+    code_validation: 'KM-TEST1',
+    date_soumission: new Date().toLocaleString('fr-FR'),
+    message:         'Ceci est un email de test envoyé depuis la page de diagnostic Kassan\'Mou.'
+  };
+
+  emailjs.send(EJS_SERVICE, EJS_TEMPLATE, params)
+    .then(function(r) {
+      setDot('mail', 'ok', 'Email envoyé ✅');
+      showResult('res-email', 'ok',
+        '✅ EMAIL ENVOYÉ AVEC SUCCÈS !\n\n' +
+        'Status : ' + r.status + '\n' +
+        'Réponse : ' + r.text + '\n\n' +
+        'Vérifiez kassanmou@gmail.com\n' +
+        '(aussi dans les Spams si pas visible)'
+      );
+    })
+    .catch(function(e) {
+      setDot('mail', 'err', 'Email ÉCHOUÉ ❌');
+      showResult('res-email', 'err',
+        '❌ ÉCHEC ENVOI EMAIL\n\n' +
+        'Status : ' + (e.status || '?') + '\n' +
+        'Erreur : ' + (e.text || JSON.stringify(e)) + '\n\n' +
+        'Solutions possibles :\n' +
+        '1. Vérifier que "To Email" dans le template EmailJS contient {{to_email}}\n' +
+        '2. Vérifier que le Service Gmail est bien connecté sur emailjs.com\n' +
+        '3. Vérifier la Public Key'
+      );
+    });
+}
+
+/* ── TEST SUPABASE ── */
+async function testSupabase() {
+  showResult('res-supabase', 'loading', '⏳ Connexion à Supabase...');
+
+  if (!kmDB) {
+    showResult('res-supabase', 'err', '❌ Supabase non initialisé');
+    return;
+  }
+
+  try {
+    /* Test 1 : lire les produits */
+    var { data: lus, error: errLire } = await kmDB
+      .from('produits')
+      .select('id, nom, statut')
+      .limit(3);
+
+    if (errLire) {
+      showResult('res-supabase', 'err',
+        '❌ ERREUR LECTURE\n\n' + errLire.message + '\n\nCode : ' + errLire.code
+      );
+      return;
+    }
+
+    /* Test 2 : insérer un produit test */
+    var testCode = 'KM-TEST-' + Date.now();
+    var { data: insere, error: errInsert } = await kmDB
+      .from('produits')
+      .insert({
+        nom: 'PRODUIT TEST DIAGNOSTIC',
+        categorie: 'Test',
+        prix: 100,
+        statut: 'en_attente',
+        code_validation: testCode,
+        pack_publication: '7jours',
+        region: 'Niamey',
+        ville: 'Niamey',
+        description: 'Produit créé automatiquement par la page de diagnostic'
+      })
+      .select()
+      .single();
+
+    if (errInsert) {
+      showResult('res-supabase', 'err',
+        '❌ ERREUR INSERTION\n\n' +
+        errInsert.message + '\n\n' +
+        'Code erreur : ' + errInsert.code + '\n' +
+        'Détail : ' + (errInsert.details || '-') + '\n\n' +
+        'Produits déjà en base : ' + (lus ? lus.length : 0)
+      );
+      return;
+    }
+
+    showResult('res-supabase', 'ok',
+      '✅ SUPABASE FONCTIONNE !\n\n' +
+      'Produit inséré avec succès\n' +
+      'ID : ' + insere.id + '\n' +
+      'Code : ' + insere.code_validation + '\n' +
+      'Statut : ' + insere.statut + '\n\n' +
+      'Produits existants en base : ' + (lus ? lus.length : 0) + '\n\n' +
+      'Vérifiez dans Supabase → Table Editor → produits'
+    );
+
+  } catch(ex) {
+    showResult('res-supabase', 'err', '❌ EXCEPTION\n\n' + ex.toString());
+  }
+}
+
+/* ── TEST TOUT ── */
+async function testTout() {
+  showResult('res-tout', 'loading', '⏳ Test complet en cours...');
+  var resultats = [];
+
+  /* Email */
+  try {
+    var r = await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+      to_email: ADMIN_EMAIL,
+      from_name: "Kassan'Mou",
+      reply_to: ADMIN_EMAIL,
+      nom_produit: 'TEST COMPLET',
+      categorie: 'Diagnostic',
+      prix: '500 FCFA',
+      region: 'Niamey',
+      vendeur_nom: 'Système Test',
+      vendeur_tel: '+227 00 00 00',
+      pack: '30jours',
+      code_validation: 'KM-FULL-TEST',
+      date_soumission: new Date().toLocaleString('fr-FR'),
+      message: 'Test complet Kassan\'Mou'
+    });
+    resultats.push('✅ EMAIL : OK (status ' + r.status + ')');
+  } catch(e) {
+    resultats.push('❌ EMAIL : ' + (e.text || JSON.stringify(e)));
+  }
+
+  /* Supabase */
+  if (kmDB) {
+    try {
+      var { data, error } = await kmDB.from('produits')
+        .insert({ nom:'TEST COMPLET', categorie:'Test', prix:1, statut:'en_attente',
+          code_validation:'KM-FULL-'+Date.now(), pack_publication:'7jours' })
+        .select().single();
+      if (error) resultats.push('❌ SUPABASE : ' + error.message);
+      else resultats.push('✅ SUPABASE : OK — ID ' + data.id.substr(0,8) + '...');
+    } catch(ex) {
+      resultats.push('❌ SUPABASE : ' + ex.toString());
+    }
+  } else {
+    resultats.push('❌ SUPABASE : non connecté');
+  }
+
+  var allOk = resultats.every(function(r){ return r.startsWith('✅'); });
+  showResult('res-tout', allOk ? 'ok' : 'err',
+    resultats.join('\n\n') + '\n\n' +
+    (allOk
+      ? '🎉 TOUT FONCTIONNE ! Votre plateforme est opérationnelle.'
+      : '⚠️ Copiez ce résultat et envoyez-le à Claude pour corriger.')
+  );
+}
+</script>
+
+</body>
+</html>
