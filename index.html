@@ -2889,9 +2889,7 @@ function sendEmailAuto(data, type){
       pack:            String(data.pack || '-'),
       code_validation: data.code || data.refCommande || '-',
       date_soumission: data.soumisLe || new Date().toLocaleString('fr-FR'),
-      message:         type === 'commande' ? buildEmailCommande(data) : buildEmailProduit(data),
-    photo_1:         (data.photosUrls && data.photosUrls[0]) ? '(photo soumise - voir WhatsApp)' : 'Aucune photo',
-    nb_photos:       String(data.photos || data.photosUrls && data.photosUrls.length || 0)
+      message:         type === 'commande' ? buildEmailCommande(data) : buildEmailProduit(data)
     };
     emailjs.send('service_5sapdz7', 'template_6sdif0e', params)
       .then(function(r){
@@ -2956,12 +2954,6 @@ function generateRef(){
 
 /* ── Helpers opérationnels ───────────────── */
 function buildWhatsAppMsg(data){
-  /* Ajouter les photos comme URLs si disponibles */
-  var photosSection = '';
-  if(data.photosUrls && data.photosUrls.length > 0){
-    photosSection = '\n📸 *Photos (' + data.photosUrls.length + ') :*\n' +
-      data.photosUrls.map(function(p, i){ return '  Photo '+(i+1)+' : (envoyée séparément via WhatsApp)'; }).join('\n');
-  }
   var lines=[
     '🌿 *KASSAN\'MOU — Nouveau produit à valider*',
     '',
@@ -3711,7 +3703,6 @@ function submitProduct(modes){
     pack:packVal,
     duree:packDuree,
     photos:uploadedPhotos.length,
-    photosUrls:uploadedPhotos.map(function(p){return p.url;}),
     email:emailVal,phone:phoneVal,
     soumisLe:new Date().toLocaleString('fr-FR'),
     statut:'EN_ATTENTE',
@@ -3750,93 +3741,92 @@ function submitProduct(modes){
   sendEmailAuto(prodData, 'produit');
 
   var waMsg=buildWhatsAppMsg(prodData);
+  var mailtoLink=buildMailtoLink(prodData);
   var typeLbl={'vendeur':'🏪 Vendeur','producteur':'🌾 Producteur','transformateur':'🏭 Transformateur','maraicher':'🥬 Maraîcher'}[prodData.sellerType]||'🏪 Vendeur';
   var nbPhotos=uploadedPhotos.length;
-  var photosHTML = uploadedPhotos.map(function(p){
-    return '<img src="'+p.url+'" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid var(--B)">';
-  }).join('');
 
   closeModal();
   setTimeout(function(){
-    var box=g('mbox');
-    box.className='mbox center-modal';
+    var box=g('mbox');box.className='mbox center-modal';
     box.innerHTML=
-      '<button class="mcls" id="mcls-btn2">✕</button>'+
+      '<button class="mcls" id="mcls-btn">✕</button>'+
       '<div class="mh">✅ Produit soumis !</div>'+
       '<div style="font-size:14px;font-weight:700;color:var(--O);margin-bottom:4px">'+prodData.nom+' · '+typeLbl+'</div>'+
-      '<div style="font-size:12.5px;color:var(--Mu);margin-bottom:12px">'+nbPhotos+' photo(s) · '+new Date().toLocaleDateString('fr-FR')+'</div>'+
-
-      (photosHTML ? '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">'+photosHTML+'</div>' : '')+
+      '<div style="font-size:12.5px;color:var(--Mu);margin-bottom:14px">'+nbPhotos+' photo(s) · '+new Date().toLocaleDateString("fr-FR")+'</div>'+
 
       '<div class="code-box">'+
-        '<div class="code-box-title">🔐 Code de mise en ligne</div>'+
+        '<div class="code-box-title">🔐 Votre code de mise en ligne</div>'+
         '<div class="code-display">'+prodCode+'</div>'+
-        '<div class="code-info">Notez ce code. Il vous sera demandé après validation et paiement.</div>'+
-        '<button id="btn-copy-code" style="margin-top:10px;padding:8px 18px;border-radius:var(--rs);background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);cursor:pointer;font-family:Outfit,sans-serif;font-size:13px">📋 Copier le code</button>'+
+        '<div class="code-info">Notez ce code précieusement. Vous en aurez besoin après paiement pour activer votre annonce.</div>'+
+        '<button onclick="copyCode(\''+prodCode+'\')" style="margin-top:10px;padding:8px 18px;border-radius:var(--rs);background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);cursor:pointer;font-family:\'Outfit\',sans-serif;font-size:13px">📋 Copier le code</button>'+
       '</div>'+
 
-      '<div id="send-status" style="margin:12px 0;padding:11px 14px;border-radius:var(--rs);background:var(--Ol);border-left:3px solid var(--O);font-size:13px;color:var(--Od)">'+
-        '📨 Envoi à l'équipe en cours...'+
+      '<div style="margin:14px 0;background:var(--SD);border-radius:var(--rm);padding:14px;font-size:13px;color:var(--Sm);line-height:1.85">'+
+        '<div style="font-weight:700;color:var(--S);margin-bottom:6px">📋 Prochaines étapes :</div>'+
+        '1️⃣ Nous recevons votre dossier <strong>immédiatement</strong><br>'+
+        '2️⃣ Analyse et validation <strong>sous 48h</strong><br>'+
+        '3️⃣ Nous vous contactons pour le <strong>paiement</strong> ('+prodData.pack+' FCFA)<br>'+
+        '4️⃣ Après paiement → votre produit est <strong>visible '+prodData.duree+'</strong> ✓'+
+        '<div style="margin-top:10px;padding:8px 12px;background:rgba(45,90,27,.08);border-radius:var(--rs);border-left:3px solid var(--O);font-size:12px">'+
+        '⏱ <strong>Durée de publication :</strong> '+prodData.duree+' · Renouvelable à expiration'+
+        '</div>'+
+      '</div>'+
+
+      '<div style="background:var(--Ol);border-radius:var(--rm);padding:12px 14px;margin-bottom:12px;border-left:3px solid var(--O)">'+
+        '<div style="font-size:13px;font-weight:700;color:var(--Od);margin-bottom:4px">📨 Envoi automatique en cours...</div>'+
+        '<div style="font-size:12px;color:var(--Om)" id="auto-send-status">Email + WhatsApp envoyés à l\'équipe Kassan\'Mou ✓</div>'+
       '</div>'+
 
       '<div style="background:var(--SD);border-radius:var(--rm);padding:13px;margin-bottom:14px;font-size:13px;color:var(--Sm);line-height:1.8">'+
-        '<strong style="color:var(--S)">📋 Prochaines étapes :</strong><br>'+
-        '1️⃣ Notre équipe reçoit votre fiche maintenant<br>'+
-        '2️⃣ Validation sous 48h<br>'+
-        '3️⃣ Paiement ('+prodData.pack+' FCFA)<br>'+
-        '4️⃣ Produit visible '+prodData.duree+' ✓'+
+        '<div style="font-weight:700;color:var(--S);margin-bottom:6px">📋 Ce qui va se passer :</div>'+
+        '1️⃣ Notre équipe reçoit votre fiche <strong>maintenant</strong><br>'+
+        '2️⃣ Validation sous <strong>48h</strong><br>'+
+        '3️⃣ Nous vous envoyons le paiement <strong>('+prodData.pack+' FCFA)</strong><br>'+
+        '4️⃣ Après paiement → produit <strong>visible '+prodData.duree+'</strong> ✓'+
       '</div>'+
 
       '<div style="display:flex;flex-direction:column;gap:10px">'+
-        '<button id="btn-wa2" style="width:100%;padding:15px;border-radius:var(--rm);background:#25D366;color:#fff;border:none;cursor:pointer;font-size:15px;font-weight:700;font-family:Outfit,sans-serif">'+
-          '📲 Envoyer via WhatsApp'+
+        '<button id="btn-wa-submit" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;border-radius:var(--rm);background:#25D366;color:#fff;border:none;cursor:pointer;font-size:14px;font-weight:700;font-family:\'Outfit\',sans-serif;box-shadow:0 4px 16px rgba(37,211,102,.3)">'+
+          '📲 Renvoyer via WhatsApp'+
         '</button>'+
-        '<button id="btn-mail2" style="width:100%;padding:13px;border-radius:var(--rm);background:var(--Ol);color:var(--Od);border:2px solid var(--O);font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">'+
-          '✉️ Envoyer par Email'+
+        '<button id="btn-email-submit" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px;border-radius:var(--rm);background:var(--Ol);color:var(--Od);border:2px solid var(--O);font-size:14px;font-weight:700;font-family:\'Outfit\',sans-serif;cursor:pointer">'+
+          '✉️ Renvoyer par Email'+
         '</button>'+
-        '<button id="btn-code2" class="bs" style="padding:12px;width:100%">'+
-          '🔑 Activer avec un code'+
-        '</button>'+
-      '</div>';
+        '<button class="bs" id="btn-pay-code-2" style="padding:12px;width:100%">🔑 Activer avec un code existant</button>'+
+      '</div>'+
+      '<p style="font-size:11.5px;color:var(--Mu);text-align:center;margin-top:10px">Votre dossier a été envoyé automatiquement. Les boutons ci-dessus permettent de renvoyer si besoin.</p>';
 
     g('mveil').classList.add('on');
-
-    /* Copier code */
-    var cpBtn = g('btn-copy-code');
-    if(cpBtn) cpBtn.onclick = function(){ copyCode(prodCode); };
-
-    /* Fermer */
-    var cls2 = g('mcls-btn2');
+    var cls2 = document.getElementById('mcls-btn');
     if(cls2) cls2.addEventListener('click', closeModal);
 
-    /* Envoi email automatique */
+    /* Email automatique */
     sendEmailAuto(prodData, 'produit');
     setTimeout(function(){
-      var st = g('send-status');
-      if(st) st.innerHTML = '✅ Email envoyé à l'équipe Kassan'Mou';
+      var st = document.getElementById('auto-send-status');
+      if(st) st.textContent = '✅ Email envoyé à l\'équipe Kassan\'Mou';
     }, 2000);
 
-    /* WhatsApp */
-    var wa2 = g('btn-wa2');
-    if(wa2) wa2.addEventListener('click', function(){
+    /* Bouton WhatsApp */
+    var wb = document.getElementById('btn-wa-submit');
+    if(wb) wb.addEventListener('click', function(){
       openWhatsApp(waMsg);
       toast('WhatsApp ouvert — envoyez le message !');
     });
 
-    /* Email bouton manuel */
-    var ml2 = g('btn-mail2');
-    if(ml2) ml2.addEventListener('click', function(){
+    /* Bouton Email manuel */
+    var eb = document.getElementById('btn-email-submit');
+    if(eb) eb.addEventListener('click', function(){
       sendEmailAuto(prodData, 'produit');
-      ml2.textContent = '✅ Email renvoyé !';
-      ml2.style.opacity = '0.7';
-      toast('Email envoyé à l'équipe Kassan'Mou !');
+      eb.textContent = '✅ Email renvoyé !';
+      toast('Email envoyé à l\'équipe !');
     });
 
-    /* Code paiement */
-    var cd2 = g('btn-code2');
-    if(cd2) cd2.addEventListener('click', function(){ closeModal(); openModal('code-payment'); });
+    /* Bouton code paiement */
+    var pb = document.getElementById('btn-pay-code-2');
+    if(pb) pb.addEventListener('click', function(){ closeModal(); openModal('code-payment'); });
 
-  },100);
+  }, 100);
 }
 
 function closeModal(){g('mveil').classList.remove('on');uploadedPhotos=[];}
