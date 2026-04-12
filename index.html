@@ -56,6 +56,11 @@ button,input,select,textarea{font-family:inherit}
 a{text-decoration:none;color:inherit}
 img{max-width:100%}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--SD)}::-webkit-scrollbar-thumb{background:var(--Om);border-radius:3px}
+/* Scrollbar épaisse pour le formulaire modal */
+.mbox::-webkit-scrollbar{width:10px}
+.mbox::-webkit-scrollbar-track{background:var(--SD);border-radius:10px}
+.mbox::-webkit-scrollbar-thumb{background:var(--T);border-radius:10px;border:2px solid var(--SD)}
+.mbox::-webkit-scrollbar-thumb:hover{background:var(--Td)}
 
 /* ════════════════════════════════════════
    NAV DESKTOP
@@ -695,6 +700,7 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
 @keyframes vlIn{from{opacity:0}to{opacity:1}}
 .mbox{background:var(--W);border-radius:var(--rx) var(--rx) 0 0;padding:24px 22px 32px;
   width:100%;max-width:560px;max-height:92vh;overflow-y:auto;
+  scrollbar-width:thick;scrollbar-color:var(--T) var(--SD);
   box-shadow:var(--sl);animation:mIn .28s cubic-bezier(.34,1.4,.64,1)}
 .mbox.center-modal{border-radius:var(--rx);margin:auto;max-height:90vh}
 @keyframes mIn{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
@@ -3271,10 +3277,30 @@ function openModal(type){
       '<div style="text-align:center;font-size:13px;color:var(--Mu);margin-top:12px">Pas de compte ? <button style="color:var(--T);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;font-size:13px" id="mbtn-switch">S\'inscrire gratuitement</button></div>';
 
   } else if(type==='register'){
-    wide=true;
-    h=X+'<div class="mh">Rejoindre Kassan\'Mou</div><div class="msub">Inscription gratuite · Compte activé sous 24h</div>'+
-      '<div class="reg-steps"><div class="reg-step on" id="step-1">1. Profil</div><div class="reg-step" id="step-2">2. Info</div><div class="reg-step" id="step-3">3. Détails</div><div class="reg-step" id="step-4">4. Accès</div></div>'+
-      '<div id="step-content">'+buildRegStep(1)+'</div>';
+    wide=false;
+    h=X+'<div class="mh">Que voulez-vous faire ?</div>'+
+      '<div class="msub">Choisissez ce qui correspond à votre besoin</div>'+
+      '<div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">'+
+
+        '<button onclick="closeModal();goTo(\'marketplace\')" style="display:flex;align-items:center;gap:16px;width:100%;padding:16px 18px;border-radius:14px;border:2px solid var(--O);background:var(--Ol);cursor:pointer;font-family:\'Outfit\',sans-serif;text-align:left">'+
+          '<span style="font-size:28px;flex-shrink:0">🛒</span>'+
+          '<div><div style="font-size:15px;font-weight:700;color:var(--Od)">Acheter un produit</div>'+
+          '<div style="font-size:12px;color:var(--Om);margin-top:2px">Parcourir la marketplace locale · Légumes, céréales, transformés...</div></div>'+
+        '</button>'+
+
+        '<button onclick="closeModal();setTimeout(function(){openModal(\'sell\');},100)" style="display:flex;align-items:center;gap:16px;width:100%;padding:16px 18px;border-radius:14px;border:2px solid var(--T);background:var(--Tl);cursor:pointer;font-family:\'Outfit\',sans-serif;text-align:left">'+
+          '<span style="font-size:28px;flex-shrink:0">📦</span>'+
+          '<div><div style="font-size:15px;font-weight:700;color:var(--Td)">Vendre / Publier un produit</div>'+
+          '<div style="font-size:12px;color:var(--T);margin-top:2px">Soumettre une annonce · Validation sous 48h · Paiement après validation</div></div>'+
+        '</button>'+
+
+        '<button onclick="closeModal();goTo(\'about\')" style="display:flex;align-items:center;gap:16px;width:100%;padding:16px 18px;border-radius:14px;border:2px solid var(--G);background:var(--Gl);cursor:pointer;font-family:\'Outfit\',sans-serif;text-align:left">'+
+          '<span style="font-size:28px;flex-shrink:0">🌍</span>'+
+          '<div><div style="font-size:15px;font-weight:700;color:var(--Gd)">Export international</div>'+
+          '<div style="font-size:12px;color:var(--G);margin-top:2px">Sésame, paprika, cornes · Export vers Inde, Vietnam, Europe</div></div>'+
+        '</button>'+
+
+      '</div>';
 
   } else if(type==='focal'){
     h=X+'<div class="mh">Devenir Point Focal</div><div class="msub">Représentez Kassan\'Mou dans votre région. Commission 5–15%. Contrat signé. Pas d\'investissement.</div>'+
