@@ -3797,34 +3797,34 @@ function submitProduct(modes){
       '<p style="font-size:11.5px;color:var(--Mu);text-align:center;margin-top:10px">Votre dossier a été envoyé automatiquement. Les boutons ci-dessus permettent de renvoyer si besoin.</p>';
 
     g('mveil').classList.add('on');
-    var cls2 = document.getElementById('mcls-btn');
-    if(cls2) cls2.addEventListener('click', closeModal);
+    var cls = document.getElementById('mcls-btn');
+    if(cls) cls.addEventListener('click', closeModal);
 
-    /* Email automatique */
     sendEmailAuto(prodData, 'produit');
+
     setTimeout(function(){
       var st = document.getElementById('auto-send-status');
-      if(st) st.textContent = '✅ Email envoyé à l\'équipe Kassan\'Mou';
+      if(st) st.textContent = 'Email envoyé à l\'équipe Kassan\'Mou ✅';
     }, 2000);
 
-    /* Bouton WhatsApp */
     var wb = document.getElementById('btn-wa-submit');
     if(wb) wb.addEventListener('click', function(){
       openWhatsApp(waMsg);
-      toast('WhatsApp ouvert — envoyez le message !');
+      toast('WhatsApp ouvert !');
     });
 
-    /* Bouton Email manuel */
     var eb = document.getElementById('btn-email-submit');
     if(eb) eb.addEventListener('click', function(){
       sendEmailAuto(prodData, 'produit');
-      eb.textContent = '✅ Email renvoyé !';
-      toast('Email envoyé à l\'équipe !');
+      eb.textContent = 'Email renvoyé ✅';
+      toast('Email envoyé !');
     });
 
-    /* Bouton code paiement */
     var pb = document.getElementById('btn-pay-code-2');
-    if(pb) pb.addEventListener('click', function(){ closeModal(); openModal('code-payment'); });
+    if(pb) pb.addEventListener('click', function(){
+      closeModal();
+      openModal('code-payment');
+    });
 
   }, 100);
 }
