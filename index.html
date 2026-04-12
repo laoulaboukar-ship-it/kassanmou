@@ -2861,12 +2861,12 @@ var EJS={
   serviceId:'service_5sapdz7',
   templateProd:'template_6sdif0e'
 };
-/* Email admin — kassanmou@gmail.com */
-var _adm=atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ=='); // kassanmou@gmail.com
+/* Email admin — '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' */
+var _adm=atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ=='); // '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+'
 /* Numéro WhatsApp admin — +22799851532 */
 var _wap=atob('MjI3OTk4NTE1MzI='); // +22799851532
 
-/* ── Envoi email automatique vers kassanmou@gmail.com ── */
+/* ── Envoi email automatique vers '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' ── */
 function sendEmailAuto(data, type){
   try{
     var _dest = atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==');
@@ -3099,7 +3099,7 @@ var activeSellerType='all';
 var activeSaleMode='all';
 
 var lang='fr', curPage='home', mOpen=false;
-/* v11 — Flux commande actif | Emails auto kassanmou@gmail.com | Livraison post-achat */
+/* v11 — Flux commande actif | Emails auto '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' | Livraison post-achat */
 
 function g(id){return document.getElementById(id);}
 function t(fr,en){return lang==='fr'?fr:en;}
@@ -3711,7 +3711,7 @@ function submitProduct(modes){
     if(saved) console.log('[KM-DB] Produit en base. Code:', saved.code_validation);
   });
 
-  /* ENVOI EMAIL AUTOMATIQUE à kassanmou@gmail.com */
+  /* ENVOI EMAIL AUTOMATIQUE à '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' */
   sendEmailAuto(prodData, 'produit');
 
   var waMsg=buildWhatsAppMsg(prodData);
@@ -3988,7 +3988,7 @@ function wire(){
     if(!nm.trim()||!em.trim()){toast('Veuillez remplir votre nom et votre contact.',true);return;}
     var waMsg='📩 *KASSAN\'MOU — Message Contact*\n\n👤 *Nom :* '+nm+'\n📱 *Contact :* '+em+'\n💼 *Profil :* '+role+'\n\n💬 *Message :*\n'+msg+'\n\n_Kassan\'Mou · Business Bridge Niger_';
     openWhatsApp(waMsg);
-    /* Email auto à kassanmou@gmail.com */
+    /* Email auto à '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' */
     sendEmailAuto({
       nom: nm, email: em, sellerType: role, categorie:'Contact',
       prix:'—', unite:'—', origine:'—', quantite:'—', description: msg,
@@ -4356,7 +4356,7 @@ function renderDetailStep3(p, client){
   var waMsg = waLines.join('\n');
   var waUrl = 'https://wa.me/' + _wap + '?text=' + encodeURIComponent(waMsg);
 
-  // Envoi email automatique à kassanmou@gmail.com
+  // Envoi email automatique à '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+'
   sendEmailAuto({
     refCommande: ref,
     produit: p.nom,
