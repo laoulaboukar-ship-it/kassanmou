@@ -53,7 +53,7 @@ button {
 <!-- TEST 1 : EMAIL -->
 <div class="card">
   <h2>📧 Test 1 — Envoyer un email</h2>
-  <button class="btn-email" onclick="testEmail()">Envoyer email test à kassanmou@gmail.com</button>
+  <button class="btn-email" onclick="testEmail()">Envoyer email test à <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d262c3e3e2c232022380d2a202c2421632e2220">[email&#160;protected]</a></button>
   <div class="result" id="res-email"></div>
 </div>
 
@@ -71,7 +71,7 @@ button {
   <div class="result" id="res-tout"></div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ── CONFIG ── */
 var SUPABASE_URL = 'https://nifnobbeictkbprsixxe.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_xTHizuii8kXP1RNam9qvzg_HejUYPcT';
@@ -269,13 +269,4 @@ async function testTout() {
 
   var allOk = resultats.every(function(r){ return r.startsWith('✅'); });
   showResult('res-tout', allOk ? 'ok' : 'err',
-    resultats.join('\n\n') + '\n\n' +
-    (allOk
-      ? '🎉 TOUT FONCTIONNE ! Votre plateforme est opérationnelle.'
-      : '⚠️ Copiez ce résultat et envoyez-le à Claude pour corriger.')
-  );
-}
-</script>
-
-</body>
-</html>
+ 
