@@ -4209,6 +4209,41 @@ function getPremiumFiltered(){
   return list;
 }
 
+
+/* ── Helper photo URL ── */
+function kmGetPhoto(photos, idx){
+  idx = idx || 0;
+  if(!photos) return null;
+  /* Si c'est déjà un tableau */
+  if(Array.isArray(photos)){
+    var url = photos[idx];
+    if(url && typeof url === 'string' && url.startsWith('http')) return url;
+    return null;
+  }
+  /* Si c'est une string JSON */
+  if(typeof photos === 'string'){
+    try {
+      var arr = JSON.parse(photos);
+      if(Array.isArray(arr) && arr[idx]) return arr[idx];
+    } catch(e){}
+    /* Si c'est directement une URL */
+    if(photos.startsWith('http')) return photos;
+  }
+  return null;
+}
+function kmGetAllPhotos(photos){
+  if(!photos) return [];
+  if(Array.isArray(photos)) return photos.filter(function(u){ return u && typeof u==='string' && u.startsWith('http'); });
+  if(typeof photos === 'string'){
+    try {
+      var arr = JSON.parse(photos);
+      if(Array.isArray(arr)) return arr.filter(function(u){ return u && u.startsWith('http'); });
+    } catch(e){}
+    if(photos.startsWith('http')) return [photos];
+  }
+  return [];
+}
+
 function renderProdsPremium(){
   var grid = g('prods-grid-premium');
   var empty = g('prods-empty-premium');
@@ -4227,7 +4262,7 @@ function renderProdsPremium(){
 
   grid.innerHTML = list.map(function(p,i){
     return '<div class="pc-premium'+(p.vedette?' vedette-card':'')+'" style="animation-delay:'+(i*.05)+'s" onclick="openDetailSheet(\''+p.id+'\')">' +
-      '<div class="pthumb-premium" style="overflow:hidden;position:relative">'+(p.photos && p.photos.length > 0 && typeof p.photos[0]==='string' && p.photos[0].startsWith('http') ? '<img src="'+p.photos[0]+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'">' : '')+p.emoji +
+      '<div class="pthumb-premium" style="overflow:hidden;position:relative">'+(kmGetPhoto(p.photos) ? '<img src="'+kmGetPhoto(p.photos)+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:12px 12px 0 0" onerror="this.style.display='none'">' : '')+p.emoji +
         '<div class="pdispo-dot '+(p.dispo==='commande'?'cmd':'ok')+'"></div>' +
         (p.vedette ? '<div class="vedette-badge-card">★ Vedette</div>' : '') +
       '</div>' +
@@ -4324,7 +4359,7 @@ function renderDetailStep1(p){
   g('detail-content').innerHTML =
     '<div class="order-step">' +
     '<div class="order-progress"><div class="op-step active"></div><div class="op-step"></div><div class="op-step"></div></div>' +
-    '<div class="dsheet-thumb">'+(p.photos && p.photos.length > 0 && typeof p.photos[0] === 'string' && p.photos[0].startsWith('http') ? '<img src="'+p.photos[0]+'" style="width:100%;height:100%;object-fit:cover;border-radius:12px" onerror="this.parentNode.innerHTML=\''+p.emoji+'\'">' : p.emoji)+'</div>' +
+    '<div class="dsheet-thumb" id="dt-main">'+(kmGetPhoto(p.photos)?'<img src="'+kmGetPhoto(p.photos)+'" style="width:100%;height:100%;object-fit:cover;border-radius:12px" onerror="this.style.display=\'none\'">':'')+p.emoji+'</div>' +
     '<div class="dsheet-body">' +
       '<div class="dsheet-badges">'+badgePremiumHtml(p.badge)+(p.vedette?'<span class="vbp p">★ En vedette</span>':'')+'</div>' +
       '<div class="dsheet-name">'+p.nom+'</div>' +
@@ -4339,6 +4374,12 @@ function renderDetailStep1(p){
         '<div class="dsheet-mi"><div class="dsheet-ml">Catégorie</div><div class="dsheet-mv">'+p.catLbl+'</div></div>' +
         '<div class="dsheet-mi"><div class="dsheet-ml">Zone vendeur</div><div class="dsheet-mv">📍 '+p.zone+'</div></div>' +
       '</div>' +
+      (kmGetAllPhotos(p.photos).length > 1 ?
+        '<div style="display:flex;gap:8px;overflow-x:auto;padding:8px 0;margin-bottom:8px">'+
+        kmGetAllPhotos(p.photos).map(function(url,i){
+          return '<img src="'+url+'" onclick="document.getElementById(\'dt-main\').innerHTML=\'<img src=\"'+url+'\" style=\"width:100%;height:100%;object-fit:cover;border-radius:12px\">\'+(p.emoji||\'\')" style="width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer;border:2px solid var(--B)">';
+        }).join('')+
+        '</div>' : '') +
       '<div class="dsheet-desc">'+p.desc+'</div>' +
       '<div class="dsheet-vendor">' +
         '<div class="dsheet-vav">'+p.emoji+'</div>' +
