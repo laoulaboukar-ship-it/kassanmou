@@ -2876,6 +2876,14 @@ var _wap=atob('MjI3OTk4NTE1MzI='); // +22799851532
 function sendEmailAuto(data, type){
   try{
     var _dest = atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==');
+    var _base = 'https://laoulaboukar-ship-it.github.io/kassanmou';
+    var _code = data.code || data.refCommande || '';
+    var _photos = '';
+    if(data.photosUrls && data.photosUrls.length > 0){
+      _photos = data.photosUrls.map(function(u,i){ return 'Photo '+(i+1)+' : '+u; }).join('\n');
+    } else {
+      _photos = (data.photos || 0) + ' photo(s) — voir WhatsApp';
+    }
     var params = {
       to_email:        _dest,
       from_name:       "Kassan'Mou Plateforme",
@@ -2887,9 +2895,12 @@ function sendEmailAuto(data, type){
       vendeur_nom:     data.email || data.nomClient || '-',
       vendeur_tel:     data.phone || data.telephone || '-',
       pack:            String(data.pack || '-'),
-      code_validation: data.code || data.refCommande || '-',
+      code_validation: _code,
       date_soumission: data.soumisLe || new Date().toLocaleString('fr-FR'),
-      message:         type === 'commande' ? buildEmailCommande(data) : buildEmailProduit(data)
+      message:         type === 'commande' ? buildEmailCommande(data) : buildEmailProduit(data),
+      photo_urls:      _photos,
+      lien_valider:    _base + '/?valider=' + _code + '&action=valider',
+      lien_refuser:    _base + '/?valider=' + _code + '&action=refuser'
     };
     emailjs.send('service_5sapdz7', 'template_6sdif0e', params)
       .then(function(r){
