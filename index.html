@@ -55,7 +55,10 @@ body{font-family:'Outfit',sans-serif;background:var(--CR);color:var(--S);overflo
 button,input,select,textarea{font-family:inherit}
 a{text-decoration:none;color:inherit}
 img{max-width:100%}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--SD)}::-webkit-scrollbar-thumb{background:var(--Om);border-radius:3px}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--SD);border-radius:10px}
+::-webkit-scrollbar-thumb{background:var(--Om);border-radius:10px;border:2px solid var(--SD)}
+::-webkit-scrollbar-thumb:hover{background:var(--O)}
 /* Scrollbar épaisse pour le formulaire modal */
 .mbox::-webkit-scrollbar{width:10px}
 .mbox::-webkit-scrollbar-track{background:var(--SD);border-radius:10px}
@@ -700,7 +703,7 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
 @keyframes vlIn{from{opacity:0}to{opacity:1}}
 .mbox{background:var(--W);border-radius:var(--rx) var(--rx) 0 0;padding:24px 22px 32px;
   width:100%;max-width:560px;max-height:92vh;overflow-y:auto;
-  scrollbar-width:thick;scrollbar-color:var(--T) var(--SD);
+  scrollbar-width:auto;scrollbar-color:var(--Om) var(--SD);
   box-shadow:var(--sl);animation:mIn .28s cubic-bezier(.34,1.4,.64,1)}
 .mbox.center-modal{border-radius:var(--rx);margin:auto;max-height:90vh}
 @keyframes mIn{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
