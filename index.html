@@ -3368,14 +3368,12 @@ function openModal(type){
       '<div class="fg"><label>Catégorie du produit</label>'+
         '<select id="prod-cat">'+
           '<option value="">— Choisir —</option>'+
-          '<option value="cereales">🌾 Céréales et Grains (mil, sorgho, maïs...)</option>'+
-          '<option value="legumineuses">🫘 Légumineuses (niébé, arachides, soja...)</option>'+
-          '<option value="oleagineux">🌻 Oléagineux (sésame, karité brut...)</option>'+
-          '<option value="legumes">🥬 Légumes frais (tomates, gombo, oignons...)</option>'+
-          '<option value="fruits">🍅 Fruits frais (mangues, pastèques...)</option>'+
-          '<option value="transforme">🍯 Produit transformé (confiture, jus, sauce...)</option>'+
-          '<option value="epicerie">🧂 Épicerie locale (farine, sel, épices...)</option>'+
-          '<option value="cosmetique">🧴 Cosmétique naturel (savon, huile, karité...)</option>'+
+          '<option value="alimentaire">🥬 Alimentaire (céréales, légumes, fruits, élevage...)</option>'+
+          '<option value="cosmetique">💄 Cosmétique (savon, huile, karité, neem...)</option>'+
+          '<option value="artisanat">🪆 Artisanat (poterie, cuir, bois, bijoux...)</option>'+
+          '<option value="vetements">👗 Vêtements (bazin, boubou, tissus, chaussures...)</option>'+
+          '<option value="maison">🏠 Maison (nattes, ustensiles, décoration...)</option>'+
+          '<option value="tech">📱 Tech (solaire, électronique, outils...)</option>'+
         '</select>'+
       '</div>'+
 
@@ -4720,21 +4718,23 @@ async function kmLoadProduits() {
 
       /* Mapping catégories */
       var catMap = {
+        'alimentaire':'alimentaire','cosmetique':'cosmetique','artisanat':'artisanat',
+        'vetements':'vetements','maison':'maison','tech':'tech',
+        /* Anciennes catégories → alimentaire */
         'oleagineux':'alimentaire','cereales':'alimentaire','legumineuses':'alimentaire',
-        'legumes':'alimentaire','fruits':'alimentaire','transforme':'alimentaire',
-        'epicerie':'alimentaire','cosmetique':'cosmetique','artisanat':'artisanat',
-        'vetements':'vetements','maison':'maison','tech':'tech'
+        'legumes':'alimentaire','fruits':'alimentaire','transforme':'alimentaire','epicerie':'alimentaire'
       };
       var emojiMap = {
+        'alimentaire':'🥬','cosmetique':'💄','artisanat':'🪆',
+        'vetements':'👗','maison':'🏠','tech':'📱',
         'oleagineux':'🌾','cereales':'🌾','legumineuses':'🫘','legumes':'🥬',
-        'fruits':'🍅','transforme':'🍯','epicerie':'🧂','cosmetique':'🧴',
-        'artisanat':'🪆','vetements':'👗','maison':'🏠','tech':'📱'
+        'fruits':'🍅','transforme':'🍯','epicerie':'🧂'
       };
       var lblMap = {
-        'oleagineux':'Oléagineux','cereales':'Céréales','legumineuses':'Légumineuses',
-        'legumes':'Légumes','fruits':'Fruits','transforme':'Transformé',
-        'epicerie':'Épicerie','cosmetique':'Cosmétique','artisanat':'Artisanat',
-        'vetements':'Vêtements','maison':'Maison','tech':'Tech'
+        'alimentaire':'Alimentation','cosmetique':'Cosmétique','artisanat':'Artisanat',
+        'vetements':'Vêtements','maison':'Maison','tech':'Tech',
+        'oleagineux':'Alimentation','cereales':'Alimentation','legumineuses':'Alimentation',
+        'legumes':'Alimentation','fruits':'Alimentation','transforme':'Alimentation','epicerie':'Alimentation'
       };
 
       res.data.forEach(function(p) {
@@ -4749,8 +4749,8 @@ async function kmLoadProduits() {
           nom:     p.nom || 'Produit',
           vendeur: p.vendeurs ? p.vendeurs.nom : (p.ville || 'Niger'),
           zone:    p.ville || p.region || 'Niger',
-          prix:    parseFloat(p.prix) || 0,
-          unite:   p.unite || 'kg',
+          prix:    parseFloat(String(p.prix).replace(/[^0-9.]/g,'')) || 0,
+          unite:   (p.unite||'kg').replace(/^FCFA\s*\/\s*/i,'').replace(/^EUR\s*\/\s*/i,'').replace(/^USD\s*\/\s*/i,'').trim() || 'kg',
           dispo:   'immediat',
           delai:   '48h',
           badge:   'v',
