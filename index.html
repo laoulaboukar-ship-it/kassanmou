@@ -3159,7 +3159,10 @@ function goTo(page){
   var nb=g('nl-'+page);if(nb)nb.classList.add('on');
   var bnb=g('bn-'+page);if(bnb)bnb.classList.add('on');
   if(page==='home'){g('bn-home').classList.add('on');}
-  if(page==='marketplace'){g('bn-marketplace')&&g('bn-marketplace').classList.add('on');renderProds();}
+  if(page==='marketplace'){
+    g('bn-marketplace')&&g('bn-marketplace').classList.add('on');
+    kmLoadProduits().then(function(){ renderProdsPremium(); });
+  }
   if(page==='tracking'){g('bn-tracking')&&g('bn-tracking').classList.add('on');}
   if(page==='dashboard'){g('bn-account')&&g('bn-account').classList.add('on');renderDash('overview');}
   closeMN();
@@ -4697,25 +4700,43 @@ try {
 } catch(e) { console.warn('[KM-DB] Supabase non disponible:', e); }
 
 async function kmLoadProduits() {
-  if (!kmDB) return;
+  if (!kmDB) return Promise.resolve();
   try {
-    var res = await kmDB.from('produits').select('*, vendeurs(nom,telephone,ville)').eq('statut','validé').order('date_validation',{ascending:false});
+    var res = await kmDB.from('produits')
+      .select('*, vendeurs(nom,telephone,ville)')
+      .eq('statut','validé')
+      .order('date_validation',{ascending:false});
     if (res.error) { console.warn('[KM-DB]', res.error.message); return; }
     if (res.data && res.data.length > 0) {
+      /* Vider et recharger pour avoir la liste à jour */
+      ONLINE_PRODUCTS = ONLINE_PRODUCTS.filter(function(p){ return p.source !== 'supabase'; });
       res.data.forEach(function(p) {
-        var exists = ONLINE_PRODUCTS.find(function(x){ return x.id === p.id; });
-        if (!exists) ONLINE_PRODUCTS.unshift({
-          id:p.id, nom:p.nom, categorie:p.categorie, prix:p.prix,
-          unite:p.unite||'kg', quantite:p.quantite_disponible,
-          region:p.region||'', ville:p.ville||'',
-          description:p.description||'', photos:p.photos||[],
+        ONLINE_PRODUCTS.unshift({
+          id:p.id,
+          nom:p.nom,
+          categorie:p.categorie,
+          prix:p.prix,
+          unite:p.unite||'kg',
+          quantite:p.quantite_disponible,
+          region:p.region||'',
+          ville:p.ville||'',
+          description:p.description||'',
+          photos:p.photos||[],
           vendeur:p.vendeurs?p.vendeurs.nom:'Vendeur',
           tel:p.vendeurs?p.vendeurs.telephone:'',
-          vedette:p.est_vedette, code:p.code_validation, source:'supabase'
+          vedette:p.est_vedette,
+          code:p.code_validation,
+          modes:['detail','gros'],
+          sellerType:'producteur',
+          origine:(p.region||p.ville||'Niger'),
+          source:'supabase'
         });
       });
-      console.log('[KM-DB] '+res.data.length+' produit(s) charge(s)');
-      renderProdsPremium(); renderFeaturedStrip();
+      console.log('[KM-DB] '+res.data.length+' produit(s) chargé(s) depuis Supabase');
+      renderProdsPremium();
+      renderFeaturedStrip();
+    } else {
+      console.log('[KM-DB] Aucun produit validé en base pour le moment');
     }
   } catch(e) { console.warn('[KM-DB]', e); }
 }
@@ -4814,12 +4835,18 @@ document.addEventListener('DOMContentLoaded', function(){
   initHeroLiveCard();
 
   /* ── CHARGER LES PRODUITS DEPUIS SUPABASE ── */
-  kmLoadProduits();
+  /* On attend que Supabase réponde avant de rendre la marketplace */
+  kmLoadProduits().then(function(){
+    renderFeaturedStrip();
+    renderProdsPremium();
+    renderHomeFeatured();
+  });
+
   setInterval(rotateLiveCard, 4000);
   setInterval(tickActivity, 3200);
   animateHowSteps('acheteur');
 
-  /* ── 2. RENDU INITIAL DES PAGES ── */
+  /* ── 2. RENDU INITIAL DES PAGES (sans attendre Supabase) ── */
   renderFeaturedStrip();
   renderProdsPremium();
   renderLivreursPage();
@@ -4904,28 +4931,45 @@ document.addEventListener('DOMContentLoaded', function(){
     var urlParams = new URLSearchParams(window.location.search);
     var codeVal   = urlParams.get('valider');
     var codeAction= urlParams.get('action') || 'valider';
-    if(codeVal && kmDB){
+    /* Attendre que kmDB soit prêt puis valider */
+    function executerValidation(){
+      if(!kmDB){
+        setTimeout(executerValidation, 500);
+        return;
+      }
       if(codeAction === 'valider'){
+        /* Essayer avec le code tel quel ET en majuscules */
         kmDB.from('produits')
           .update({statut:'validé', date_validation: new Date().toISOString()})
-          .eq('code_validation', codeVal.toUpperCase())
+          .eq('code_validation', codeVal)
           .then(function(res){
-            if(res.error){ toast('Erreur : ' + res.error.message, true); }
-            else {
+            if(res.error){
+              /* Essayer en majuscules */
+              kmDB.from('produits')
+                .update({statut:'validé', date_validation: new Date().toISOString()})
+                .eq('code_validation', codeVal.toUpperCase())
+                .then(function(res2){
+                  if(res2.error){ toast('Erreur validation : ' + res2.error.message, true); }
+                  else {
+                    toast('✅ Produit ' + codeVal + ' validé et mis en ligne !');
+                    setTimeout(function(){ kmLoadProduits(); goTo('marketplace'); }, 1000);
+                  }
+                });
+            } else {
               toast('✅ Produit ' + codeVal + ' validé et mis en ligne !');
-              kmLoadProduits();
-              goTo('marketplace');
+              setTimeout(function(){ kmLoadProduits(); goTo('marketplace'); }, 1000);
             }
           });
       } else if(codeAction === 'refuser'){
         kmDB.from('produits')
           .update({statut:'refusé'})
-          .eq('code_validation', codeVal.toUpperCase())
+          .eq('code_validation', codeVal)
           .then(function(res){
             toast('❌ Produit ' + codeVal + ' refusé.');
           });
       }
     }
+    if(codeVal){ executerValidation(); }
     if(codeVal){
       var found = false;
       PENDING_PRODUCTS.forEach(function(p){
