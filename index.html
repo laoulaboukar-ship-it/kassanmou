@@ -3448,7 +3448,7 @@ function openModal(type){
         '</div>'+
       '</div>'+
 
-      '<button class="bp" style="width:100%;padding:14px;margin-top:4px" id="mbtn-sell">Soumettre pour validation →</button>'+
+      '<button class="bp" style="width:100%;padding:14px;margin-top:4px;font-size:16px" id="mbtn-sell" onclick="submitProduct(window._selectedModes||[])">✅ Soumettre pour validation</button>'+
       '<p style="font-size:12px;color:var(--Mu);text-align:center;margin-top:8px">Après validation par notre équipe, vous recevrez votre code de mise en ligne par SMS et Email.</p>';
 
   } else if(type==='request-product'){
@@ -3527,6 +3527,7 @@ function openModal(type){
   });
   // Wire mode de vente
   var selectedModes=[];
+  window._selectedModes = selectedModes;
   document.querySelectorAll('.sms-card').forEach(function(c){
     c.addEventListener('click',function(){
       c.classList.toggle('sel-'+c.dataset.mode);
@@ -3535,10 +3536,15 @@ function openModal(type){
       } else {
         selectedModes.push(c.dataset.mode);
       }
+      window._selectedModes = selectedModes;
     });
   });
 
-  var sb=g('mbtn-sell');if(sb)sb.addEventListener('click',function(){submitProduct(selectedModes);});
+  /* Câblage bouton soumettre - double sécurité */
+  var sb=g('mbtn-sell');
+  if(sb){
+    sb.onclick = function(){ submitProduct(window._selectedModes||[]); };
+  }
 
   // Wire export OUI/NON toggle
   var expYes=g('exp-yes'),expNo=g('exp-no'),expFields=g('export-fields');
@@ -3719,8 +3725,13 @@ function submitProduct(modes){
   if(!currentSellerType){toast('Veuillez sélectionner votre profil (Vendeur, Producteur, Transformateur ou Maraîcher).',true);return;}
   var nm=g('prod-name');if(!nm||!nm.value.trim()){toast('Veuillez nommer votre produit.',true);return;}
   var catEl=g('prod-cat');if(!catEl||!catEl.value){toast('Veuillez choisir une catégorie.',true);return;}
-  if(uploadedPhotos.length===0){toast('Ajoutez au moins une photo de votre produit.',true);return;}
-  if(!modes||modes.length===0){toast('Sélectionnez votre mode de vente (Détail et/ou Gros).',true);return;}
+  if(uploadedPhotos.length===0){
+    toast('Conseil : ajoutez une photo pour attirer plus d'acheteurs.', false);
+    /* On continue quand même */
+  }
+  if(!modes||modes.length===0){
+    modes = ['detail']; /* Mode détail par défaut */
+  }
   var emailVal=(g('prod-email')||{}).value||'';
   var phoneVal=(g('prod-phone')||{}).value||'';
   if(!emailVal.trim()&&!phoneVal.trim()){toast('Ajoutez votre email ou téléphone pour recevoir votre code.',true);return;}
@@ -4216,7 +4227,7 @@ function renderProdsPremium(){
 
   grid.innerHTML = list.map(function(p,i){
     return '<div class="pc-premium'+(p.vedette?' vedette-card':'')+'" style="animation-delay:'+(i*.05)+'s" onclick="openDetailSheet(\''+p.id+'\')">' +
-      '<div class="pthumb-premium">'+p.emoji +
+      '<div class="pthumb-premium" style="overflow:hidden;position:relative">'+(p.photos && p.photos.length > 0 && typeof p.photos[0]==='string' && p.photos[0].startsWith('http') ? '<img src="'+p.photos[0]+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'">' : '')+p.emoji +
         '<div class="pdispo-dot '+(p.dispo==='commande'?'cmd':'ok')+'"></div>' +
         (p.vedette ? '<div class="vedette-badge-card">★ Vedette</div>' : '') +
       '</div>' +
@@ -4313,7 +4324,7 @@ function renderDetailStep1(p){
   g('detail-content').innerHTML =
     '<div class="order-step">' +
     '<div class="order-progress"><div class="op-step active"></div><div class="op-step"></div><div class="op-step"></div></div>' +
-    '<div class="dsheet-thumb">'+p.emoji+'</div>' +
+    '<div class="dsheet-thumb">'+(p.photos && p.photos.length > 0 && typeof p.photos[0] === 'string' && p.photos[0].startsWith('http') ? '<img src="'+p.photos[0]+'" style="width:100%;height:100%;object-fit:cover;border-radius:12px" onerror="this.parentNode.innerHTML=\''+p.emoji+'\'">' : p.emoji)+'</div>' +
     '<div class="dsheet-body">' +
       '<div class="dsheet-badges">'+badgePremiumHtml(p.badge)+(p.vedette?'<span class="vbp p">★ En vedette</span>':'')+'</div>' +
       '<div class="dsheet-name">'+p.nom+'</div>' +
