@@ -4707,41 +4707,72 @@ async function kmLoadProduits() {
   try {
     var res = await kmDB.from('produits')
       .select('*, vendeurs(nom,telephone,ville)')
-      .eq('statut','validé')
+      .eq('statut',String.fromCharCode(118,97,108,105,100,233))
       .order('date_validation',{ascending:false});
-    if (res.error) { console.warn('[KM-DB]', res.error.message); return; }
+
+    if (res.error) { console.warn('[KM-DB]', res.error.message); return Promise.resolve(); }
+
     if (res.data && res.data.length > 0) {
-      /* Vider et recharger pour avoir la liste à jour */
-      ONLINE_PRODUCTS = ONLINE_PRODUCTS.filter(function(p){ return p.source !== 'supabase'; });
+      /* Supprimer les anciens produits Supabase de DB_PREMIUM */
+      DB_PREMIUM.produits = DB_PREMIUM.produits.filter(function(p){
+        return p.source !== 'supabase';
+      });
+
+      /* Mapping catégories */
+      var catMap = {
+        'oleagineux':'alimentaire','cereales':'alimentaire','legumineuses':'alimentaire',
+        'legumes':'alimentaire','fruits':'alimentaire','transforme':'alimentaire',
+        'epicerie':'alimentaire','cosmetique':'cosmetique','artisanat':'artisanat',
+        'vetements':'vetements','maison':'maison','tech':'tech'
+      };
+      var emojiMap = {
+        'oleagineux':'🌾','cereales':'🌾','legumineuses':'🫘','legumes':'🥬',
+        'fruits':'🍅','transforme':'🍯','epicerie':'🧂','cosmetique':'🧴',
+        'artisanat':'🪆','vetements':'👗','maison':'🏠','tech':'📱'
+      };
+      var lblMap = {
+        'oleagineux':'Oléagineux','cereales':'Céréales','legumineuses':'Légumineuses',
+        'legumes':'Légumes','fruits':'Fruits','transforme':'Transformé',
+        'epicerie':'Épicerie','cosmetique':'Cosmétique','artisanat':'Artisanat',
+        'vetements':'Vêtements','maison':'Maison','tech':'Tech'
+      };
+
       res.data.forEach(function(p) {
-        ONLINE_PRODUCTS.unshift({
-          id:p.id,
-          nom:p.nom,
-          categorie:p.categorie,
-          prix:p.prix,
-          unite:p.unite||'kg',
-          quantite:p.quantite_disponible,
-          region:p.region||'',
-          ville:p.ville||'',
-          description:p.description||'',
-          photos:p.photos||[],
-          vendeur:p.vendeurs?p.vendeurs.nom:'Vendeur',
-          tel:p.vendeurs?p.vendeurs.telephone:'',
-          vedette:p.est_vedette,
-          code:p.code_validation,
-          modes:['detail','gros'],
-          sellerType:'producteur',
-          origine:(p.region||p.ville||'Niger'),
-          source:'supabase'
+        var c = (p.categorie||'').toLowerCase();
+        DB_PREMIUM.produits.unshift({
+          id:      p.id,
+          source:  'supabase',
+          vedette: p.est_vedette || false,
+          emoji:   emojiMap[c] || '📦',
+          cat:     catMap[c] || 'alimentaire',
+          catLbl:  lblMap[c] || 'Produit',
+          nom:     p.nom || 'Produit',
+          vendeur: p.vendeurs ? p.vendeurs.nom : (p.ville || 'Niger'),
+          zone:    p.ville || p.region || 'Niger',
+          prix:    parseFloat(p.prix) || 0,
+          unite:   p.unite || 'kg',
+          dispo:   'immediat',
+          delai:   '48h',
+          badge:   'v',
+          neg:     false,
+          desc:    p.description || '',
+          tel:     p.vendeurs ? p.vendeurs.telephone : '',
+          code:    p.code_validation,
+          photos:  p.photos || []
         });
       });
-      console.log('[KM-DB] '+res.data.length+' produit(s) chargé(s) depuis Supabase');
+
+      console.log('[KM-DB] ' + res.data.length + ' produit(s) chargé(s) depuis Supabase');
       renderProdsPremium();
       renderFeaturedStrip();
     } else {
-      console.log('[KM-DB] Aucun produit validé en base pour le moment');
+      console.log('[KM-DB] Aucun produit validé en base');
     }
-  } catch(e) { console.warn('[KM-DB]', e); }
+    return Promise.resolve();
+  } catch(e) {
+    console.warn('[KM-DB] Exception:', e);
+    return Promise.resolve();
+  }
 }
 
 async function kmUploadPhoto(base64data, filename, prodCode) {
