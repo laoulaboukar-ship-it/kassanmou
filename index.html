@@ -4393,12 +4393,9 @@ function renderDetailStep1(p){
 function renderDetailStep2(p){
   var selectedPay = '';
   var payments = [
-    {id:'orange_money', ico:'🟠', lbl:'Orange Money', sub:'Transfert mobile Orange', num:'+227 99 85 15 32'},
-    {id:'airtel_money', ico:'🔴', lbl:'Airtel Money', sub:'Transfert mobile Airtel', num:'+227 99 85 15 32'},
-    {id:'flooz',        ico:'💙', lbl:'Flooz',        sub:'Transfert mobile Moov', num:'+227 99 85 15 32'},
-    {id:'amana',        ico:'🏦', lbl:'Dépôt Amana',  sub:'Dépôt bancaire Amana', num:'Compte Amana'},
-    {id:'nita',         ico:'🏧', lbl:'Dépôt Nita',   sub:'Nita Bank / dépôt', num:'Compte Nita'},
-    {id:'cash',         ico:'💵', lbl:'Cash',          sub:'Paiement à la livraison', num:'À la réception'},
+    {id:'amana', ico:'🏦', lbl:'Dépôt Amana',  sub:'Dépôt bancaire — coordonnées envoyées par WhatsApp', num:'Compte Amana'},
+    {id:'nita',  ico:'🏧', lbl:'Dépôt Nita',   sub:'Nita Bank — coordonnées envoyées par WhatsApp', num:'Compte Nita'},
+    {id:'cash',  ico:'💵', lbl:'Cash au livreur', sub:'Vous payez directement à la réception', num:'À la réception'},
   ];
 
   g('detail-content').innerHTML =
@@ -4475,40 +4472,104 @@ function renderDetailStep3(p, client){
   var ref = generateRef();
   var payName = _payNames[client.pay] || client.pay;
   var isCash = client.pay === 'cash';
-  var needProof = !isCash && client.pay !== 'amana' && client.pay !== 'nita';
   var needBankInfo = client.pay === 'amana' || client.pay === 'nita';
 
-  // Construire le message WhatsApp complet
-  var waLines = [
+  /* Choisir un livreur disponible automatiquement */
+  var livreursDispos = DB_PREMIUM.livreurs.filter(function(l){ return l.statut === 'dispo'; });
+  var livreur = livreursDispos.length > 0
+    ? livreursDispos[Math.floor(Math.random() * livreursDispos.length)]
+    : DB_PREMIUM.livreurs[0];
+
+  /* URL photo produit si disponible */
+  var photoUrl = kmGetPhoto(p.photos);
+
+  /* ══════════════════════════════════════════
+     MESSAGE WHATSAPP KASSAN'MOU (équipe)
+     Message envoyé à l'équipe pour traitement
+  ══════════════════════════════════════════ */
+  var waMsgEquipe = [
     '🛒 *NOUVELLE COMMANDE — KASSAN\'MOU*',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━',
     '',
-    '📦 *Produit :* ' + p.nom,
-    '🏷️ *Vendeur :* ' + p.vendeur,
-    '💰 *Prix :* ' + p.prix.toLocaleString('fr-FR') + ' FCFA / ' + p.unite,
-    '📍 *Zone vendeur :* ' + p.zone,
+    '📦 *PRODUIT*',
+    '  Nom : ' + p.nom,
+    '  Prix : ' + p.prix.toLocaleString('fr-FR') + ' FCFA / ' + p.unite,
+    '  Vendeur : ' + p.vendeur,
+    '  Zone : ' + p.zone,
+    (photoUrl ? '  Photo : ' + photoUrl : ''),
     '',
-    '👤 *Client :* ' + client.nom,
-    '📱 *Contact :* ' + client.tel,
+    '👤 *CLIENT*',
+    '  Nom : ' + client.nom,
+    '  WhatsApp : ' + client.tel,
     '',
-    '💳 *Mode de paiement :* ' + payName,
-  ];
-  if(needProof){
-    waLines.push('');
-    waLines.push('📸 *Preuve de paiement à envoyer ici sur WhatsApp*');
-  }
-  if(needBankInfo){
-    waLines.push('');
-    waLines.push('ℹ️ Merci de répondre avec les coordonnées du compte ' + (client.pay==='amana'?'Amana':'Nita'));
-  }
-  waLines = waLines.concat([
+    '💳 *PAIEMENT : ' + payName.toUpperCase() + '*',
+    (isCash ? '  → Cash remis au livreur à la livraison' : needBankInfo ? '  → Dépôt ' + (client.pay==='amana'?'Amana':'Nita') + ' — envoyer coordonnées compte' : '  → Preuve de paiement à recevoir sur WhatsApp'),
     '',
-    '🔖 *Réf :* ' + ref,
+    '🛵 *LIVREUR ASSIGNÉ*',
+    '  ' + livreur.emoji + ' ' + livreur.nom,
+    '  Zone : ' + livreur.zone,
+    '  Tél : ' + livreur.telDisplay,
     '',
-    '_→ Notre équipe vous contactera pour confirmer lieu et heure de livraison_',
-    '_Kassan\'Mou · Business Bridge Niger_'
-  ]);
-  var waMsg = waLines.join('\n');
-  var waUrl = 'https://wa.me/' + _wap + '?text=' + encodeURIComponent(waMsg);
+    '🔖 *Réf : ' + ref + '*',
+    '⏱ Livraison Niamey — 1 000 FCFA',
+    '',
+    '_Kassan\'Mou · Validez et contactez le client_'
+  ].filter(function(l){ return l !== undefined; }).join('\n');
+
+  /* ══════════════════════════════════════════
+     MESSAGE WHATSAPP CLIENT
+     Message que l'acheteur envoie à Kassan'Mou
+     pour confirmer sa commande
+  ══════════════════════════════════════════ */
+  var waMsgClient = [
+    '✅ *MA COMMANDE KASSAN\'MOU*',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '',
+    '📦 *' + p.nom + '*',
+    '💰 ' + p.prix.toLocaleString('fr-FR') + ' FCFA / ' + p.unite,
+    '🏪 Vendeur : ' + p.vendeur,
+    (photoUrl ? '🖼️ Photo : ' + photoUrl : ''),
+    '',
+    '👤 Mon nom : ' + client.nom,
+    '📱 Mon numéro : ' + client.tel,
+    '',
+    '💳 Paiement : *' + payName + '*',
+    (isCash ? '✅ Je paie cash au livreur' : ''),
+    (needBankInfo ? '🏦 J\'attends les coordonnées ' + (client.pay==='amana'?'Amana':'Nita') : ''),
+    '',
+    '🛵 *Mon livreur assigné*',
+    '  ' + livreur.emoji + ' *' + livreur.nom + '*',
+    '  Zone : ' + livreur.zone,
+    '  📞 ' + livreur.telDisplay,
+    '',
+    '🔖 Réf : *' + ref + '*',
+    '',
+    '_→ Je peux contacter mon livreur directement au ' + livreur.telDisplay + '_',
+    '_Kassan\'Mou · Marketplace Niger_'
+  ].filter(function(l){ return l !== undefined; }).join('\n');
+
+  var waUrlEquipe = 'https://wa.me/' + _wap + '?text=' + encodeURIComponent(waMsgEquipe);
+  var waUrlLivreur = 'https://wa.me/' + livreur.tel.replace(/[^0-9]/g,'') + '?text=' + encodeURIComponent(
+    'Bonjour ' + livreur.nom + ', une livraison vous a été assignée via Kassan\'Mou.\n\n📦 ' + p.nom + '\n👤 Client : ' + client.nom + '\n📱 ' + client.tel + '\n🔖 Réf : ' + ref + '\n\nMerci de contacter le client pour confirmer l\'heure et le lieu.'
+  );
+
+  /* Envoi email à l'équipe */
+  sendEmailAuto({
+    refCommande: ref, produit: p.nom,
+    prix: p.prix.toLocaleString('fr-FR') + ' FCFA / ' + p.unite,
+    vendeur: p.vendeur, nomClient: client.nom, contactClient: client.tel,
+    modePaiement: payName, email: '', photosUrls: photoUrl ? [photoUrl] : []
+  }, 'commande');
+
+  /* Sauvegarder commande dans Supabase */
+  kmSaveCommande({
+    reference: ref, produitId: p.id || null, vendeurId: null,
+    nom: client.nom, telephone: client.tel, whatsapp: client.tel,
+    ville: 'Niamey', quantite: 1,
+    prixUnitaire: p.prix, prixTotal: p.prix,
+    fraisLivraison: 1000, montantTotal: p.prix + 1000,
+    notes: 'Paiement: ' + payName + ' | Livreur: ' + livreur.nom
+  });
 
   // Envoi email automatique à '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+'
   sendEmailAuto({
@@ -4528,17 +4589,45 @@ function renderDetailStep3(p, client){
     '<div class="dsheet-body">' +
 
       '<div style="text-align:center;padding:16px 0 10px">' +
-        '<div style="font-size:3rem;margin-bottom:8px">✅</div>' +
-        '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.6rem;font-weight:800;color:var(--Od)">Commande confirmée !</div>' +
-        '<div style="font-size:12.5px;color:var(--Mu);margin-top:4px">Réf : <strong style="font-family:\'JetBrains Mono\',monospace;color:var(--O)">'+ref+'</strong></div>' +
+        '<div style="font-size:3rem;margin-bottom:6px">✅</div>' +
+        '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.5rem;font-weight:800;color:var(--Od)">Commande confirmée !</div>' +
+        '<div style="font-size:12px;color:var(--Mu);margin-top:4px">Réf : <strong style="font-family:\'JetBrains Mono\',monospace;color:var(--O)">'+ref+'</strong></div>' +
+      '</div>' +
+
+      /* Résumé produit avec photo */
+      '<div style="display:flex;align-items:center;gap:12px;background:var(--SD);border-radius:var(--rm);padding:12px;margin-bottom:12px">' +
+        (photoUrl ? '<img src="'+photoUrl+'" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0">' : '<div style="width:60px;height:60px;border-radius:8px;background:var(--PC);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">'+p.emoji+'</div>') +
+        '<div>' +
+          '<div style="font-weight:700;font-size:14px;color:var(--S)">'+p.nom+'</div>' +
+          '<div style="font-size:13px;color:var(--T)">'+p.prix.toLocaleString('fr-FR')+' FCFA / '+p.unite+'</div>' +
+          '<div style="font-size:12px;color:var(--Mu)">'+p.vendeur+' · '+p.zone+'</div>' +
+        '</div>' +
+      '</div>' +
+
+      /* Livreur assigné */
+      '<div style="background:linear-gradient(135deg,#EBF4E4,#F5FAF0);border-radius:var(--rm);padding:12px 14px;margin-bottom:12px;border:1.5px solid rgba(45,90,27,.2)">' +
+        '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--Om);margin-bottom:8px">🛵 Votre livreur assigné</div>' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<div style="width:44px;height:44px;border-radius:50%;background:var(--Ok);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">'+livreur.emoji+'</div>' +
+          '<div style="flex:1">' +
+            '<div style="font-weight:700;font-size:14px;color:var(--S)">'+livreur.nom+'</div>' +
+            '<div style="font-size:12px;color:var(--Mu);margin-top:1px">📍 '+livreur.zone+'</div>' +
+          '</div>' +
+          '<a href="tel:'+livreur.tel.replace(/[^0-9+]/g,'')+'" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--O);color:#fff;border-radius:10px;padding:8px 12px;text-decoration:none;flex-shrink:0">' +
+            '<span style="font-size:16px">📞</span>' +
+            '<span style="font-size:10px;font-weight:700">Appeler</span>' +
+          '</a>' +
+        '</div>' +
+        '<div style="margin-top:8px;padding:8px 10px;background:rgba(45,90,27,.07);border-radius:8px;font-size:12px;color:var(--Od)">' +
+          '📱 Numéro direct : <strong>'+livreur.telDisplay+'</strong> — Contactez votre livreur directement pour l\'heure et le lieu.' +
+        '</div>' +
       '</div>' +
 
       '<div class="conf-box">' +
-        '<div class="conf-row"><span>Produit</span><span style="font-weight:600">'+p.emoji+' '+p.nom+'</span></div>' +
-        '<div class="conf-row"><span>Prix</span><span>'+p.prix.toLocaleString('fr-FR')+' FCFA / '+p.unite+'</span></div>' +
-        '<div class="conf-row"><span>Client</span><span>'+client.nom+'</span></div>' +
-        '<div class="conf-row"><span>Contact</span><span>'+client.tel+'</span></div>' +
-        '<div class="conf-row"><span>Paiement</span><span>'+payName+'</span></div>' +
+        '<div class="conf-row"><span>Client</span><span style="font-weight:600">'+client.nom+'</span></div>' +
+        '<div class="conf-row"><span>WhatsApp</span><span>'+client.tel+'</span></div>' +
+        '<div class="conf-row"><span>Paiement</span><span style="color:var(--O);font-weight:600">'+payName+'</span></div>' +
+        '<div class="conf-row"><span>Livraison</span><span>1 000 FCFA</span></div>' +
       '</div>' +
 
       '<div class="wa-instr">' +
@@ -4556,17 +4645,23 @@ function renderDetailStep3(p, client){
         '</div>' +
       '</div>' +
 
-      '<a class="btn-wa-order" href="'+waUrl+'" target="_blank" rel="noopener">' +
-        '<svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.558 4.122 1.533 5.854L0 24l6.335-1.511A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.034-1.388l-.36-.214-3.762.897.944-3.658-.236-.374A9.817 9.817 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>' +
-        'Envoyer ma commande sur WhatsApp' +
-      '</a>' +
+      '<div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">' +
 
-      '<div style="font-size:11.5px;color:var(--Mu);text-align:center;margin-top:10px;line-height:1.6">' +
-        '📧 Un email de confirmation a été envoyé à notre équipe.<br>' +
-        '⏱ Nous vous répondrons sous <strong>30 minutes</strong> (7h–20h).' +
+        '<a href="'+waUrlEquipe+'" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;border-radius:var(--rm);background:#25D366;color:#fff;text-decoration:none;font-size:15px;font-weight:700;font-family:Outfit,sans-serif;box-shadow:0 4px 16px rgba(37,211,102,.3)">' +
+          '📲 Confirmer ma commande sur WhatsApp' +
+        '</a>' +
+
+        '<a href="'+waUrlLivreur+'" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border-radius:var(--rm);background:var(--Ol);color:var(--Od);text-decoration:none;font-size:14px;font-weight:700;font-family:Outfit,sans-serif;border:2px solid var(--O)">' +
+          '🛵 Contacter ' + livreur.nom + ' directement' +
+        '</a>' +
+
       '</div>' +
 
-      '<button class="btn-dclose" onclick="closeDetailSheet()" style="margin-top:14px;width:100%;padding:12px;border-radius:var(--rm);border:1.5px solid var(--B);background:none;font-family:\'Outfit\',sans-serif;font-size:14px;cursor:pointer;color:var(--Mu)">Fermer</button>' +
+      '<div style="font-size:11px;color:var(--Mu);text-align:center;margin-top:10px;line-height:1.6">' +
+        '📧 Email envoyé à l\'équipe · ⏱ Réponse sous 30 min (7h–20h)' +
+      '</div>' +
+
+      '<button class="btn-dclose" onclick="closeDetailSheet()" style="margin-top:12px;width:100%;padding:12px;border-radius:var(--rm);border:1.5px solid var(--B);background:none;font-family:Outfit,sans-serif;font-size:14px;cursor:pointer;color:var(--Mu)">✕ Fermer</button>' +
     '</div></div>';
 }
 function closeDetailSheet(e){
