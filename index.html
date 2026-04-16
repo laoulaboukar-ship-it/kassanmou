@@ -1586,7 +1586,7 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
     <button class="nl on" id="nl-home">Accueil</button>
     <button class="nl" id="nl-marketplace">Marché 🛍️</button>
 
-    <button class="nl" id="nl-focal">Points Focaux</button>
+
     <button class="nl" id="nl-tracking">Suivi</button>
     <button class="nl" id="nl-how">Comment ça marche</button>
     <button class="nl" id="nl-about">À propos · Export</button>
@@ -1605,7 +1605,7 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
   <button class="mi" id="mn-home"><span class="mi-ico">🏠</span><span>Accueil</span></button>
   <button class="mi" id="mn-marketplace"><span class="mi-ico">🛒</span><span>Marché local</span></button>
 
-  <button class="mi" id="mn-focal"><span class="mi-ico">🤝</span><span>Points Focaux</span></button>
+
   <button class="mi" id="mn-tracking"><span class="mi-ico">📦</span><span>Suivi commande</span></button>
   <button class="mi" id="mn-how"><span class="mi-ico">📋</span><span>Comment ça marche</span></button>
   <button class="mi" id="mn-about"><span class="mi-ico">🌍</span><span>À propos</span></button>
@@ -1647,9 +1647,28 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
         <span>✓ Cornes de bœufs → Vietnam</span><span class="hsep"></span>
         <span>✓ Partenariats Europe & Asie</span>
       </div>
-      <div class="hctas">
-        <button class="hcp" id="btn-see-mkt">🛍️ Explorer le marché</button>
-        <button class="hcs" id="btn-post-home">🚢 Exporter avec KassanMou</button>
+      <div class="hctas" style="display:flex;flex-direction:column;gap:12px;max-width:520px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+
+          <button id="btn-see-mkt" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border-radius:16px;border:1.5px solid rgba(45,90,27,.5);background:rgba(45,90,27,.15);cursor:pointer;transition:all .2s;font-family:Outfit,sans-serif" onmouseover="this.style.background='rgba(45,90,27,.35)'" onmouseout="this.style.background='rgba(45,90,27,.15)'">
+            <span style="font-size:28px">🛍️</span>
+            <span style="font-size:12px;font-weight:700;color:#fff;line-height:1.3">Marketplace Locale</span>
+            <span style="font-size:10px;color:rgba(255,255,255,.45)">Acheter · Vendre</span>
+          </button>
+
+          <button id="btn-export-home" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border-radius:16px;border:1.5px solid rgba(196,154,60,.5);background:rgba(196,154,60,.12);cursor:pointer;transition:all .2s;font-family:Outfit,sans-serif" onmouseover="this.style.background='rgba(196,154,60,.28)'" onmouseout="this.style.background='rgba(196,154,60,.12)'">
+            <span style="font-size:28px">🌍</span>
+            <span style="font-size:12px;font-weight:700;color:var(--G);line-height:1.3">Export B2B</span>
+            <span style="font-size:10px;color:rgba(255,255,255,.45)">Niger → Monde</span>
+          </button>
+
+          <button id="btn-b2b-home" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border-radius:16px;border:1.5px solid rgba(200,75,47,.4);background:rgba(200,75,47,.1);cursor:pointer;transition:all .2s;font-family:Outfit,sans-serif" onmouseover="this.style.background='rgba(200,75,47,.25)'" onmouseout="this.style.background='rgba(200,75,47,.1)'">
+            <span style="font-size:28px">🤝</span>
+            <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,.9);line-height:1.3">Mise en Relation</span>
+            <span style="font-size:10px;color:rgba(255,255,255,.45)">Producteur · Acheteur</span>
+          </button>
+
+        </div>
       </div>
       <div class="hkpis">
         <div class="kpic"><div class="kpin" id="kpi-producteurs">0</div><div class="kpil">Producteurs locaux</div></div>
@@ -2386,293 +2405,136 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
 ═══════════════════════════════════ -->
 <div class="page" id="page-how">
 
-  <!-- CSS INLINE POUR CETTE PAGE -->
-  <style>
-  #page-how{background:#07100C}
-  .how-hero{
-    padding:4rem 1.5rem 2.5rem;text-align:center;position:relative;overflow:hidden;
-    background:linear-gradient(180deg,#060D04 0%,#0A160A 100%);
-  }
-  .how-hero::before{content:'';position:absolute;inset:0;
-    background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(45,90,27,.22) 0,transparent 65%);pointer-events:none}
-  .how-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--G);margin-bottom:.8rem;font-weight:700;
-    display:flex;align-items:center;justify-content:center;gap:8px}
-  .how-tag::before,.how-tag::after{content:'';flex:1;max-width:60px;height:1px;background:rgba(196,154,60,.25)}
-  .how-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,4vw,3.4rem);
-    font-weight:800;color:#fff;line-height:1.1;margin-bottom:.8rem}
-  .how-h1 span{background:var(--gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .how-lead{font-size:15px;color:rgba(255,255,255,.45);max-width:540px;margin:0 auto 2.5rem;line-height:1.8}
+<style>
+#page-how{background:#07100C}
+.how-s{padding:3rem 1.5rem;max-width:900px;margin:0 auto}
+.how-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:.6rem}
+.how-h1 em{font-style:normal;background:linear-gradient(135deg,#C49A3C,#E8C060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.how-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--G);margin-bottom:.8rem;font-weight:700}
+.how-lead{font-size:15px;color:rgba(255,255,255,.5);line-height:1.8;margin-bottom:2.5rem;max-width:600px}
+.how-block{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;margin-bottom:20px}
+.how-block-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:8px}
+.how-block-sub{font-size:13px;color:rgba(255,255,255,.5);line-height:1.8;margin-bottom:16px}
+.how-step{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
+.how-step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;flex-shrink:0}
+.how-step-body{flex:1}
+.how-step-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.how-step-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6}
+.how-prod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0}
+.how-prod-card{background:rgba(196,154,60,.08);border:1px solid rgba(196,154,60,.2);border-radius:14px;padding:16px;text-align:center}
+.how-prod-ico{font-size:2rem;margin-bottom:8px}
+.how-prod-nm{font-size:14px;font-weight:700;color:var(--G);margin-bottom:4px}
+.how-prod-dest{font-size:12px;color:rgba(255,255,255,.4)}
+.how-proto{background:rgba(45,90,27,.12);border:1px solid rgba(45,90,27,.3);border-radius:14px;padding:16px;margin-top:14px}
+.how-proto-title{font-size:13px;font-weight:700;color:var(--G);margin-bottom:8px}
+.how-proto-step{font-size:12.5px;color:rgba(255,255,255,.5);margin-bottom:6px;padding-left:8px;border-left:2px solid rgba(45,90,27,.4);line-height:1.6}
+.how-tabs-simple{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
+.how-tab-s{padding:10px 20px;border-radius:12px;border:1.5px solid rgba(255,255,255,.12);background:transparent;font-family:Outfit,sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;transition:all .2s}
+.how-tab-s.on{border-color:rgba(45,90,27,.6);background:rgba(45,90,27,.2);color:#fff}
+.how-section{display:none}.how-section.on{display:block}
+</style>
 
-  /* Tabs acheteur / vendeur */
-  .how-tabs{display:inline-flex;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-    border-radius:var(--rl);padding:4px;margin-bottom:3rem}
-  .how-tab{padding:10px 24px;border-radius:12px;border:none;background:transparent;
-    font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;
-    color:rgba(255,255,255,.45);cursor:pointer;transition:all .22s}
-  .how-tab.on{background:linear-gradient(135deg,#2D5A1B,#4A7A35);color:#fff;
-    box-shadow:0 4px 16px rgba(45,90,27,.4)}
+<div style="background:linear-gradient(180deg,#060D04 0%,#0A160A 100%);padding:4rem 1.5rem 2rem">
+  <div style="max-width:900px;margin:0 auto;text-align:center">
+    <div class="how-tag">Kassan'Mou · Guide pratique</div>
+    <h1 class="how-h1">Comment ça <em>marche</em> ?</h1>
+    <p class="how-lead">Marketplace locale, export international, réseau Points Focaux — tout ce que vous devez savoir pour utiliser Kassan'Mou.</p>
+    <div class="how-tabs-simple" style="justify-content:center">
+      <button class="how-tab-s on" onclick="switchHowSection('acheter')">🛒 Acheter</button>
+      <button class="how-tab-s" onclick="switchHowSection('vendre')">📦 Vendre</button>
+      <button class="how-tab-s" onclick="switchHowSection('exporter')">🌍 Exporter</button>
+      <button class="how-tab-s" onclick="switchHowSection('focal')">🤝 Point Focal</button>
+    </div>
+  </div>
+</div>
 
-  /* Timeline steps */
-  .how-steps{max-width:860px;margin:0 auto;padding:0 1.5rem 4rem;position:relative}
-  .how-steps::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;
-    background:linear-gradient(to bottom,rgba(196,154,60,.4),rgba(45,90,27,.3),rgba(196,154,60,.1));
-    transform:translateX(-50%)}
+<div class="how-s">
 
-  .how-step{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;
-    gap:0;margin-bottom:3rem;opacity:0;transform:translateY(30px);
-    transition:opacity .5s,transform .5s}
-  .how-step.visible{opacity:1;transform:none}
-  .how-step:nth-child(even) .how-step-card{order:2}
-  .how-step:nth-child(even) .how-step-empty{order:0}
-  .how-step:nth-child(even) .how-step-center{order:1}
-
-  .how-step-card{
-    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-    border-radius:var(--rl);padding:22px 20px;
-    transition:all .28s;cursor:default;
-  }
-  .how-step-card:hover{background:rgba(255,255,255,.09);border-color:rgba(196,154,60,.3);transform:scale(1.02)}
-  .how-step-card.gold-card{border-color:rgba(196,154,60,.25);background:rgba(196,154,60,.06)}
-
-  .how-step-center{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:2;position:relative}
-  .how-step-num{
-    width:48px;height:48px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:800;
-    border:2px solid rgba(196,154,60,.5);
-    background:linear-gradient(135deg,#0F1F0A,#1A2E10);
-    color:var(--G);box-shadow:0 0 20px rgba(196,154,60,.2);
-    transition:all .3s;
-  }
-  .how-step-card:hover ~ .how-step-center .how-step-num,
-  .how-step:hover .how-step-num{
-    background:var(--gold);color:#1A0E00;border-color:transparent;
-    box-shadow:0 0 28px rgba(196,154,60,.5);transform:scale(1.1);
-  }
-  .how-step-empty{} /* spacer */
-
-  .hsc-ico{font-size:2rem;margin-bottom:10px;display:block}
-  .hsc-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:800;
-    letter-spacing:.15em;text-transform:uppercase;color:var(--G);margin-bottom:5px}
-  .hsc-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:7px}
-  .hsc-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.72}
-  .hsc-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
-    border-radius:var(--rp);background:rgba(45,90,27,.2);border:1px solid rgba(45,90,27,.35);
-    color:var(--Om);font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;
-    margin-top:10px;letter-spacing:.05em}
-  .hsc-pill.gold{background:rgba(196,154,60,.12);border-color:rgba(196,154,60,.3);color:var(--G)}
-  .hsc-pill.red{background:rgba(200,75,47,.12);border-color:rgba(200,75,47,.25);color:var(--Tm)}
-
-  /* Modes paiement display */
-  .hsc-pay-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
-  .hsc-pay{font-size:11px;padding:3px 8px;border-radius:var(--rp);
-    background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.1)}
-
-  /* CTA final */
-  .how-cta{text-align:center;padding:2rem 1.5rem 4rem;background:rgba(196,154,60,.04);
-    border-top:1px solid rgba(196,154,60,.12)}
-
-  @media(max-width:760px){
-    .how-steps::before{left:24px}
-    .how-step{grid-template-columns:48px 1fr;grid-template-rows:auto}
-    .how-step .how-step-center{order:0!important;grid-row:1}
-    .how-step .how-step-card{order:1!important;grid-column:2;grid-row:1}
-    .how-step .how-step-empty{display:none}
-    .how-step:nth-child(even) .how-step-card{order:1!important}
-    .how-step:nth-child(even) .how-step-empty{display:none}
-    .how-step:nth-child(even) .how-step-center{order:0!important}
-  }
-  </style>
-
-  <!-- HERO DE LA PAGE -->
-  <div class="how-hero">
-    <div class="how-tag">Processus · Comment ça marche</div>
-    <h1 class="how-h1">Du <span>choix du produit</span><br>à la livraison chez vous</h1>
-    <p class="how-lead">Simple, guidé, sécurisé — 100% sur votre téléphone. Commandez en 3 minutes, recevez chez vous à Niamey.</p>
-
-    <div class="how-tabs" id="how-tabs">
-      <button class="how-tab on" data-mode="acheteur" onclick="switchHowTab('acheteur')">🛒 J'achète un produit</button>
-      <button class="how-tab" data-mode="vendeur" onclick="switchHowTab('vendeur')">📦 Je vends / publie</button>
+  <!-- ACHETER -->
+  <div class="how-section on" id="how-acheter">
+    <div class="how-block">
+      <div class="how-block-title">🛒 Comment acheter sur Kassan'Mou</div>
+      <div class="how-block-sub">En moins de 3 minutes, commandez un produit local livré à Niamey.</div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(45,90,27,.3);color:var(--G)">1</div><div class="how-step-body"><div class="how-step-title">Choisissez votre produit</div><div class="how-step-desc">Parcourez la marketplace, filtrez par catégorie, cliquez sur le produit qui vous intéresse pour voir la fiche complète avec photos et prix.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(45,90,27,.3);color:var(--G)">2</div><div class="how-step-body"><div class="how-step-title">Passez commande</div><div class="how-step-desc">Cliquez "Commander", entrez votre nom et votre numéro WhatsApp, choisissez votre mode de paiement : Amana, Nita ou Cash au livreur.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(45,90,27,.3);color:var(--G)">3</div><div class="how-step-body"><div class="how-step-title">Recevez votre livreur</div><div class="how-step-desc">Un livreur Kassan'Mou est automatiquement assigné. Vous recevez son nom et son numéro directement. Contactez-le pour l'heure et le lieu de livraison.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(45,90,27,.3);color:var(--G)">4</div><div class="how-step-body"><div class="how-step-title">Confirmez sur WhatsApp</div><div class="how-step-desc">Cliquez le bouton WhatsApp pour envoyer votre commande à l'équipe. Frais de livraison Niamey : 1 000 FCFA.</div></div></div>
     </div>
   </div>
 
-  <!-- TIMELINE ACHETEUR (défaut) -->
-  <div class="how-steps" id="how-steps-acheteur">
-
-    <div class="how-step">
-      <div class="how-step-card">
-        <span class="hsc-ico">🛍️</span>
-        <div class="hsc-tag">Étape 01</div>
-        <div class="hsc-title">Explorez le marché</div>
-        <div class="hsc-desc">Parcourez la marketplace premium. Filtrez par catégorie, prix, disponibilité. Chaque produit est vérifié par notre équipe.</div>
-        <div class="hsc-pill">✓ Produits vérifiés</div>
-      </div>
-      <div class="how-step-center"><div class="how-step-num">01</div></div>
-      <div class="how-step-empty"></div>
+  <!-- VENDRE -->
+  <div class="how-section" id="how-vendre">
+    <div class="how-block">
+      <div class="how-block-title">📦 Comment vendre sur Kassan'Mou</div>
+      <div class="how-block-sub">Publiez votre produit en quelques minutes et touchez des acheteurs locaux et internationaux.</div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(200,75,47,.2);color:var(--T)">1</div><div class="how-step-body"><div class="how-step-title">Soumettez votre produit</div><div class="how-step-desc">Cliquez "Vendre / Acheter" → "Vendre un produit". Remplissez : type de vendeur, catégorie, nom, prix, quantité, région, description et ajoutez vos photos.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(200,75,47,.2);color:var(--T)">2</div><div class="how-step-body"><div class="how-step-title">Choisissez votre pack</div><div class="how-step-desc">7 jours (2 000 FCFA), 30 jours (5 000 FCFA), 90 jours (15 000 FCFA) ou annuel (50 000 FCFA). Payez après validation.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(200,75,47,.2);color:var(--T)">3</div><div class="how-step-body"><div class="how-step-title">Validation sous 48h</div><div class="how-step-desc">Notre équipe vérifie votre dossier. Vous recevez un email et WhatsApp de confirmation avec votre code de validation unique KM-XXXXXX.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(200,75,47,.2);color:var(--T)">4</div><div class="how-step-body"><div class="how-step-title">Votre produit est en ligne</div><div class="how-step-desc">Après paiement et validation, votre annonce apparaît immédiatement sur la marketplace. Les acheteurs vous contactent directement via WhatsApp.</div></div></div>
     </div>
-
-    <div class="how-step">
-      <div class="how-step-empty"></div>
-      <div class="how-step-center"><div class="how-step-num">02</div></div>
-      <div class="how-step-card">
-        <span class="hsc-ico">👁️</span>
-        <div class="hsc-tag">Étape 02</div>
-        <div class="hsc-title">Consultez la fiche produit</div>
-        <div class="hsc-desc">Cliquez sur le produit de votre choix. Lisez la description complète, le prix, le vendeur, la disponibilité et le délai de livraison.</div>
-        <div class="hsc-pill gold">→ Fiche détaillée</div>
-      </div>
-    </div>
-
-    <div class="how-step">
-      <div class="how-step-card">
-        <span class="hsc-ico">✅</span>
-        <div class="hsc-tag">Étape 03</div>
-        <div class="hsc-title">Validez votre commande</div>
-        <div class="hsc-desc">Le produit vous convient ? Cliquez <strong style="color:#fff">"Commander ce produit"</strong>. Entrez votre nom complet et votre numéro WhatsApp.</div>
-        <div class="hsc-pill">📱 Votre numéro WA</div>
-      </div>
-      <div class="how-step-center"><div class="how-step-num">03</div></div>
-      <div class="how-step-empty"></div>
-    </div>
-
-    <div class="how-step">
-      <div class="how-step-empty"></div>
-      <div class="how-step-center"><div class="how-step-num">04</div></div>
-      <div class="how-step-card gold-card">
-        <span class="hsc-ico">💳</span>
-        <div class="hsc-tag">Étape 04</div>
-        <div class="hsc-title">Choisissez votre paiement</div>
-        <div class="hsc-desc">Sélectionnez votre mode de paiement préféré parmi nos 6 options disponibles :</div>
-        <div class="hsc-pay-grid">
-          <span class="hsc-pay">🟠 Orange Money</span>
-          <span class="hsc-pay">🔴 Airtel Money</span>
-          <span class="hsc-pay">💙 Flooz</span>
-          <span class="hsc-pay">🏦 Amana</span>
-          <span class="hsc-pay">🏧 Nita</span>
-          <span class="hsc-pay">💵 Cash</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="how-step">
-      <div class="how-step-card">
-        <span class="hsc-ico">💬</span>
-        <div class="hsc-tag">Étape 05</div>
-        <div class="hsc-title">Envoyez sur WhatsApp</div>
-        <div class="hsc-desc">Votre commande est pré-remplie et s'ouvre directement dans WhatsApp. Envoyez-la en un clic. Si paiement mobile : joignez la <strong style="color:#fff">photo de preuve</strong> dans ce même fil.</div>
-        <div class="hsc-pill gold">→ +227 99 85 15 32</div>
-      </div>
-      <div class="how-step-center"><div class="how-step-num">05</div></div>
-      <div class="how-step-empty"></div>
-    </div>
-
-    <div class="how-step">
-      <div class="how-step-empty"></div>
-      <div class="how-step-center"><div class="how-step-num">06</div></div>
-      <div class="how-step-card">
-        <span class="hsc-ico">🛵</span>
-        <div class="hsc-tag">Étape 06</div>
-        <div class="hsc-title">Livraison organisée</div>
-        <div class="hsc-desc">Notre service client vous <strong style="color:#fff">appelle ou écrit sur WhatsApp</strong> pour confirmer votre adresse et fixer l'heure de livraison. Délai : <strong style="color:#fff">1h à 4h</strong> à Niamey.</div>
-        <div class="hsc-pill">⏱ 1h–4h · Niamey</div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- TIMELINE VENDEUR (cachée par défaut) -->
-  <div class="how-steps" id="how-steps-vendeur" style="display:none">
+  <!-- EXPORTER -->
+  <div class="how-section" id="how-exporter">
+    <div class="how-block">
+      <div class="how-block-title">🌍 Exporter vos produits avec Kassan'Mou</div>
+      <div class="how-block-sub">Le Niger produit des richesses exceptionnelles. Kassan'Mou vous connecte aux acheteurs internationaux.</div>
 
-    <div class="how-step">
-      <div class="how-step-card">
-        <span class="hsc-ico">📸</span>
-        <div class="hsc-tag">Étape 01</div>
-        <div class="hsc-title">Photographiez votre produit</div>
-        <div class="hsc-desc">Prenez une ou plusieurs photos directement depuis votre téléphone. Qualité recommandée : bonne lumière, fond neutre.</div>
-        <div class="hsc-pill">📱 Depuis votre téléphone</div>
+      <div class="how-block-title" style="font-size:1.1rem;margin-top:8px;margin-bottom:12px">Produits phares à l'export</div>
+      <div class="how-prod-grid">
+        <div class="how-prod-card"><div class="how-prod-ico">🌻</div><div class="how-prod-nm">Sésame</div><div class="how-prod-dest">→ Inde · Chine · Europe</div></div>
+        <div class="how-prod-card"><div class="how-prod-ico">🦴</div><div class="how-prod-nm">Cornes de bœufs</div><div class="how-prod-dest">→ Vietnam · Asie du Sud-Est</div></div>
+        <div class="how-prod-card"><div class="how-prod-ico">🌶️</div><div class="how-prod-nm">Tattassey (Paprika)</div><div class="how-prod-dest">→ Europe · Moyen-Orient</div></div>
+        <div class="how-prod-card"><div class="how-prod-ico">🌿</div><div class="how-prod-nm">Gomme arabique</div><div class="how-prod-dest">→ Europe · Industrie agroalim.</div></div>
       </div>
-      <div class="how-step-center"><div class="how-step-num">01</div></div>
-      <div class="how-step-empty"></div>
-    </div>
 
-    <div class="how-step">
-      <div class="how-step-empty"></div>
-      <div class="how-step-center"><div class="how-step-num">02</div></div>
-      <div class="how-step-card">
-        <span class="hsc-ico">📝</span>
-        <div class="hsc-tag">Étape 02</div>
-        <div class="hsc-title">Remplissez le formulaire</div>
-        <div class="hsc-desc">Cliquez sur <strong style="color:#fff">"+ Publier un produit"</strong>. Choisissez votre profil (vendeur, producteur, transformateur, maraîcher), renseignez nom, prix, quantité et description.</div>
-        <div class="hsc-pill gold">→ 5 minutes</div>
+      <div class="how-block-title" style="font-size:1.1rem;margin-top:20px;margin-bottom:12px">Protocole d'exportation Kassan'Mou</div>
+
+      <div class="how-proto">
+        <div class="how-proto-title">📋 Pour les produits phares (sésame, cornes, paprika, gomme arabique)</div>
+        <div class="how-proto-step">1. Soumettez votre demande d'export via le formulaire (section Export sur la marketplace)</div>
+        <div class="how-proto-step">2. Notre équipe vous contacte sous 48h pour évaluer votre capacité de production</div>
+        <div class="how-proto-step">3. Contrôle qualité par une structure compétente agréée (certifications Bio EU, Fair Trade, ISO 22000)</div>
+        <div class="how-proto-step">4. Signature d'un protocole d'accord Kassan'Mou — Commission claire et transparente</div>
+        <div class="how-proto-step">5. Mise en relation directe avec l'acheteur international qualifié</div>
+        <div class="how-proto-step">6. Suivi de l'export et accompagnement documentation (certificats, douane, logistique)</div>
       </div>
-    </div>
 
-    <div class="how-step">
-      <div class="how-step-card">
-        <span class="hsc-ico">🔍</span>
-        <div class="hsc-tag">Étape 03</div>
-        <div class="hsc-title">Validation par notre équipe</div>
-        <div class="hsc-desc">Notre équipe examine votre dossier sous <strong style="color:#fff">48 heures</strong>. Nous vérifions la cohérence du prix, la catégorie, la qualité de la description.</div>
-        <div class="hsc-pill">⏱ 48h maximum</div>
+      <div class="how-proto" style="background:rgba(200,75,47,.08);border-color:rgba(200,75,47,.25);margin-top:12px">
+        <div class="how-proto-title" style="color:var(--T)">📦 Pour les autres produits exportables</div>
+        <div class="how-proto-step">1. Publiez votre produit sur la marketplace en cochant "Export international"</div>
+        <div class="how-proto-step">2. Indiquez votre volume disponible, votre capacité de production et vos certifications</div>
+        <div class="how-proto-step">3. Kassan'Mou vérifie la conformité et le potentiel d'export</div>
+        <div class="how-proto-step">4. Protocole d'accord signé avant toute mise en relation internationale</div>
+        <div class="how-proto-step">5. Votre produit est présenté aux acheteurs B2B internationaux de notre réseau</div>
       </div>
-      <div class="how-step-center"><div class="how-step-num">03</div></div>
-      <div class="how-step-empty"></div>
-    </div>
 
-    <div class="how-step">
-      <div class="how-step-empty"></div>
-      <div class="how-step-center"><div class="how-step-num">04</div></div>
-      <div class="how-step-card gold-card">
-        <span class="hsc-ico">🔐</span>
-        <div class="hsc-tag">Étape 04</div>
-        <div class="hsc-title">Recevez votre code</div>
-        <div class="hsc-desc">Après validation, vous recevez un <strong style="color:#fff">code unique KM-XXXXXX</strong> par WhatsApp et Email. Ce code est votre ticket d'activation. Conservez-le précieusement.</div>
-        <div class="hsc-pill gold">🔑 Code KM-XXXXXX</div>
+      <div style="margin-top:16px;text-align:center">
+        <button onclick="openModal('request-product')" style="padding:14px 28px;border-radius:12px;background:linear-gradient(135deg,#C49A3C,#E8C060);color:#1A0E00;border:none;font-family:Outfit,sans-serif;font-size:14px;font-weight:700;cursor:pointer">🌍 Soumettre une demande d'export</button>
       </div>
     </div>
-
-    <div class="how-step">
-      <div class="how-step-card">
-        <span class="hsc-ico">💳</span>
-        <div class="hsc-tag">Étape 05</div>
-        <div class="hsc-title">Payez pour publier</div>
-        <div class="hsc-desc">Choisissez votre pack (Starter 5.000F · Premium 15.000F · Annuel 50.000F). Effectuez le paiement via Orange Money, Airtel, Flooz, Amana, Nita ou Cash.</div>
-        <div class="hsc-pill red">5 000 FCFA · 30 jours</div>
-      </div>
-      <div class="how-step-center"><div class="how-step-num">05</div></div>
-      <div class="how-step-empty"></div>
-    </div>
-
-    <div class="how-step">
-      <div class="how-step-empty"></div>
-      <div class="how-step-center"><div class="how-step-num">06</div></div>
-      <div class="how-step-card">
-        <span class="hsc-ico">🚀</span>
-        <div class="hsc-tag">Étape 06</div>
-        <div class="hsc-title">Votre produit est en ligne !</div>
-        <div class="hsc-desc">Entrez votre code dans le formulaire d'activation. Votre produit apparaît immédiatement sur la marketplace. Les acheteurs vous contactent directement par WhatsApp.</div>
-        <div class="hsc-pill gold">✅ En ligne immédiatement</div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- CTA FINAL -->
-  <div class="how-cta">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:800;color:#fff;margin-bottom:.6rem">Prêt à commencer ?</div>
-    <p style="font-size:14px;color:rgba(255,255,255,.45);margin-bottom:1.6rem">Rejoignez la marketplace premium du Niger dès maintenant.</p>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button style="padding:13px 26px;border-radius:var(--rm);font-size:14px;font-weight:700;background:linear-gradient(135deg,#C49A3C,#E8C060);color:#1A0E00;border:none;cursor:pointer;font-family:'Outfit',sans-serif;box-shadow:0 4px 18px rgba(184,150,62,.35)" onclick="goTo('marketplace')">🛒 Explorer le marché →</button>
-      <button style="padding:13px 26px;border-radius:var(--rm);font-size:14px;font-weight:700;background:rgba(255,255,255,.07);color:#fff;border:1.5px solid rgba(255,255,255,.18);cursor:pointer;font-family:'Outfit',sans-serif" onclick="openModal('sell')">📦 Publier un produit →</button>
+  <!-- POINT FOCAL -->
+  <div class="how-section" id="how-focal">
+    <div class="how-block">
+      <div class="how-block-title">🤝 Devenir Point Focal Kassan'Mou</div>
+      <div class="how-block-sub">Un Point Focal est un représentant local de Kassan'Mou dans une région ou un pays. Vous facilitez les connexions — vous ne vendez pas vous-même.</div>
+
+      <div class="how-step"><div class="how-step-num" style="background:rgba(196,154,60,.15);color:var(--G)">1</div><div class="how-step-body"><div class="how-step-title">Votre rôle</div><div class="how-step-desc">Identifier des producteurs locaux avec des produits de qualité. Les aider à publier sur Kassan'Mou. Faciliter la mise en relation avec les acheteurs. Accompagner les démarches d'export dans votre zone.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(196,154,60,.15);color:var(--G)">2</div><div class="how-step-body"><div class="how-step-title">Vos avantages</div><div class="how-step-desc">Commission de 5 à 15% sur chaque transaction réalisée grâce à votre réseau. Contrat signé et transparent. Formation aux outils Kassan'Mou. Badge officiel "Point Focal" sur la plateforme.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(196,154,60,.15);color:var(--G)">3</div><div class="how-step-body"><div class="how-step-title">Ce que nous recherchons</div><div class="how-step-desc">Personnes avec un réseau local solide dans l'agriculture, le commerce ou les exportations. Connaissance du tissu économique local. Bonne maîtrise de WhatsApp et du téléphone. Zones prioritaires : toutes les régions du Niger + diaspora (Europe, Asie).</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(196,154,60,.15);color:var(--G)">4</div><div class="how-step-body"><div class="how-step-title">Candidater</div><div class="how-step-desc">Soumettez votre candidature ci-dessous. Notre équipe vous contacte sous 72h pour un entretien WhatsApp. Aucun investissement requis.</div></div></div>
+
+      <div style="margin-top:16px;text-align:center">
+        <button onclick="openModal('focal')" style="padding:14px 28px;border-radius:12px;background:linear-gradient(135deg,#2D5A1B,#4A7A35);color:#fff;border:none;font-family:Outfit,sans-serif;font-size:14px;font-weight:700;cursor:pointer">🤝 Candidater comme Point Focal</button>
+      </div>
     </div>
   </div>
 
 </div>
+</div>
 
-<!-- ═══════════════════════════════════
-     PAGE À PROPOS
-═══════════════════════════════════ -->
 <div class="page" id="page-about">
   <div class="abhero" style="background:linear-gradient(135deg,#0A0A06 0%,#0F1F0A 60%,#0A1206 100%);min-height:42vh">
     <div class="abin">
@@ -4092,6 +3954,8 @@ function wire(){
   g('bn-account').addEventListener('click',function(){openModal('login');});
   // Home
   g('btn-see-mkt').addEventListener('click',function(){goTo('marketplace');});
+  var bex=g('btn-export-home');if(bex)bex.addEventListener('click',function(){goTo('about');});
+  var bb2b=g('btn-b2b-home');if(bb2b)bb2b.addEventListener('click',function(){goTo('how');});
   g('btn-post-home').addEventListener('click',function(){var se=document.getElementById('section-export');if(se)se.scrollIntoView({behavior:'smooth'});});
   g('btn-cta-sell').addEventListener('click',function(){openModal('sell');});
   g('btn-cta-buy').addEventListener('click',function(){goTo('marketplace');});
@@ -4664,11 +4528,24 @@ function renderDetailStep3(p, client){
       '<button class="btn-dclose" onclick="closeDetailSheet()" style="margin-top:12px;width:100%;padding:12px;border-radius:var(--rm);border:1.5px solid var(--B);background:none;font-family:Outfit,sans-serif;font-size:14px;cursor:pointer;color:var(--Mu)">✕ Fermer</button>' +
     '</div></div>';
 }
+var _formActive = false;
+document.addEventListener('focusin', function(e){
+  if(e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')){
+    _formActive = true;
+  }
+});
+document.addEventListener('focusout', function(e){
+  setTimeout(function(){ _formActive = false; }, 300);
+});
+
 function closeDetailSheet(e){
+  /* Ne pas fermer si l'utilisateur est en train de remplir un champ */
+  if(_formActive && e && e.type === 'click') return;
   if(e && e.target && e.target !== g('detail-overlay') && !e.target.classList.contains('btn-dclose')) return;
   g('detail-overlay').classList.remove('show');
   document.body.style.overflow = '';
   _orderProduct = null;
+  _formActive = false;
 }
 
 /* Swipe vers le bas pour fermer sur mobile */
@@ -4831,6 +4708,16 @@ function tickActivity(){_actIdx=(_actIdx+1)%_activities.length;renderHeroActivit
 /* ═══════════════════════════════════════════
    COMMENT ÇA MARCHE — TAB SWITCH + SCROLL ANIM
 ═══════════════════════════════════════════ */
+function switchHowSection(sec){
+  document.querySelectorAll('.how-section').forEach(function(s){ s.classList.remove('on'); });
+  document.querySelectorAll('.how-tab-s').forEach(function(t){ t.classList.remove('on'); });
+  var el = document.getElementById('how-'+sec);
+  if(el) el.classList.add('on');
+  document.querySelectorAll('.how-tab-s').forEach(function(t){
+    if(t.getAttribute('onclick') && t.getAttribute('onclick').includes(sec)) t.classList.add('on');
+  });
+}
+
 function switchHowTab(mode){
   document.querySelectorAll('.how-tab').forEach(function(t){t.classList.toggle('on',t.dataset.mode===mode);});
   var ac=g('how-steps-acheteur'),vd=g('how-steps-vendeur');
