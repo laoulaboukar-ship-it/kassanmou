@@ -2662,8 +2662,10 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
       <button class="sblnk" data-dash="orders"><span class="sbico">📦</span>Commandes</button>
       <button class="sblnk" data-dash="messages"><span class="sbico">💬</span>Messages<span class="sbbdg">3</span></button>
       <div class="sbsec">Administration</div>
-      <button class="sblnk" data-dash="admin"><span class="sbico">⚙️</span>Validation produits</button>
-      <button class="sblnk" data-dash="users"><span class="sbico">👥</span>Utilisateurs</button>
+      <button class="sblnk" data-dash="admin"><span class="sbico">⚙️</span>Produits en attente</button>
+      <button class="sblnk" data-dash="allprod"><span class="sbico">🌾</span>Tous les produits</button>
+      <button class="sblnk" data-dash="livreurs"><span class="sbico">🛵</span>Livreurs</button>
+      <button class="sblnk" data-dash="commandes_admin"><span class="sbico">📦</span>Commandes</button>
       <div class="sbsec">Compte</div>
       <button class="sblnk" id="btn-dash-back"><span class="sbico">←</span>Retour au site</button>
       <div class="sbprof">
@@ -3028,7 +3030,8 @@ function goTo(page){
   if(page==='home'){g('bn-home').classList.add('on');}
   if(page==='marketplace'){
     g('bn-marketplace')&&g('bn-marketplace').classList.add('on');
-    kmLoadProduits().then(function(){ renderProdsPremium(); });
+    kmLoadLivreurs();
+  kmLoadProduits().then(function(){ renderProdsPremium(); });
   }
   if(page==='tracking'){g('bn-tracking')&&g('bn-tracking').classList.add('on');}
   if(page==='dashboard'){g('bn-account')&&g('bn-account').classList.add('on');renderDash('overview');}
@@ -3785,107 +3788,368 @@ function doTrack(){
 /* ══════════════════════════════
    DASHBOARD
 ══════════════════════════════ */
+/* Délégation globale pour navigation dashboard */
+document.addEventListener('click', function(e){
+  var b = e.target.closest('.btn-goto-dash');
+  if(b && b.dataset.tab) renderDash(b.dataset.tab);
+});
+
 function renderDash(tab){
   document.querySelectorAll('.sblnk[data-dash]').forEach(function(b){b.classList.toggle('on',b.dataset.dash===tab);});
   var body=g('dash-body');if(!body)return;
+  body.innerHTML='<div style="padding:20px;text-align:center;color:var(--Mu)">⏳ Chargement...</div>';
 
-  if(tab==='overview'){
-    body.innerHTML='<div class="dhi">Tableau de bord</div><div class="dnm">Amadou Mahamadou</div>'+
-      '<div class="krow">'+
-      '<div class="kc"><div class="klbl">Ventes</div><div class="kv kvt">14820 EUR</div><div class="kd kdup">+18% ce mois</div></div>'+
-      '<div class="kc"><div class="klbl">Commandes</div><div class="kv kvo">7</div><div class="kd">3 en transit</div></div>'+
-      '<div class="kc"><div class="klbl">Produits</div><div class="kv">12</div><div class="kd">9 actifs</div></div>'+
-      '<div class="kc"><div class="klbl">Connexions</div><div class="kv">4</div><div class="kd kdup">2 nouvelles</div></div></div>'+
-      '<div class="dcols">'+
-      '<div class="dbox"><div class="dbhd">Commandes récentes</div>'+
-      [{ico:'🌾',nm:'Mil Bio 8t',dt:'FinGrain Oy · Helsinki',st:'oss',lb:'Expédié'},
-       {ico:'🫘',nm:'Niébé 3t',dt:'BioImport GmbH · Hamburg',st:'osp',lb:'En cours'},
-       {ico:'🌿',nm:'Sésame 1.5t',dt:'FoodBridge · Lyon',st:'osc',lb:'Confirmé'}
-      ].map(function(o){return '<div class="ordrow"><div class="ordico">'+o.ico+'</div><div><div class="ordnm">'+o.nm+'</div><div class="orddt">'+o.dt+'</div></div><span class="ordst '+o.st+'">'+o.lb+'</span></div>';}).join('')+'</div>'+
-      '<div class="dbox"><div class="dbhd">Revenus 2025 (EUR)</div>'+
-      '<div class="bars">'+[42,56,35,68,51,76,60,86].map(function(h){return '<div class="bar" style="height:'+h+'%"></div>';}).join('')+'</div>'+
-      '<div class="barlbls"><span>Jan</span><span>Fév</span><span>Mar</span><span>Avr</span><span>Mai</span><span>Jun</span><span>Jul</span><span>Aoû</span></div></div></div>';
-
-  } else if(tab==='admin'){
-    var pendingList=PENDING_PRODUCTS.slice();
-    try{
-      var ls=JSON.parse(localStorage.getItem('km_pending')||'[]');
-      ls.forEach(function(p){if(!pendingList.find(function(x){return x.id===p.id;}))pendingList.push(p);});
-    }catch(e){}
-
-    var typeBadge={'vendeur':'🏪 Vendeur','producteur':'🌾 Producteur','transformateur':'🏭 Transformé','maraicher':'🥬 Maraîcher'};
-    var pendingHtml=pendingList.length===0
-      ?'<div style="padding:20px;text-align:center;color:var(--Mu)">Aucun produit en attente.</div>'
-      :pendingList.map(function(p){
-          var stCls=p.statut==='EN_LIGNE'?'oss':p.statut==='VALIDE'?'oss':'osp';
-          var stLbl=p.statut==='EN_LIGNE'?'En ligne':p.statut==='VALIDE'?'Validé — attente paiement':'En attente';
-          return '<div class="val-item" id="vi-'+p.id+'">'+
-            '<div class="val-thumbs">'+Array(Math.min(p.photos,3)).fill(0).map(function(){return '<div class="val-thumb">📸</div>';}).join('')+'</div>'+
-            '<div style="flex:1">'+
-              '<div class="val-name">'+p.nom+'</div>'+
-              '<div class="val-meta">'+typeBadge[p.sellerType]+' · '+p.categorie+' · '+(p.modes||[]).join('+')+' · '+p.pack+' FCFA · '+p.photos+' photo(s)</div>'+
-              '<div class="val-meta">📍 '+p.origine+' · 📅 '+p.soumisLe+'</div>'+
-              '<div class="val-meta">📧 '+p.email+' · 📱 '+p.phone+'</div>'+
-              '<div style="margin-top:7px">Code : <span class="val-code">'+p.code+'</span> <span class="ordst '+stCls+'">'+stLbl+'</span></div>'+
-              (p.statut==='EN_ATTENTE'?'<div class="val-acts">'+
-                '<button class="bp" style="padding:7px 14px;font-size:12px" data-vid="'+p.id+'" data-vcode="'+p.code+'" data-vnm="'+p.nom+'">✓ Valider</button>'+
-                '<button class="bs" style="padding:7px 14px;font-size:12px" data-refid="'+p.id+'">✕ Refuser</button>'+
-              '</div>':'<div style="font-size:12px;color:var(--O);margin-top:8px;font-weight:600">'+(p.statut==='VALIDE'?'✓ Code envoyé — en attente du paiement producteur':'✅ En ligne sur la marketplace')+'</div>')+
-            '</div></div>';
-        }).join('');
-
-    body.innerHTML='<div class="dhi">Administration</div><div class="dnm">Validation produits</div>'+
-      '<div class="krow">'+
-      '<div class="kc"><div class="klbl">En attente</div><div class="kv kvt">'+pendingList.filter(function(p){return p.statut==='EN_ATTENTE';}).length+'</div><div class="kd">à valider</div></div>'+
-      '<div class="kc"><div class="klbl">Validés</div><div class="kv kvo">'+pendingList.filter(function(p){return p.statut==='VALIDE';}).length+'</div><div class="kd">code envoyé</div></div>'+
-      '<div class="kc"><div class="klbl">En ligne</div><div class="kv">'+pendingList.filter(function(p){return p.statut==='EN_LIGNE';}).length+'</div></div>'+
-      '<div class="kc"><div class="klbl">Total codes</div><div class="kv">'+Object.keys(VALIDATION_CODES).length+'</div></div>'+
-      '</div>'+
-      '<div class="dbox"><div class="dbhd">Produits soumis</div>'+pendingHtml+'</div>'+
-      '<div class="dbox"><div class="dbhd">Validation manuelle par code</div>'+
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">'+
-        '<input id="admin-code-inp" placeholder="KM-XXXXXX" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:9px 12px;font-size:14px;font-family:\'JetBrains Mono\',monospace;letter-spacing:.1em;flex:1;min-width:160px;outline:none">'+
-        '<button class="bp" id="admin-validate-btn" style="padding:9px 18px;flex-shrink:0">Marquer VALIDÉ</button>'+
-      '</div>'+
-      '<p style="font-size:12px;color:var(--Mu);margin-top:7px">Le producteur recevra une notification et pourra ensuite payer pour mettre en ligne.</p>'+
-      '</div>';
-
-    var avb=g('admin-validate-btn');
-    if(avb)avb.addEventListener('click',function(){
-      var code=(g('admin-code-inp').value||'').trim().toUpperCase();
-      if(VALIDATION_CODES[code]){
-        VALIDATION_CODES[code].statut='VALIDE';
-        var pp=PENDING_PRODUCTS.find(function(p){return p.code===code;});
-        if(pp)pp.statut='VALIDE';
-        toast('✓ Code '+code+' validé. Le producteur peut maintenant payer et publier.');
-        renderDash('admin');
-      } else {
-        toast('Code non trouvé en base locale.',true);
-      }
-    });
-    body.querySelectorAll('[data-vid]').forEach(function(b){
-      b.addEventListener('click',function(){
-        var p=PENDING_PRODUCTS.find(function(x){return x.id===b.dataset.vid;});
-        if(p){p.statut='VALIDE';if(VALIDATION_CODES[b.dataset.vcode])VALIDATION_CODES[b.dataset.vcode].statut='VALIDE';}
-        toast('✓ "'+b.dataset.vnm+'" validé. Code '+b.dataset.vcode+' actif pour paiement.');
-        renderDash('admin');
-      });
-    });
-    body.querySelectorAll('[data-refid]').forEach(function(b){
-      b.addEventListener('click',function(){
-        var p=PENDING_PRODUCTS.find(function(x){return x.id===b.dataset.refid;});
-        if(p)p.statut='REFUSE';
-        toast('Produit refusé. Producteur notifié.',true);
-        renderDash('admin');
-      });
-    });
-  } else {
-    var lbl={products:'Mes Produits',orders:'Commandes',messages:'Messages',users:'Utilisateurs'};
-    body.innerHTML='<div class="dnm">'+(lbl[tab]||tab)+'</div>'+
-      '<div class="dbox"><p style="color:var(--Mu);font-size:14px;margin-bottom:14px">Section en développement — disponible bientôt.</p>'+
-      '<button class="bp notifbtn">Être notifié à l\'ouverture</button></div>';
-    body.querySelector('.notifbtn').addEventListener('click',function(){toast('✓ Vous serez notifié dès l\'ouverture de cette section.');});
+  if(tab==='overview') renderDashOverview();
+  else if(tab==='admin') renderDashAdmin();
+  else if(tab==='allprod') renderDashAllProd();
+  else if(tab==='livreurs') renderDashLivreurs();
+  else if(tab==='commandes_admin') renderDashCommandes();
+  else {
+    body.innerHTML='<div class="dhi">'+tab+'</div><div class="dbox"><p style="color:var(--Mu)">Section disponible bientôt.</p></div>';
   }
+}
+
+/* ══ OVERVIEW ══ */
+async function renderDashOverview(){
+  var body=g('dash-body');
+  var stats={produits:0,attente:0,valides:0,commandes:0,livreurs:0};
+  if(kmDB){
+    try{
+      var r1=await kmDB.from('produits').select('statut');
+      if(r1.data){
+        stats.produits=r1.data.length;
+        stats.attente=r1.data.filter(function(p){return p.statut==='en_attente';}).length;
+        stats.valides=r1.data.filter(function(p){return p.statut==='validé';}).length;
+      }
+      var r2=await kmDB.from('commandes').select('id',{count:'exact',head:true});
+      if(r2.count) stats.commandes=r2.count;
+      var r3=await kmDB.from('livreurs').select('id',{count:'exact',head:true});
+      if(r3.count) stats.livreurs=r3.count;
+    }catch(e){}
+  }
+  body.innerHTML=
+    '<div class="dhi">Tableau de bord</div>'+
+    '<div class="dnm">Kassan Mou Admin · Centre de controle</div>'+
+    '<div class="krow">'+
+      '<div class="kc"><div class="klbl">Produits total</div><div class="kv">'+stats.produits+'</div></div>'+
+      '<div class="kc"><div class="klbl">En attente</div><div class="kv kvt">'+stats.attente+'</div><div class="kd">à valider</div></div>'+
+      '<div class="kc"><div class="klbl">Validés</div><div class="kv kvo">'+stats.valides+'</div></div>'+
+      '<div class="kc"><div class="klbl">Livreurs</div><div class="kv">'+stats.livreurs+'</div></div>'+
+    '</div>'+
+    '<div class="krow" style="margin-top:10px">'+
+      '<div class="kc" style="cursor:pointer" onclick="renderDash(\'admin\')"><div class="klbl">⚙️ Valider produits</div><div class="kv kvt">'+stats.attente+'</div><div class="kd">en attente</div></div>'+
+      '<div class="kc" style="cursor:pointer" onclick="renderDash(\'allprod\')"><div class="klbl">🌾 Gérer produits</div><div class="kv">'+stats.produits+'</div></div>'+
+      '<div class="kc" style="cursor:pointer" onclick="renderDash(\'livreurs\')"><div class="klbl">🛵 Gérer livreurs</div><div class="kv">'+stats.livreurs+'</div></div>'+
+      '<div class="kc" style="cursor:pointer" onclick="renderDash(\'commandes_admin\')"><div class="klbl">📦 Commandes</div><div class="kv">'+stats.commandes+'</div></div>'+
+    '</div>';
+}
+
+/* ══ PRODUITS EN ATTENTE ══ */
+async function renderDashAdmin(){
+  var body=g('dash-body');
+  var produits=[];
+  if(kmDB){
+    try{
+      var res=await kmDB.from('produits')
+        .select('*, vendeurs(nom,telephone)')
+        .eq('statut','en_attente')
+        .order('date_soumission',{ascending:false});
+      if(res.data) produits=res.data;
+    }catch(e){}
+  }
+  var html='<div class="dhi">Produits en attente ('+produits.length+')</div>';
+  if(produits.length===0){
+    html+='<div class="dbox" style="text-align:center;padding:32px;color:var(--Mu)">Aucun produit en attente.</div>';
+  } else {
+    produits.forEach(function(p){
+      var photos=[]; try{photos=Array.isArray(p.photos)?p.photos:JSON.parse(p.photos||'[]');}catch(e){}
+      var photoHtml='';
+      photos.slice(0,4).forEach(function(url){
+        if(url&&url.startsWith('http')) photoHtml+='<img src="'+url+'" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--B)">';
+      });
+      html+='<div class="dbox" style="margin-bottom:12px">'+
+        (photoHtml?'<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">'+photoHtml+'</div>':'')+
+        '<div style="font-size:16px;font-weight:700;color:var(--S)">'+p.nom+'</div>'+
+        '<div style="font-size:12px;color:var(--Mu);margin-top:3px">'+p.categorie+' · '+(p.region||p.ville||'—')+' · '+new Date(p.date_soumission).toLocaleDateString('fr-FR')+'</div>'+
+        '<div style="font-size:13px;color:var(--O);font-weight:600;margin-top:4px">'+parseFloat(p.prix||0).toLocaleString('fr-FR')+' FCFA / '+(p.unite||'kg')+'</div>'+
+        '<div style="font-size:12px;color:var(--Mu);margin-top:3px">Vendeur : '+(p.vendeurs?p.vendeurs.nom:'—')+' · '+(p.vendeurs?p.vendeurs.telephone:'—')+'</div>'+
+        '<div style="font-size:12px;font-family:JetBrains Mono,monospace;color:var(--T);margin-top:4px">Code : '+p.code_validation+'</div>'+
+        (p.description?'<div style="font-size:13px;color:var(--Sm);margin:8px 0;padding:8px;background:var(--SD);border-radius:8px">'+p.description+'</div>':'')+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">'+
+          '<button class="adm-val" data-id="'+p.id+'" data-code="'+p.code_validation+'" style="padding:10px 18px;border-radius:10px;background:var(--O);color:#fff;border:none;font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">✅ Valider</button>'+
+          '<button class="adm-ref" data-id="'+p.id+'" style="padding:10px 18px;border-radius:10px;background:var(--Tl);color:var(--T);border:2px solid var(--T);font-family:Outfit,sans-serif;font-size:13px;font-weight:700;cursor:pointer">❌ Refuser</button>'+
+        '</div>'+
+      '</div>';
+    });
+  }
+  body.innerHTML=html;
+  body.querySelectorAll('.adm-val').forEach(function(b){b.onclick=function(){adminValiderProduit(b.dataset.id,b.dataset.code);};});
+  body.querySelectorAll('.adm-ref').forEach(function(b){b.onclick=function(){adminRefuserProduit(b.dataset.id);};});
+}
+
+/* ══ TOUS LES PRODUITS ══ */
+async function renderDashAllProd(){
+  var body=g('dash-body');
+  var produits=[];
+  if(kmDB){
+    try{
+      var res=await kmDB.from('produits')
+        .select('id,nom,statut,categorie,prix,unite,code_validation,date_soumission,photos')
+        .order('date_soumission',{ascending:false});
+      if(res.data) produits=res.data;
+    }catch(e){}
+  }
+  var statC={'en_attente':'osp','valide':'oss','validé':'oss','refuse':'osc','refusé':'osc'};
+  var statL={'en_attente':'En attente','valide':'✅ En ligne','validé':'✅ En ligne','refuse':'❌ Refusé','refusé':'❌ Refusé'};
+  var html='<div class="dhi">Tous les produits ('+produits.length+')</div>'+
+    '<button onclick="adminAddProduit()" style="margin-bottom:14px;padding:10px 18px;border-radius:10px;background:var(--O);color:#fff;border:none;font-family:Outfit,sans-serif;font-weight:700;cursor:pointer;font-size:14px">+ Ajouter un produit</button>'+
+    '<div class="dbox" style="padding:0;overflow:hidden">';
+  produits.forEach(function(p,i){
+    var photo=kmGetPhoto(p.photos);
+    html+='<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:0.5px solid var(--B);'+(i%2===0?'background:var(--CR)':'')+'">' +
+      (photo?'<img src="'+photo+'" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0">'
+            :'<div style="width:48px;height:48px;border-radius:8px;background:var(--SD);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px">🌾</div>')+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-weight:600;font-size:14px;color:var(--S);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.nom+'</div>'+
+        '<div style="font-size:12px;color:var(--Mu)">'+p.categorie+' · '+parseFloat(p.prix||0).toLocaleString('fr-FR')+' FCFA · '+new Date(p.date_soumission).toLocaleDateString('fr-FR')+'</div>'+
+      '</div>'+
+      '<span class="ordst '+(statC[p.statut]||'osp')+'" style="flex-shrink:0">'+(statL[p.statut]||p.statut)+'</span>'+
+      '<div style="display:flex;gap:6px;margin-left:8px;flex-shrink:0">'+
+        '<button class="adm-val2" data-id="'+p.id+'" data-code="'+p.code_validation+'" title="Valider" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--Ol);cursor:pointer;font-size:14px">✅</button>'+
+        '<button class="adm-del" data-id="'+p.id+'" title="Supprimer" style="width:32px;height:32px;border-radius:8px;border:none;background:var(--Tl);cursor:pointer;font-size:14px">🗑️</button>'+
+      '</div>'+
+    '</div>';
+  });
+  html+='</div>';
+  body.innerHTML=html;
+  body.querySelectorAll('.adm-val2').forEach(function(b){b.onclick=function(){adminValiderProduit(b.dataset.id,b.dataset.code);};});
+  body.querySelectorAll('.adm-del').forEach(function(b){b.onclick=function(){adminSupprimerProduit(b.dataset.id);};});
+}
+
+/* ══ LIVREURS ══ */
+async function renderDashLivreurs(){
+  var body=g('dash-body');
+  var livreurs=[];
+  if(kmDB){
+    try{
+      var res=await kmDB.from('livreurs').select('*').order('date_inscription',{ascending:false});
+      if(res.data) livreurs=res.data;
+    }catch(e){}
+  }
+  var html='<div class="dhi">Livreurs ('+livreurs.length+')</div>'+
+    '<button onclick="adminAddLivreur()" style="margin-bottom:14px;padding:10px 18px;border-radius:10px;background:var(--O);color:#fff;border:none;font-family:Outfit,sans-serif;font-weight:700;cursor:pointer;font-size:14px">+ Ajouter un livreur</button>';
+  if(livreurs.length===0){
+    html+='<div class="dbox" style="text-align:center;padding:32px;color:var(--Mu)">Aucun livreur. Ajoutez vos premiers livreurs.</div>';
+  } else {
+    livreurs.forEach(function(l){
+      var dispo=l.statut==='disponible';
+      html+='<div class="dbox" style="margin-bottom:12px">'+
+        '<div style="display:flex;align-items:center;gap:14px">'+
+          (l.photo_url?'<img src="'+l.photo_url+'" style="width:64px;height:64px;object-fit:cover;border-radius:50%;border:3px solid var(--O);flex-shrink:0">'
+            :'<div style="width:64px;height:64px;border-radius:50%;background:var(--Ok);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🛵</div>')+
+          '<div style="flex:1">'+
+            '<div style="font-size:16px;font-weight:700;color:var(--S)">'+l.nom+'</div>'+
+            '<div style="font-size:13px;color:var(--Mu);margin-top:2px">📍 '+(l.zone_couverture||'—')+'</div>'+
+            '<div style="font-size:13px;color:var(--Mu)">📱 '+(l.telephone||'—')+' · 🏍️ '+(l.vehicule||'Moto')+'</div>'+
+            '<span style="font-size:12px;font-weight:700;color:'+(dispo?'var(--O)':'var(--T)')+'">● '+(dispo?'Disponible':'Occupé')+'</span>'+
+            ' <span style="font-size:12px;color:var(--Mu)">· '+(l.livraisons_effectuees||0)+' livraisons</span>'+
+          '</div>'+
+          '<div style="display:flex;flex-direction:column;gap:6px">'+
+            '<button class="lv-edit" data-id="'+l.id+'" style="padding:8px 14px;border-radius:8px;background:var(--Ol);color:var(--Od);border:none;font-family:Outfit,sans-serif;font-size:13px;cursor:pointer">✏️ Modifier</button>'+
+            '<button class="lv-tog" data-id="'+l.id+'" data-st="'+l.statut+'" style="padding:8px 14px;border-radius:8px;background:var(--SD);color:var(--Sm);border:none;font-family:Outfit,sans-serif;font-size:13px;cursor:pointer">'+(dispo?'⏸ Occupé':'▶ Dispo')+'</button>'+
+            '<button class="lv-del" data-id="'+l.id+'" style="padding:8px 14px;border-radius:8px;background:var(--Tl);color:var(--T);border:none;font-family:Outfit,sans-serif;font-size:13px;cursor:pointer">🗑️ Suppr.</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    });
+  }
+  body.innerHTML=html;
+  body.querySelectorAll('.lv-edit').forEach(function(b){b.onclick=function(){adminEditLivreur(b.dataset.id);};});
+  body.querySelectorAll('.lv-tog').forEach(function(b){b.onclick=function(){adminToggleLivreur(b.dataset.id,b.dataset.st);};});
+  body.querySelectorAll('.lv-del').forEach(function(b){b.onclick=function(){adminSupprimerLivreur(b.dataset.id);};});
+}
+
+/* ══ COMMANDES ══ */
+async function renderDashCommandes(){
+  var body=g('dash-body');
+  var commandes=[];
+  if(kmDB){
+    try{
+      var res=await kmDB.from('commandes').select('*').order('date_commande',{ascending:false}).limit(50);
+      if(res.data) commandes=res.data;
+    }catch(e){}
+  }
+  var statC={'en_attente':'osp','confirmée':'oss','en_livraison':'osc','livrée':'oss','annulée':'osc'};
+  var html='<div class="dhi">Commandes ('+commandes.length+')</div>';
+  if(commandes.length===0){
+    html+='<div class="dbox" style="text-align:center;padding:32px;color:var(--Mu)">Aucune commande.</div>';
+  } else {
+    html+='<div class="dbox" style="padding:0;overflow:hidden">';
+    commandes.forEach(function(c,i){
+      html+='<div style="padding:14px 16px;border-bottom:0.5px solid var(--B);'+(i%2===0?'background:var(--CR)':'')+'">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'+
+          '<div style="font-weight:700;font-size:13px;color:var(--S);font-family:JetBrains Mono,monospace">'+c.reference+'</div>'+
+          '<span class="ordst '+(statC[c.statut]||'osp')+'">'+c.statut+'</span>'+
+        '</div>'+
+        '<div style="font-size:12px;color:var(--Mu)">'+c.acheteur_nom+' · '+c.acheteur_telephone+'</div>'+
+        '<div style="font-size:12px;color:var(--Mu)">'+parseFloat(c.montant_total||0).toLocaleString('fr-FR')+' FCFA · '+new Date(c.date_commande).toLocaleDateString('fr-FR')+'</div>'+
+        '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">'+
+          '<button class="cmd-upd" data-id="'+c.id+'" data-st="confirmée" style="padding:6px 12px;border-radius:8px;border:none;background:var(--Ol);color:var(--Od);font-family:Outfit,sans-serif;font-size:12px;cursor:pointer">✅ Confirmer</button>'+
+          '<button class="cmd-upd" data-id="'+c.id+'" data-st="en_livraison" style="padding:6px 12px;border-radius:8px;border:none;background:var(--SD);color:var(--Sm);font-family:Outfit,sans-serif;font-size:12px;cursor:pointer">🛵 En livraison</button>'+
+          '<button class="cmd-upd" data-id="'+c.id+'" data-st="livrée" style="padding:6px 12px;border-radius:8px;border:none;background:rgba(45,90,27,.1);color:var(--O);font-family:Outfit,sans-serif;font-size:12px;cursor:pointer">✓ Livrée</button>'+
+        '</div>'+
+      '</div>';
+    });
+    html+='</div>';
+  }
+  body.innerHTML=html;
+  body.querySelectorAll('.cmd-upd').forEach(function(b){b.onclick=function(){adminUpdateCommande(b.dataset.id,b.dataset.st);};});
+}
+
+/* ══ ACTIONS ADMIN ══ */
+async function adminValiderProduit(id, code){
+  if(!kmDB){toast('Supabase non connecté',true);return;}
+  try{
+    var res=await kmDB.from('produits').update({statut:'validé',date_validation:new Date().toISOString()}).eq('id',id);
+    if(res.error){toast('Erreur: '+res.error.message,true);return;}
+    toast('✅ Produit validé et mis en ligne ! Code: '+code);
+    kmLoadProduits();
+    renderDash('admin');
+  }catch(e){toast('Erreur: '+e.message,true);}
+}
+
+async function adminRefuserProduit(id){
+  if(!kmDB)return;
+  try{
+    await kmDB.from('produits').update({statut:'refusé'}).eq('id',id);
+    toast('Produit refusé.');
+    renderDash('admin');
+  }catch(e){}
+}
+
+async function adminSupprimerProduit(id){
+  if(!kmDB)return;
+  if(!confirm('Supprimer ce produit définitivement ?'))return;
+  try{
+    await kmDB.from('produits').delete().eq('id',id);
+    toast('Produit supprimé.');
+    renderDash('allprod');
+  }catch(e){}
+}
+
+async function adminUpdateCommande(id, statut){
+  if(!kmDB)return;
+  try{
+    await kmDB.from('commandes').update({statut:statut}).eq('id',id);
+    toast('Commande mise à jour : '+statut);
+    renderDash('commandes_admin');
+  }catch(e){}
+}
+
+async function adminToggleLivreur(id, statut_actuel){
+  if(!kmDB)return;
+  var nouveau = statut_actuel==='disponible' ? 'occupé' : 'disponible';
+  try{
+    await kmDB.from('livreurs').update({statut:nouveau}).eq('id',id);
+    toast('Livreur mis à jour : '+nouveau);
+    renderDash('livreurs');
+  }catch(e){}
+}
+
+async function adminSupprimerLivreur(id){
+  if(!kmDB)return;
+  if(!confirm('Supprimer ce livreur ?'))return;
+  try{
+    await kmDB.from('livreurs').delete().eq('id',id);
+    toast('Livreur supprimé.');
+    renderDash('livreurs');
+  }catch(e){}
+}
+
+function adminModifierProduit(id){
+  toast('Modification : ouvrez le produit et editez via le formulaire.');
+}
+
+function adminAddProduit(){
+  closeModal();
+  setTimeout(function(){ openModal('sell'); goTo('marketplace'); },100);
+}
+
+function adminAddLivreur(){
+  var body=g('dash-body');
+  var form='<div class="dhi">Ajouter un livreur</div>'+
+    '<div class="dbox">'+
+      '<div class="fg"><label>Nom complet</label><input id="lv-nom" placeholder="Ex: Ibrahim Mahamane" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;width:100%;font-family:Outfit,sans-serif;font-size:14px;outline:none"></div>'+
+      '<div class="fg"><label>Téléphone / WhatsApp</label><input id="lv-tel" placeholder="+227 90 00 00 00" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;width:100%;font-family:Outfit,sans-serif;font-size:14px;outline:none"></div>'+
+      '<div class="fg"><label>Zone de couverture</label><input id="lv-zone" placeholder="Ex: Niamey centre, Plateau, Yantala" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;width:100%;font-family:Outfit,sans-serif;font-size:14px;outline:none"></div>'+
+      '<div class="fg"><label>Véhicule</label><select id="lv-vehicule" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;width:100%;font-family:Outfit,sans-serif;font-size:14px;outline:none"><option value="Moto">Moto</option><option value="Voiture">Voiture</option><option value="Camionnette">Camionnette</option><option value="Vélo">Vélo</option></select></div>'+
+      '<div class="fg"><label>URL Photo (optionnel)</label><input id="lv-photo" placeholder="https://... (lien vers la photo du livreur)" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;width:100%;font-family:Outfit,sans-serif;font-size:14px;outline:none"></div>'+
+      '<div style="display:flex;gap:10px;margin-top:16px">'+
+        '<button id="lv-save-btn" style="padding:12px 24px;border-radius:10px;background:var(--O);color:#fff;border:none;font-family:Outfit,sans-serif;font-weight:700;cursor:pointer;font-size:15px">💾 Enregistrer le livreur</button>'+
+        '<button class="btn-goto-dash" data-tab="livreurs" style="padding:12px 20px;border-radius:10px;background:var(--SD);color:var(--Sm);border:none;font-family:Outfit,sans-serif;cursor:pointer">Annuler</button>'+
+      '</div>'+
+    '</div>';
+  body.innerHTML=form;
+
+  g('lv-save-btn').addEventListener('click', async function(){
+    var nom=(g('lv-nom').value||'').trim();
+    var tel=(g('lv-tel').value||'').trim();
+    var zone=(g('lv-zone').value||'').trim();
+    var vehicule=g('lv-vehicule').value;
+    var photo=(g('lv-photo').value||'').trim();
+    if(!nom||!tel){toast('Nom et téléphone obligatoires.',true);return;}
+    if(!kmDB){toast('Supabase non connecté.',true);return;}
+    try{
+      var res=await kmDB.from('livreurs').insert({
+        nom:nom, telephone:tel, whatsapp:tel,
+        zone_couverture:zone, vehicule:vehicule,
+        photo_url:photo||null,
+        statut:'disponible', livraisons_effectuees:0
+      }).select().single();
+      if(res.error){toast('Erreur: '+res.error.message,true);return;}
+      toast('✅ Livreur '+nom+' ajouté avec succès !');
+      /* Mettre à jour DB_PREMIUM pour affichage immédiat */
+      DB_PREMIUM.livreurs.push({
+        id:res.data.id, nom:nom, emoji:'🛵',
+        tel:tel.replace(/\s/g,''), telDisplay:tel,
+        zone:zone, statut:'dispo', photo_url:photo||null
+      });
+      renderDash('livreurs');
+    }catch(e){toast('Erreur: '+e,true);}
+  });
+}
+
+async function adminEditLivreur(id){
+  if(!kmDB)return;
+  var res=await kmDB.from('livreurs').select('*').eq('id',id).single();
+  if(res.error||!res.data){toast('Livreur non trouvé.',true);return;}
+  var l=res.data;
+  var body=g('dash-body');
+  body.innerHTML='<div class="dhi">Modifier le livreur</div>'+
+    '<div class="dbox">'+
+      '<div class="fg"><label>Nom</label><input id="lve-nom" value="'+( l.nom||'')+'" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;width:100%;font-family:Outfit,sans-serif;font-size:14px;outline:none"></div>'+
+      '<div class="fg"><label>Téléphone</label><input id="lve-tel" value="'+(l.telephone||'')+'" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;width:100%;font-family:Outfit,sans-serif;font-size:14px;outline:none"></div>'+
+      '<div class="fg"><label>Zone</label><input id="lve-zone" value="'+(l.zone_couverture||'')+'" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;width:100%;font-family:Outfit,sans-serif;font-size:14px;outline:none"></div>'+
+      '<div class="fg"><label>URL Photo</label><input id="lve-photo" value="'+(l.photo_url||'')+'" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;width:100%;font-family:Outfit,sans-serif;font-size:14px;outline:none"></div>'+
+      '<div style="display:flex;gap:10px;margin-top:16px">'+
+        '<button id="lve-save" style="padding:12px 24px;border-radius:10px;background:var(--O);color:#fff;border:none;font-family:Outfit,sans-serif;font-weight:700;cursor:pointer">💾 Sauvegarder</button>'+
+        '<button class="btn-goto-dash" data-tab="livreurs" style="padding:12px 20px;border-radius:10px;background:var(--SD);color:var(--Sm);border:none;font-family:Outfit,sans-serif;cursor:pointer">Annuler</button>'+
+      '</div>'+
+    '</div>';
+
+  g('lve-save').addEventListener('click', async function(){
+    var updates={
+      nom:(g('lve-nom').value||'').trim(),
+      telephone:(g('lve-tel').value||'').trim(),
+      whatsapp:(g('lve-tel').value||'').trim(),
+      zone_couverture:(g('lve-zone').value||'').trim(),
+      photo_url:(g('lve-photo').value||'').trim()||null
+    };
+    var r2=await kmDB.from('livreurs').update(updates).eq('id',id);
+    if(r2.error){toast('Erreur: '+r2.error.message,true);return;}
+    toast('✅ Livreur mis à jour !');
+    renderDash('livreurs');
+  });
 }
 
 /* ══════════════════════════════
@@ -4750,6 +5014,28 @@ try {
   kmDB = supabase.createClient(KM_SUPABASE_URL, KM_SUPABASE_KEY);
   console.log('[KM-DB] Connexion Supabase etablie');
 } catch(e) { console.warn('[KM-DB] Supabase non disponible:', e); }
+
+/* Charger les livreurs depuis Supabase au démarrage */
+async function kmLoadLivreurs(){
+  if(!kmDB) return;
+  try{
+    var res=await kmDB.from('livreurs').select('*').neq('statut','inactif');
+    if(res.data && res.data.length>0){
+      DB_PREMIUM.livreurs = res.data.map(function(l){
+        return {
+          id:l.id, nom:l.nom, emoji:'🛵',
+          tel:(l.telephone||'').replace(/\s/g,''),
+          telDisplay:l.telephone||'',
+          zone:l.zone_couverture||'Niamey',
+          statut:l.statut==='disponible'?'dispo':'busy',
+          photo_url:l.photo_url||null,
+          vehicule:l.vehicule||'Moto'
+        };
+      });
+      console.log('[KM-DB] '+res.data.length+' livreur(s) chargé(s)');
+    }
+  }catch(e){console.warn('[KM-DB] Livreurs:',e);}
+}
 
 async function kmLoadProduits() {
   if (!kmDB) return Promise.resolve();
