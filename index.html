@@ -1570,6 +1570,126 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
 .toast{z-index:1200}
 
 </style>
+<style>
+/* ══ ADMIN DASHBOARD ══ */
+#page-dashboard{background:#0F1F0A;min-height:100vh}
+.adm-top{
+  position:sticky;top:var(--NH,60px);z-index:200;
+  background:rgba(10,22,10,.97);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(196,154,60,.15);
+  padding:12px 20px;display:flex;align-items:center;justify-content:space-between;
+}
+.adm-top-title{
+  font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:800;color:#fff;
+  display:flex;align-items:center;gap:8px;
+}
+.adm-top-title::before{content:'⚡';font-size:14px}
+.adm-back-btn{
+  padding:7px 16px;border-radius:20px;
+  background:rgba(196,154,60,.12);border:1px solid rgba(196,154,60,.25);
+  font-family:Outfit,sans-serif;font-size:12px;font-weight:600;cursor:pointer;
+  color:var(--G,#C49A3C);transition:all .15s;
+}
+.adm-back-btn:hover{background:rgba(196,154,60,.22)}
+.adm-tabs{
+  display:flex;gap:6px;overflow-x:auto;padding:10px 20px;
+  background:rgba(10,22,10,.95);
+  border-bottom:1px solid rgba(196,154,60,.1);
+  scrollbar-width:none;
+  position:sticky;top:calc(var(--NH,60px) + 50px);z-index:199;
+}
+.adm-tabs::-webkit-scrollbar{display:none}
+.adm-tab{
+  flex-shrink:0;padding:8px 18px;border-radius:20px;
+  border:1.5px solid rgba(255,255,255,.1);background:transparent;
+  font-family:Outfit,sans-serif;font-size:13px;font-weight:600;
+  color:rgba(255,255,255,.45);cursor:pointer;transition:all .18s;white-space:nowrap;
+}
+.adm-tab:hover:not(.on){background:rgba(255,255,255,.06);color:rgba(255,255,255,.7)}
+.adm-tab.on{
+  background:linear-gradient(135deg,#2D5A1B,#4A7A35);
+  color:#fff;border-color:transparent;
+  box-shadow:0 4px 14px rgba(45,90,27,.35);
+}
+.adm-body{padding:20px;max-width:960px;margin:0 auto;padding-bottom:100px}
+/* KPI cards */
+.adm-kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.adm-kcard{
+  background:rgba(255,255,255,.04);border-radius:16px;padding:18px 14px;
+  text-align:center;border:1px solid rgba(255,255,255,.07);
+  cursor:pointer;transition:all .18s;
+}
+.adm-kcard:hover{background:rgba(45,90,27,.2);border-color:rgba(45,90,27,.4);transform:translateY(-2px)}
+.adm-kcard-val{font-size:28px;font-weight:800;color:#C49A3C;font-family:'Cormorant Garamond',serif}
+.adm-kcard-val.urgent{color:#C84B2F}
+.adm-kcard-lbl{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+/* Box / card */
+.adm-box{
+  background:rgba(255,255,255,.04);border-radius:16px;padding:20px;
+  margin-bottom:14px;border:1px solid rgba(255,255,255,.07);
+}
+.adm-box-title{
+  font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:800;
+  color:#fff;margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+/* Alert */
+.adm-alert{
+  background:rgba(200,75,47,.12);border-radius:12px;padding:14px 16px;
+  margin-bottom:16px;border:1px solid rgba(200,75,47,.3);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.adm-alert-txt{font-size:14px;font-weight:700;color:#E07055}
+/* Buttons */
+.adm-btn{
+  padding:10px 18px;border-radius:10px;border:none;
+  font-family:Outfit,sans-serif;font-weight:700;cursor:pointer;
+  font-size:13px;transition:all .15s;display:inline-flex;align-items:center;gap:5px;
+}
+.adm-btn-g{background:linear-gradient(135deg,#2D5A1B,#4A7A35);color:#fff;box-shadow:0 4px 12px rgba(45,90,27,.3)}
+.adm-btn-g:hover{box-shadow:0 6px 18px rgba(45,90,27,.45);transform:translateY(-1px)}
+.adm-btn-r{background:rgba(200,75,47,.12);color:#E07055;border:1.5px solid rgba(200,75,47,.3)}
+.adm-btn-r:hover{background:rgba(200,75,47,.22)}
+.adm-btn-n{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.1)}
+.adm-btn-n:hover{background:rgba(255,255,255,.12)}
+/* Produit card */
+.adm-prod-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.adm-prod-meta{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:2px;line-height:1.5}
+.adm-prod-code{font-size:11px;font-family:'JetBrains Mono',monospace;color:#C49A3C;margin-bottom:10px}
+.adm-actions{display:flex;gap:8px;flex-wrap:wrap}
+/* Livreur */
+.adm-livreur-avatar{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #C49A3C;flex-shrink:0}
+.adm-livreur-placeholder{width:60px;height:60px;border-radius:50%;background:rgba(196,154,60,.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:2px solid rgba(196,154,60,.2)}
+.adm-badge-dispo{font-size:11px;font-weight:700;color:#4A7A35}
+.adm-badge-busy{font-size:11px;font-weight:700;color:#E07055}
+/* Form inputs */
+.adm-input{
+  border:1.5px solid rgba(255,255,255,.12);border-radius:10px;
+  padding:11px 14px;width:100%;font-family:Outfit,sans-serif;font-size:14px;
+  outline:none;background:rgba(255,255,255,.06);color:#fff;
+  transition:border-color .15s;box-sizing:border-box;
+}
+.adm-input::placeholder{color:rgba(255,255,255,.3)}
+.adm-input:focus{border-color:#C49A3C;background:rgba(255,255,255,.09)}
+select.adm-input option{background:#0F1F0A;color:#fff}
+.adm-label{display:block;font-size:12px;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.adm-field{margin-bottom:16px}
+/* Rows list */
+.adm-list-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.adm-list-row:last-child{border-bottom:none}
+/* Status badges */
+.adm-st-attente{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(200,75,47,.15);color:#E07055}
+.adm-st-valide{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(45,90,27,.2);color:#5A9A35}
+.adm-st-refuse{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(100,100,100,.15);color:rgba(255,255,255,.4)}
+@media(max-width:640px){
+  .adm-kgrid{grid-template-columns:1fr 1fr}
+  .adm-body{padding:12px}
+  .adm-top{padding:10px 14px}
+  .adm-tabs{padding:8px 12px}
+}
+</style>
 </head>
 <body>
 
@@ -2648,126 +2768,7 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
      PAGE DASHBOARD
 ═══════════════════════════════════ -->
 <div class="page" id="page-dashboard">
-<style>
-/* ══ ADMIN DASHBOARD ══ */
-#page-dashboard{background:#0F1F0A;min-height:100vh}
-.adm-top{
-  position:sticky;top:var(--NH,60px);z-index:200;
-  background:rgba(10,22,10,.97);backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(196,154,60,.15);
-  padding:12px 20px;display:flex;align-items:center;justify-content:space-between;
-}
-.adm-top-title{
-  font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:800;color:#fff;
-  display:flex;align-items:center;gap:8px;
-}
-.adm-top-title::before{content:'⚡';font-size:14px}
-.adm-back-btn{
-  padding:7px 16px;border-radius:20px;
-  background:rgba(196,154,60,.12);border:1px solid rgba(196,154,60,.25);
-  font-family:Outfit,sans-serif;font-size:12px;font-weight:600;cursor:pointer;
-  color:var(--G,#C49A3C);transition:all .15s;
-}
-.adm-back-btn:hover{background:rgba(196,154,60,.22)}
-.adm-tabs{
-  display:flex;gap:6px;overflow-x:auto;padding:10px 20px;
-  background:rgba(10,22,10,.95);
-  border-bottom:1px solid rgba(196,154,60,.1);
-  scrollbar-width:none;
-  position:sticky;top:calc(var(--NH,60px) + 50px);z-index:199;
-}
-.adm-tabs::-webkit-scrollbar{display:none}
-.adm-tab{
-  flex-shrink:0;padding:8px 18px;border-radius:20px;
-  border:1.5px solid rgba(255,255,255,.1);background:transparent;
-  font-family:Outfit,sans-serif;font-size:13px;font-weight:600;
-  color:rgba(255,255,255,.45);cursor:pointer;transition:all .18s;white-space:nowrap;
-}
-.adm-tab:hover:not(.on){background:rgba(255,255,255,.06);color:rgba(255,255,255,.7)}
-.adm-tab.on{
-  background:linear-gradient(135deg,#2D5A1B,#4A7A35);
-  color:#fff;border-color:transparent;
-  box-shadow:0 4px 14px rgba(45,90,27,.35);
-}
-.adm-body{padding:20px;max-width:960px;margin:0 auto;padding-bottom:100px}
-/* KPI cards */
-.adm-kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.adm-kcard{
-  background:rgba(255,255,255,.04);border-radius:16px;padding:18px 14px;
-  text-align:center;border:1px solid rgba(255,255,255,.07);
-  cursor:pointer;transition:all .18s;
-}
-.adm-kcard:hover{background:rgba(45,90,27,.2);border-color:rgba(45,90,27,.4);transform:translateY(-2px)}
-.adm-kcard-val{font-size:28px;font-weight:800;color:#C49A3C;font-family:'Cormorant Garamond',serif}
-.adm-kcard-val.urgent{color:#C84B2F}
-.adm-kcard-lbl{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-/* Box / card */
-.adm-box{
-  background:rgba(255,255,255,.04);border-radius:16px;padding:20px;
-  margin-bottom:14px;border:1px solid rgba(255,255,255,.07);
-}
-.adm-box-title{
-  font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:800;
-  color:#fff;margin-bottom:16px;display:flex;align-items:center;gap:8px;
-}
-/* Alert */
-.adm-alert{
-  background:rgba(200,75,47,.12);border-radius:12px;padding:14px 16px;
-  margin-bottom:16px;border:1px solid rgba(200,75,47,.3);
-  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-}
-.adm-alert-txt{font-size:14px;font-weight:700;color:#E07055}
-/* Buttons */
-.adm-btn{
-  padding:10px 18px;border-radius:10px;border:none;
-  font-family:Outfit,sans-serif;font-weight:700;cursor:pointer;
-  font-size:13px;transition:all .15s;display:inline-flex;align-items:center;gap:5px;
-}
-.adm-btn-g{background:linear-gradient(135deg,#2D5A1B,#4A7A35);color:#fff;box-shadow:0 4px 12px rgba(45,90,27,.3)}
-.adm-btn-g:hover{box-shadow:0 6px 18px rgba(45,90,27,.45);transform:translateY(-1px)}
-.adm-btn-r{background:rgba(200,75,47,.12);color:#E07055;border:1.5px solid rgba(200,75,47,.3)}
-.adm-btn-r:hover{background:rgba(200,75,47,.22)}
-.adm-btn-n{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.1)}
-.adm-btn-n:hover{background:rgba(255,255,255,.12)}
-/* Produit card */
-.adm-prod-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
-.adm-prod-meta{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:2px;line-height:1.5}
-.adm-prod-code{font-size:11px;font-family:'JetBrains Mono',monospace;color:#C49A3C;margin-bottom:10px}
-.adm-actions{display:flex;gap:8px;flex-wrap:wrap}
-/* Livreur */
-.adm-livreur-avatar{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #C49A3C;flex-shrink:0}
-.adm-livreur-placeholder{width:60px;height:60px;border-radius:50%;background:rgba(196,154,60,.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:2px solid rgba(196,154,60,.2)}
-.adm-badge-dispo{font-size:11px;font-weight:700;color:#4A7A35}
-.adm-badge-busy{font-size:11px;font-weight:700;color:#E07055}
-/* Form inputs */
-.adm-input{
-  border:1.5px solid rgba(255,255,255,.12);border-radius:10px;
-  padding:11px 14px;width:100%;font-family:Outfit,sans-serif;font-size:14px;
-  outline:none;background:rgba(255,255,255,.06);color:#fff;
-  transition:border-color .15s;box-sizing:border-box;
-}
-.adm-input::placeholder{color:rgba(255,255,255,.3)}
-.adm-input:focus{border-color:#C49A3C;background:rgba(255,255,255,.09)}
-select.adm-input option{background:#0F1F0A;color:#fff}
-.adm-label{display:block;font-size:12px;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
-.adm-field{margin-bottom:16px}
-/* Rows list */
-.adm-list-row{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);
-}
-.adm-list-row:last-child{border-bottom:none}
-/* Status badges */
-.adm-st-attente{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(200,75,47,.15);color:#E07055}
-.adm-st-valide{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(45,90,27,.2);color:#5A9A35}
-.adm-st-refuse{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(100,100,100,.15);color:rgba(255,255,255,.4)}
-@media(max-width:640px){
-  .adm-kgrid{grid-template-columns:1fr 1fr}
-  .adm-body{padding:12px}
-  .adm-top{padding:10px 14px}
-  .adm-tabs{padding:8px 12px}
-}
-</style>
+
 <div class="adm-top">
   <div class="adm-top-title">⚡ Centre de contrôle</div>
   <button class="adm-back-btn" id="btn-dash-back">← Site</button>
