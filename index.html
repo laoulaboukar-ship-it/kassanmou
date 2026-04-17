@@ -4319,7 +4319,7 @@ function wire(){
   g('btn-see-mkt').addEventListener('click',function(){goTo('marketplace');});
   var bex=g('btn-export-home');if(bex)bex.addEventListener('click',function(){goTo('about');});
   var bb2b=g('btn-b2b-home');if(bb2b)bb2b.addEventListener('click',function(){goTo('how');});
-  g('btn-post-home').addEventListener('click',function(){var se=document.getElementById('section-export');if(se)se.scrollIntoView({behavior:'smooth'});});
+  var bph=g('btn-post-home');if(bph)bph.addEventListener('click',function(){var se=document.getElementById('section-export');if(se)se.scrollIntoView({behavior:'smooth'});});
   g('btn-cta-sell').addEventListener('click',function(){openModal('sell');});
   g('btn-cta-buy').addEventListener('click',function(){goTo('marketplace');});
   // Marketplace
