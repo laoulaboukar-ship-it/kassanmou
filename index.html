@@ -2668,6 +2668,7 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
       <button class="sblnk" data-dash="orders"><span class="sbico">📦</span>Commandes</button>
       <button class="sblnk" data-dash="messages"><span class="sbico">💬</span>Messages</button>
       <button class="sblnk" data-dash="users"><span class="sbico">👥</span>Utilisateurs</button>
+      <button class="sblnk" data-dash="settings"><span class="sbico">🔐</span>Mot de passe</button>
       <div class="sbsec">Compte</div>
       <button class="sblnk" id="btn-dash-back"><span class="sbico">←</span>Retour au site</button>
       <div class="sbprof">
@@ -3367,11 +3368,34 @@ function openModal(type){
   g('mveil').onclick=function(e){if(e.target===g('mveil'))closeModal();};
 
   var sw=g('mbtn-switch');if(sw)sw.addEventListener('click',function(){closeModal();openModal('register');});
+  /* ── LOGIN AVEC VRAI MOT DE PASSE ADMIN ── */
+  var ADMIN_CREDENTIALS = {
+    email: 'kassanmou@gmail.com',
+    password: 'KassanMou2025!'
+  };
   var lb=g('mbtn-login');if(lb)lb.addEventListener('click',function(){
     var emailInp=document.querySelector('#mbox input[type="email"]');
     var passInp=document.querySelector('#mbox input[type="password"]');
-    if(emailInp&&!emailInp.value.trim()){toast('Veuillez entrer votre email.',true);return;}
-    closeModal();goTo('dashboard');toast('✅ Bienvenue ! Tableau de bord ouvert.');
+    var email=(emailInp?emailInp.value.trim():'');
+    var pass=(passInp?passInp.value:'');
+    if(!email){toast('Veuillez entrer votre email.',true);return;}
+    if(!pass){toast('Veuillez entrer votre mot de passe.',true);return;}
+    /* Vérification admin */
+    if(email===ADMIN_CREDENTIALS.email && pass===ADMIN_CREDENTIALS.password){
+      window._kmIsAdmin=true;
+      closeModal();goTo('dashboard');toast('✅ Bienvenue Admin ! Centre de contrôle ouvert.');
+      return;
+    }
+    /* Vérification mot de passe personnalisé sauvegardé */
+    try{
+      var saved=JSON.parse(localStorage.getItem('km_admin_creds')||'null');
+      if(saved && email===saved.email && pass===saved.password){
+        window._kmIsAdmin=true;
+        closeModal();goTo('dashboard');toast('✅ Bienvenue Admin !');
+        return;
+      }
+    }catch(e){}
+    toast('Email ou mot de passe incorrect.',true);
   });
   var fb=g('mbtn-focal');if(fb)fb.addEventListener('click',function(){
     var nm=(g('focal-nom')||{}).value||'';
@@ -4525,6 +4549,40 @@ function renderDash(tab){
         '</div>';
       }).join('')+
       '</div>';
+
+  /* ── PARAMÈTRES / MOT DE PASSE ──────────────────────────── */
+  } else if(tab==='settings'){
+    body.innerHTML='<div class="dhi">Administration · Paramètres</div><div class="dnm">Mon compte admin</div>'+
+      '<div class="dbox"><div class="dbhd">🔐 Changer le mot de passe admin</div>'+
+      '<div style="max-width:420px;margin-top:12px">'+
+      '<div class="adm-field" style="margin-bottom:10px"><label class="adm-lbl">Email admin</label>'+
+      '<input class="adm-inp" id="set-email" type="email" placeholder="kassanmou@gmail.com" value="kassanmou@gmail.com"></div>'+
+      '<div class="adm-field" style="margin-bottom:10px"><label class="adm-lbl">Nouveau mot de passe</label>'+
+      '<input class="adm-inp" id="set-pass1" type="password" placeholder="Minimum 8 caractères"></div>'+
+      '<div class="adm-field" style="margin-bottom:14px"><label class="adm-lbl">Confirmer le mot de passe</label>'+
+      '<input class="adm-inp" id="set-pass2" type="password" placeholder="Répéter le mot de passe"></div>'+
+      '<button class="bp" id="set-save-pass" style="width:100%;padding:12px">💾 Enregistrer le nouveau mot de passe</button>'+
+      '<p style="font-size:12px;color:var(--Mu);margin-top:10px">⚠️ Note : ce mot de passe est sauvegardé dans ce navigateur. Pour le changer sur tous les appareils, modifie directement le code source (ligne ADMIN_CREDENTIALS).</p>'+
+      '</div></div>'+
+      '<div class="dbox"><div class="dbhd">ℹ️ Informations site</div>'+
+      '<div style="font-size:13px;line-height:2;color:var(--Sm)">'+
+      '<div>🌐 Site : <b>Kassan'Mou</b></div>'+
+      '<div>📧 Email : <b>kassanmou@gmail.com</b></div>'+
+      '<div>📱 WhatsApp : <b>+22799851532</b></div>'+
+      '<div>🛒 Produits catalogue : <b>'+DB_PREMIUM.produits.length+'</b></div>'+
+      '<div>🛵 Livreurs : <b>'+DB_PREMIUM.livreurs.length+'</b></div>'+
+      '</div></div>';
+    var ssp=g('set-save-pass');
+    if(ssp) ssp.addEventListener('click',function(){
+      var em=g('set-email').value.trim();
+      var p1=g('set-pass1').value;
+      var p2=g('set-pass2').value;
+      if(!em){toast('Email requis.',true);return;}
+      if(p1.length<6){toast('Mot de passe trop court (min 6 caractères).',true);return;}
+      if(p1!==p2){toast('Les mots de passe ne correspondent pas.',true);return;}
+      try{localStorage.setItem('km_admin_creds',JSON.stringify({email:em,password:p1}));}catch(e){}
+      toast('✅ Mot de passe mis à jour ! Reconnecte-toi avec le nouveau mot de passe.');
+    });
 
   /* ── FALLBACK ─────────────────────────────────────────── */
   } else {
