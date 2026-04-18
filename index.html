@@ -5349,20 +5349,19 @@ async function kmSaveCommande(d) {
   try {
     console.log('[KM-CMD] Tentative sauvegarde commande:', d.reference);
     var payload = {
-      reference: d.reference || ('KM-CMD-'+Date.now()),
-      produit_nom: d.produitNom || d.produit || '',
-      vendeur_nom: d.vendeurNom || d.vendeur || '',
-      acheteur_nom: d.nom || '',
+      reference:       d.reference || ('KM-CMD-'+Date.now()),
+      produit_nom:     d.produitNom || d.produit || '',
+      vendeur_nom:     d.vendeurNom || d.vendeur || '',
+      acheteur_nom:    d.nom || '',
       acheteur_telephone: d.telephone || '',
-      acheteur_whatsapp: d.whatsapp || d.telephone || '',
-      acheteur_ville: d.ville || 'Niamey',
-      quantite: 1,
-      prix_unitaire: parseFloat(d.prixUnitaire) || 0,
+      acheteur_whatsapp:  d.whatsapp || d.telephone || '',
+      acheteur_ville:  d.ville || 'Niamey',
+      prix_unitaire:   parseFloat(d.prixUnitaire) || 0,
       frais_livraison: parseFloat(d.fraisLivraison) || 1000,
-      montant_total: parseFloat(d.montantTotal) || parseFloat(d.prixUnitaire) || 0,
-      mode_paiement: d.modePaiement || d.notes || 'cash',
-      statut: 'en_attente',
-      notes: d.notes || ''
+      montant_total:   parseFloat(d.montantTotal) || parseFloat(d.prixUnitaire) || 0,
+      mode_paiement:   d.modePaiement || 'cash',
+      statut:          'en_attente',
+      notes:           d.notes || ''
     };
     console.log('[KM-CMD] Payload:', JSON.stringify(payload));
     var res = await kmDB.from('commandes').insert(payload).select().single();
