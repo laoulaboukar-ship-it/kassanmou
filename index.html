@@ -4150,7 +4150,7 @@ async function dashCommandes(){
     '<div class="adm-box" style="padding:0;overflow:hidden">';
 
     cmds.forEach(function(cmd,i){
-      var waUrl='https://wa.me/'+cmd.acheteur_whatsapp.replace(/[^0-9]/g,'')+
+      var waUrl='https://wa.me/'+(cmd.acheteur_whatsapp||cmd.acheteur_telephone||'').replace(/[^0-9]/g,'')+
         '?text='+encodeURIComponent(
           'Bonjour '+cmd.acheteur_nom+', votre commande Kassan\'Mou '+cmd.reference+' est confirmee. Notre livreur vous contactera bientot. Merci !'
         );
