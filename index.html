@@ -2651,7 +2651,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
       </div>
 
       <div style="margin-top:16px;text-align:center">
-        <button onclick="openModal('request-product')" style="padding:14px 28px;border-radius:12px;background:linear-gradient(135deg,#C49A3C,#E8C060);color:#1A0E00;border:none;font-family:Outfit,sans-serif;font-size:14px;font-weight:700;cursor:pointer">🌍 Soumettre une demande d'export</button>
+        <button onclick="openModal('export-b2b')" style="padding:14px 28px;border-radius:12px;background:linear-gradient(135deg,#C49A3C,#E8C060);color:#1A0E00;border:none;font-family:Outfit,sans-serif;font-size:14px;font-weight:700;cursor:pointer">🌍 Soumettre une demande d'export</button>
       </div>
     </div>
   </div>
@@ -3361,7 +3361,76 @@ function openModal(type){
       '<div class="fg"><label>Votre expérience / réseau</label><textarea placeholder="Décrivez votre réseau local, vos contacts dans le secteur agricole ou commercial..." id="focal-exp"></textarea></div>'+
       '<button class="bp" style="width:100%;padding:13px" id="mbtn-focal">Soumettre ma candidature</button>';
 
-  } else if(type==='sell'){
+  } else if(type==='export-b2b'){
+    wide=true;
+    h=X+'<div class="mh">🌍 Exporter mes produits</div>'+
+      '<div class="msub">Remplissez cette fiche. Notre équipe vous contacte sous 48h pour organiser la mise en relation avec les acheteurs internationaux.</div>'+
+
+      '<div class="fg"><label>Votre nom complet *</label><input id="exp-nom" placeholder="Nom et prénom" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'+
+
+      '<div class="fg"><label>Téléphone / WhatsApp *</label><input id="exp-tel" type="tel" placeholder="+227 XX XX XX XX" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'+
+
+      '<div class="fg"><label>Email (optionnel)</label><input id="exp-email" type="email" placeholder="votre@email.com" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'+
+
+      '<div class="fg"><label>Région / Localisation *</label><input id="exp-region" placeholder="Ex: Tillabéri, Dosso, Zinder..." style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'+
+
+      '<div class="fg"><label>Produit(s) à exporter *</label>'+
+        '<select id="exp-produit" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none">'+
+          '<option value="">— Choisir le produit principal —</option>'+
+          '<option value="sesame">🌻 Sésame</option>'+
+          '<option value="cornes">🦴 Cornes de bœufs</option>'+
+          '<option value="tattassey">🌶️ Tattassey / Paprika</option>'+
+          '<option value="gomme">🌿 Gomme arabique</option>'+
+          '<option value="niebe">🫘 Niébé</option>'+
+          '<option value="arachides">🥜 Arachides</option>'+
+          '<option value="karite">🫙 Karité (noix/beurre)</option>'+
+          '<option value="cuirs">🐄 Cuirs & peaux</option>'+
+          '<option value="moringa">🌱 Moringa</option>'+
+          '<option value="mil_sorgho">🌾 Mil / Sorgho</option>'+
+          '<option value="autre">📦 Autre produit</option>'+
+        '</select>'+
+      '</div>'+
+
+      '<div class="fg"><label>Autre produit (si non listé)</label><input id="exp-autre" placeholder="Précisez le produit" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'+
+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
+        '<div class="fg"><label>Volume disponible *</label><input id="exp-volume" placeholder="Ex: 5 tonnes" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'+
+        '<div class="fg"><label>Fréquence</label>'+
+          '<select id="exp-freq" style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none">'+
+            '<option value="unique">Unique (stock disponible)</option>'+
+            '<option value="mensuel">Mensuelle</option>'+
+            '<option value="trimestriel">Trimestrielle</option>'+
+            '<option value="annuel">Annuelle</option>'+
+            '<option value="regulier">Régulière (à discuter)</option>'+
+          '</select>'+
+        '</div>'+
+      '</div>'+
+
+      '<div class="fg"><label>Certifications (si disponibles)</label>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="cert-bio"> Bio / Organique</label>'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="cert-fair"> Fair Trade</label>'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="cert-iso"> ISO 22000</label>'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="cert-aucune"> Aucune pour l\'instant</label>'+
+        '</div>'+
+      '</div>'+
+
+      '<div class="fg"><label>Marchés visés</label>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="mkt-inde"> 🇮🇳 Inde</label>'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="mkt-vietnam"> 🇻🇳 Vietnam</label>'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="mkt-europe"> 🇫🇷 Europe</label>'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="mkt-afrique"> 🌍 Afrique</label>'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="mkt-asie"> 🌏 Asie</label>'+
+          '<label style="display:flex;align-items:center;gap:5px;font-size:13px"><input type="checkbox" id="mkt-all"> 🌐 Tous marchés</label>'+
+        '</div>'+
+      '</div>'+
+
+      '<div class="fg"><label>Message libre (optionnel)</label><textarea id="exp-msg" rows="3" placeholder="Décrivez votre situation, vos besoins, vos questions..." style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none;resize:vertical"></textarea></div>'+
+
+      '<button class="bp" style="width:100%;padding:14px;font-size:15px;margin-top:4px" id="mbtn-export">🌍 Soumettre ma demande d\'export</button>';
+
+    } else if(type==='sell'){
     wide=true;
     var prodCode=generateCode();
     h=X+'<div class="mh">Publier un produit</div>'+
@@ -3379,13 +3448,37 @@ function openModal(type){
       // Catégorie du produit
       '<div class="fg"><label>Catégorie du produit</label>'+
         '<select id="prod-cat">'+
-          '<option value="">— Choisir —</option>'+
-          '<option value="alimentaire">🥬 Alimentaire (céréales, légumes, fruits, élevage...)</option>'+
-          '<option value="cosmetique">💄 Cosmétique (savon, huile, karité, neem...)</option>'+
-          '<option value="artisanat">🪆 Artisanat (poterie, cuir, bois, bijoux...)</option>'+
-          '<option value="vetements">👗 Vêtements (bazin, boubou, tissus, chaussures...)</option>'+
-          '<option value="maison">🏠 Maison (nattes, ustensiles, décoration...)</option>'+
-          '<option value="tech">📱 Tech (solaire, électronique, outils...)</option>'+
+          '<option value="">— Choisir votre catégorie —</option>'+
+          '<optgroup label="🌾 Agriculture & Élevage">'+
+          '<option value="cereales">🌾 Céréales (mil, sorgho, maïs, riz, blé...)</option>'+
+          '<option value="legumineuses">🫘 Légumineuses (niébé, arachides, soja, lentilles...)</option>'+
+          '<option value="oleagineux">🌻 Oléagineux (sésame, karité, coton, tournesol...)</option>'+
+          '<option value="legumes">🥬 Légumes frais (tomates, oignons, gombo, poivrons...)</option>'+
+          '<option value="fruits">🥭 Fruits (mangues, agrumes, pastèque, datte...)</option>'+
+          '<option value="epices">🌶️ Épices & condiments (tattassey, poivre, gingembre...)</option>'+
+          '<option value="elevage">🐄 Élevage (bœufs, moutons, chèvres, volaille...)</option>'+
+          '<option value="peche">🐟 Pêche & aquaculture</option>'+
+          '<option value="produits_animaux">🦴 Produits animaux (cornes, peaux, cuirs bruts...)</option>'+
+          '</optgroup>'+
+          '<optgroup label="🍯 Produits transformés">'+
+          '<option value="transforme_alim">🍯 Agroalimentaire (huiles, farines, jus, conserves...)</option>'+
+          '<option value="cosmetique">💄 Cosmétique naturel (savon, huile karité, beurre...)</option>'+
+          '<option value="gomme">🌿 Gomme arabique & résines</option>'+
+          '<option value="sechage">☀️ Produits séchés (poisson, viande, légumes...)</option>'+
+          '</optgroup>'+
+          '<optgroup label="🪆 Artisanat & Textile">'+
+          '<option value="artisanat">🪆 Artisanat (poterie, sculpture, vannerie, bijoux...)</option>'+
+          '<option value="vetements">👗 Vêtements & tissus (bazin, boubou, wax, bogolan...)</option>'+
+          '<option value="cuir_maroquin">👞 Cuir & maroquinerie (chaussures, sacs, ceintures...)</option>'+
+          '<option value="maison">🏠 Maison & décoration (nattes, meubles, tapis...)</option>'+
+          '</optgroup>'+
+          '<optgroup label="📱 Autres">'+
+          '<option value="tech">📱 Tech & Énergie (solaire, électronique, outils...)</option>'+
+          '<option value="sante">💊 Santé & plantes médicinales</option>'+
+          '<option value="construction">🏗️ Construction & matériaux</option>'+
+          '<option value="services">🤝 Services (transport, logistique, conseil...)</option>'+
+          '<option value="autres">📦 Autres (précisez dans la description)</option>'+
+          '</optgroupnique, outils...)</option>'+
         '</select>'+
       '</div>'+
 
@@ -3511,6 +3604,60 @@ function openModal(type){
 
   var sw=g('mbtn-switch');if(sw)sw.addEventListener('click',function(){closeModal();openModal('register');});
   /* login géré par délégation kmDoLogin */
+  /* Handler export B2B */
+  var expBtn=g('mbtn-export');if(expBtn)expBtn.addEventListener('click',function(){
+    var nom=(g('exp-nom')||{value:''}).value.trim();
+    var tel=(g('exp-tel')||{value:''}).value.trim();
+    var region=(g('exp-region')||{value:''}).value.trim();
+    var produit=((g('exp-produit')||{value:''}).value||'').trim();
+    var autre=(g('exp-autre')||{value:''}).value.trim();
+    var volume=(g('exp-volume')||{value:''}).value.trim();
+    var freq=((g('exp-freq')||{value:'unique'}).value)||'unique';
+    var email=(g('exp-email')||{value:''}).value.trim();
+    var msg=(g('exp-msg')||{value:''}).value.trim();
+    if(!nom){toast('Votre nom est obligatoire.',true);return;}
+    if(!tel){toast('Votre téléphone est obligatoire.',true);return;}
+    if(!produit&&!autre){toast('Choisissez un produit à exporter.',true);return;}
+    if(!volume){toast('Indiquez votre volume disponible.',true);return;}
+    var certs=[];
+    ['bio','fair','iso','aucune'].forEach(function(c){if(g('cert-'+c)&&g('cert-'+c).checked)certs.push(c);});
+    var marchés=[];
+    ['inde','vietnam','europe','afrique','asie','all'].forEach(function(m){if(g('mkt-'+m)&&g('mkt-'+m).checked)marchés.push(m);});
+    var produitFinal = produit==='autre'?autre:produit;
+    var waMsg=[
+      '🌍 *DEMANDE EXPORT — KASSAN\'MOU*',
+      '━━━━━━━━━━━━━━━━━━━━━━',
+      '',
+      '👤 *Exportateur :* '+nom,
+      '📱 *Téléphone :* '+tel,
+      (email?'📧 *Email :* '+email:''),
+      '📍 *Région :* '+region,
+      '',
+      '📦 *Produit :* '+produitFinal,
+      '⚖️ *Volume :* '+volume,
+      '🔄 *Fréquence :* '+freq,
+      (certs.length?'✅ *Certifications :* '+certs.join(', '):''),
+      (marchés.length?'🎯 *Marchés visés :* '+marchés.join(', '):''),
+      (msg?'\n💬 *Message :* '+msg:''),
+      '',
+      '_Kassan\'Mou · Export Niger → Monde_'
+    ].filter(Boolean).join('\n');
+    openWhatsApp(waMsg);
+    /* Sauvegarder dans Supabase si disponible */
+    if(kmDB){
+      kmDB.from('export_demandes').insert({
+        nom:nom,telephone:tel,email:email||null,region:region,
+        produit:produitFinal,volume:volume,frequence:freq,
+        certifications:certs.join(','),marches:marchés.join(','),
+        message:msg||null,statut:'nouveau'
+      }).then(function(r){
+        if(!r.error) console.log('[KM-EXPORT] Demande sauvegardée');
+      });
+    }
+    closeModal();
+    toast('✅ Demande envoyée ! Notre équipe vous contacte sous 48h.');
+  });
+
   var fb=g('mbtn-focal');if(fb)fb.addEventListener('click',function(){
     var nm=(g('focal-nom')||{}).value||'';
     var ct=(g('focal-contact')||{}).value||'';
@@ -4381,7 +4528,7 @@ function initFilters(){
 /* ══════════════════════════════
    AUTHENTIFICATION ADMIN SÉCURISÉE v34
 ══════════════════════════════ */
-var KM_ADM_E = atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ=='); // kassannou@gmail.com
+var KM_ADM_E = atob('a2Fzc2FubW91QGdtYWlsLmNvbQ=='); // kassanmou@gmail.com
 var KM_ADM_P = atob('S2Fzc2FuTW91QDIwMjYh');          // KassanMou@2026!
 
 function kmResetLock(){
@@ -4469,7 +4616,7 @@ function wire(){
   });
   // Home
   g('btn-see-mkt').addEventListener('click',function(){goTo('marketplace');});
-  var bex=g('btn-export-home');if(bex)bex.addEventListener('click',function(){goTo('about');});
+  var bex=g('btn-export-home');if(bex)bex.addEventListener('click',function(){openModal('export-b2b');});
   var bb2b=g('btn-b2b-home');if(bb2b)bb2b.addEventListener('click',function(){goTo('how');});
   var bph=g('btn-post-home');if(bph)bph.addEventListener('click',function(){var se=document.getElementById('section-export');if(se)se.scrollIntoView({behavior:'smooth'});});
   g('btn-cta-sell').addEventListener('click',function(){openModal('sell');});
