@@ -4858,12 +4858,18 @@ function renderDetailStep3(p, client){
 
   /* Sauvegarder commande dans Supabase */
   kmSaveCommande({
-    reference: ref, produitId: p.id || null, vendeurId: null,
-    nom: client.nom, telephone: client.tel, whatsapp: client.tel,
-    ville: 'Niamey', quantite: 1,
-    prixUnitaire: p.prix, prixTotal: p.prix,
-    fraisLivraison: 1000, montantTotal: p.prix + 1000,
-    notes: 'Paiement: ' + payName + ' | Livreur: ' + livreur.nom
+    reference: ref,
+    produitNom: p.nom || '',
+    vendeurNom: p.vendeur || '',
+    nom: client.nom,
+    telephone: client.tel,
+    whatsapp: client.tel,
+    ville: 'Niamey',
+    prixUnitaire: p.prix,
+    fraisLivraison: 1000,
+    montantTotal: p.prix + 1000,
+    modePaiement: payName,
+    notes: 'Paiement: ' + payName + ' | Livreur: ' + livreur.nom + ' (' + livreur.telDisplay + ')'
   });
 
   // Envoi email automatique à '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+'
@@ -5335,23 +5341,42 @@ async function kmSaveProduit(d) {
 }
 
 async function kmSaveCommande(d) {
-  if (!kmDB) return null;
+  if (!kmDB) {
+    console.error('[KM-CMD] Supabase non connecte - commande non sauvegardee');
+    toast('Commande WhatsApp OK mais non enregistrée (hors ligne)', false);
+    return null;
+  }
   try {
-    var res = await kmDB.from('commandes').insert({
-      reference:d.reference||('KM-CMD-'+Date.now()),
-      produit_id:d.produitId||null, vendeur_id:d.vendeurId||null,
-      acheteur_nom:d.nom||'', acheteur_telephone:d.telephone||'',
-      acheteur_whatsapp:d.whatsapp||d.telephone||'',
-      acheteur_adresse:d.adresse||'', acheteur_ville:d.ville||'Niamey',
-      quantite:parseFloat(d.quantite)||1, prix_unitaire:parseFloat(d.prixUnitaire)||0,
-      prix_total:parseFloat(d.prixTotal)||0, frais_livraison:parseFloat(d.fraisLivraison)||0,
-      montant_total:parseFloat(d.montantTotal)||0,
-      statut:'en_attente', statut_paiement:'non_paye', notes:d.notes||''
-    }).select().single();
-    if (res.error) { console.warn('[KM-DB]',res.error.message); return null; }
-    console.log('[KM-DB] Commande sauvegardee:',res.data.reference);
+    console.log('[KM-CMD] Tentative sauvegarde commande:', d.reference);
+    var payload = {
+      reference: d.reference || ('KM-CMD-'+Date.now()),
+      produit_nom: d.produitNom || d.produit || '',
+      vendeur_nom: d.vendeurNom || d.vendeur || '',
+      acheteur_nom: d.nom || '',
+      acheteur_telephone: d.telephone || '',
+      acheteur_whatsapp: d.whatsapp || d.telephone || '',
+      acheteur_ville: d.ville || 'Niamey',
+      quantite: 1,
+      prix_unitaire: parseFloat(d.prixUnitaire) || 0,
+      frais_livraison: parseFloat(d.fraisLivraison) || 1000,
+      montant_total: parseFloat(d.montantTotal) || parseFloat(d.prixUnitaire) || 0,
+      mode_paiement: d.modePaiement || d.notes || 'cash',
+      statut: 'en_attente',
+      notes: d.notes || ''
+    };
+    console.log('[KM-CMD] Payload:', JSON.stringify(payload));
+    var res = await kmDB.from('commandes').insert(payload).select().single();
+    if (res.error) {
+      console.error('[KM-CMD] ERREUR INSERT:', res.error.message, res.error.code, res.error.details);
+      toast('Commande WhatsApp OK · Erreur base: ' + res.error.message, false);
+      return null;
+    }
+    console.log('[KM-CMD] ✅ Commande sauvegardee:', res.data.reference);
     return res.data;
-  } catch(e) { console.warn('[KM-DB]',e); return null; }
+  } catch(e) {
+    console.error('[KM-CMD] Exception:', e);
+    return null;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════
