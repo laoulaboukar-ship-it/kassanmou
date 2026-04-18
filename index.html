@@ -741,7 +741,7 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
   .pgrid-pr{grid-template-columns:1fr}
   .seller-types{grid-template-columns:1fr 1fr;gap:12px}
 }
-@media(max-width:900px){
+@media(max-width:768px){
   #nav{padding:0 1rem}
   .nlinks,.btn-login{display:none}
   .burger{display:flex}
@@ -3485,10 +3485,20 @@ function openModal(type){
 
   var sw=g('mbtn-switch');if(sw)sw.addEventListener('click',function(){closeModal();openModal('register');});
   /* ── SÉCURITÉ ADMIN : tentatives & verrouillage ── */
+  /* ── LOGIN ADMIN — touche Enter dans le champ mot de passe ── */
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter') return;
+    var btn = document.getElementById('mbtn-login');
+    if(btn) btn.click();
+  });
+
+  /* ── LOGIN ADMIN — délégation événement (bouton créé dynamiquement) ── */
   var _kmLoginAttempts = parseInt(sessionStorage.getItem('km_login_attempts')||'0');
   var _kmLockUntil    = parseInt(sessionStorage.getItem('km_lock_until')||'0');
 
-  var lb=g('mbtn-login');if(lb)lb.addEventListener('click',function(){
+  document.addEventListener('click', function(e){
+    if(!e.target || e.target.id !== 'mbtn-login') return;
+
     var emailInp=document.querySelector('#mbox input[type="email"]');
     var passInp=document.querySelector('#mbox input[type="password"]');
     var email=(emailInp?emailInp.value.trim().toLowerCase():'');
