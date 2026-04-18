@@ -1599,15 +1599,15 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
 }
 .adm-logout-btn:hover{background:rgba(220,50,50,.25);color:#ff9090}
 .adm-tabs{
-  display:flex;gap:6px;overflow-x:auto;padding:10px 20px;
+  display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px;
+  justify-content:center;
   background:rgba(10,22,10,.95);
   border-bottom:1px solid rgba(196,154,60,.1);
-  scrollbar-width:none;
   position:sticky;top:calc(var(--NH,60px) + 50px);z-index:199;
 }
 .adm-tabs::-webkit-scrollbar{display:none}
 .adm-tab{
-  flex-shrink:0;padding:8px 18px;border-radius:20px;
+  flex-shrink:0;padding:8px 16px;border-radius:20px;
   border:1.5px solid rgba(255,255,255,.1);background:transparent;
   font-family:Outfit,sans-serif;font-size:13px;font-weight:600;
   color:rgba(255,255,255,.45);cursor:pointer;transition:all .18s;white-space:nowrap;
@@ -1697,6 +1697,13 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   .adm-tabs{padding:8px 12px}
 }
 </style>
+<style>
+#btn-see-mkt:hover{background:linear-gradient(135deg,rgba(45,90,27,.45),rgba(45,90,27,.2)) !important;transform:translateY(-4px);box-shadow:0 16px 48px rgba(45,90,27,.3) !important}
+#btn-export-home:hover{background:linear-gradient(135deg,rgba(196,154,60,.35),rgba(196,154,60,.12)) !important;transform:translateY(-4px);box-shadow:0 16px 48px rgba(196,154,60,.25) !important}
+#btn-b2b-home:hover{background:linear-gradient(135deg,rgba(200,75,47,.32),rgba(200,75,47,.1)) !important;transform:translateY(-4px);box-shadow:0 16px 48px rgba(200,75,47,.2) !important}
+@media(max-width:640px){#trois-portes{grid-template-columns:1fr !important}}
+@media(min-width:641px) and (max-width:900px){#trois-portes{grid-template-columns:1fr 1fr !important}}
+</style>
 </head>
 <body>
 
@@ -1757,95 +1764,102 @@ select.adm-input option{background:#0F1F0A;color:#fff}
      PAGE ACCUEIL
 ═══════════════════════════════════ -->
 <div class="page on" id="page-home">
-  <section class="hero">
+  <section class="hero" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;gap:0">
     <div class="ho ho1"></div><div class="ho ho2"></div>
-    <!-- Particules flottantes JS-generated -->
     <div class="hero-particles" id="hero-particles"></div>
 
-    <div style="position:relative;z-index:2">
-      <div class="hero-eyebrow">
+    <!-- VITRINE PREMIUM -->
+    <div style="position:relative;z-index:2;width:100%;max-width:1100px;padding:2rem 1.5rem;text-align:center">
+
+      <!-- Badge live -->
+      <div class="hero-eyebrow" style="justify-content:center;margin-bottom:1.5rem">
         <span class="ldot"></span>
         🌍 Pont Commercial International · Niger → Monde
       </div>
-      <h1 class="htitle">Connecter les <span class="co ci">producteurs locaux</span><br>aux <span class="ct">acheteurs internationaux.</span></h1>
-      <p class="hlead">KassanMou est une plateforme de mise en relation B2B — facilitateur d'export agricole depuis le Niger vers l'Inde, le Vietnam, l'Europe et l'Asie.</p>
-      <div class="hproof">
-        <span>✓ Export sésame → Inde</span><span class="hsep"></span>
-        <span>✓ Cornes de bœufs → Vietnam</span><span class="hsep"></span>
-        <span>✓ Partenariats Europe & Asie</span>
-      </div>
-      <div class="hctas" style="display:flex;flex-direction:column;gap:12px;max-width:520px">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
 
-          <button id="btn-see-mkt" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border-radius:16px;border:1.5px solid rgba(45,90,27,.5);background:rgba(45,90,27,.15);cursor:pointer;transition:all .2s;font-family:Outfit,sans-serif" onmouseover="this.style.background='rgba(45,90,27,.35)'" onmouseout="this.style.background='rgba(45,90,27,.15)'">
-            <span style="font-size:28px">🛍️</span>
-            <span style="font-size:12px;font-weight:700;color:#fff;line-height:1.3">Marketplace Locale</span>
-            <span style="font-size:10px;color:rgba(255,255,255,.45)">Acheter · Vendre</span>
-          </button>
+      <!-- Titre principal -->
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,6vw,5rem);font-weight:800;color:#fff;line-height:1.05;margin-bottom:1rem">
+        <span style="background:linear-gradient(135deg,#C49A3C,#E8C060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Kassan'Mou</span><br>
+        <span style="font-size:.6em;color:rgba(255,255,255,.7);font-weight:600">La marketplace du Niger</span>
+      </h1>
 
-          <button id="btn-export-home" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border-radius:16px;border:1.5px solid rgba(196,154,60,.5);background:rgba(196,154,60,.12);cursor:pointer;transition:all .2s;font-family:Outfit,sans-serif" onmouseover="this.style.background='rgba(196,154,60,.28)'" onmouseout="this.style.background='rgba(196,154,60,.12)'">
-            <span style="font-size:28px">🌍</span>
-            <span style="font-size:12px;font-weight:700;color:var(--G);line-height:1.3">Export B2B</span>
-            <span style="font-size:10px;color:rgba(255,255,255,.45)">Niger → Monde</span>
-          </button>
+      <p style="font-size:clamp(14px,2vw,17px);color:rgba(255,255,255,.5);max-width:560px;margin:0 auto 3rem;line-height:1.8">
+        Achetez local · Vendez partout · Exportez vers l'Inde, le Vietnam et l'Europe
+      </p>
 
-          <button id="btn-b2b-home" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border-radius:16px;border:1.5px solid rgba(200,75,47,.4);background:rgba(200,75,47,.1);cursor:pointer;transition:all .2s;font-family:Outfit,sans-serif" onmouseover="this.style.background='rgba(200,75,47,.25)'" onmouseout="this.style.background='rgba(200,75,47,.1)'">
-            <span style="font-size:28px">🤝</span>
-            <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,.9);line-height:1.3">Mise en Relation</span>
-            <span style="font-size:10px;color:rgba(255,255,255,.45)">Producteur · Acheteur</span>
-          </button>
+      <!-- 3 PORTES D'ENTRÉE PREMIUM -->
+      <div id="trois-portes" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:3rem">
 
-        </div>
-      </div>
-      <div class="hkpis">
-        <div class="kpic"><div class="kpin" id="kpi-producteurs">0</div><div class="kpil">Producteurs locaux</div></div>
-        <div class="kpic"><div class="kpin" id="kpi-acheteurs">0</div><div class="kpil">Acheteurs internationaux</div></div>
-        <div class="kpic"><div class="kpin" id="kpi-exports">0</div><div class="kpil">Exports facilités</div></div>
-        <div class="kpic"><div class="kpin" id="kpi-pays">0</div><div class="kpil">Pays connectés</div></div>
-      </div>
-      <div class="hero-live"><span class="live-dot"></span> MARCHÉ ACTIF · NIAMEY, NIGER</div>
-    </div>
-
-    <!-- Colonne droite : cards animées -->
-    <div class="hcards" style="position:relative;z-index:2">
-      <!-- Card animée qui change -->
-      <div id="hero-live-card" class="hc" style="cursor:pointer;border-color:rgba(196,154,60,.25)">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <!-- Porte 1 : Marketplace locale -->
+        <button id="btn-see-mkt" style="
+          display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+          gap:16px;padding:28px 20px;border-radius:20px;cursor:pointer;text-align:center;
+          background:linear-gradient(135deg,rgba(45,90,27,.25),rgba(45,90,27,.08));
+          border:1.5px solid rgba(45,90,27,.4);
+          transition:all .25s;font-family:Outfit,sans-serif;
+          box-shadow:0 8px 32px rgba(45,90,27,.15);
+        ">
+          <div style="font-size:48px;line-height:1">🛍️</div>
           <div>
-            <div style="font-size:14px;font-weight:700;color:#fff" id="hlc-name">🧴 Huile de karité pure</div>
-            <div style="font-size:12px;color:rgba(255,255,255,.38)" id="hlc-vendor">Boutique Amina · Niamey</div>
+            <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:6px">Marketplace Locale</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.6">Achetez et vendez des produits nigériens · Livraison Niamey</div>
           </div>
-          <span style="font-size:9px;font-weight:800;background:linear-gradient(135deg,#C49A3C,#E8C060);color:#1A0E00;padding:3px 9px;border-radius:var(--rp);font-family:'JetBrains Mono',monospace;white-space:nowrap" id="hlc-badge">★ VEDETTE</span>
-        </div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--G)" id="hlc-price">3 500 FCFA <span style="font-size:12px;color:rgba(255,255,255,.35);font-family:'Outfit',sans-serif">/250ml</span></div>
-        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-          <span id="hlc-cat" style="font-size:11px;padding:3px 9px;border-radius:var(--rp);background:rgba(196,154,60,.15);color:var(--G);font-weight:600">Cosmétique</span>
-          <span style="font-size:11px;padding:3px 9px;border-radius:var(--rp);background:rgba(255,255,255,.07);color:rgba(255,255,255,.5)">✅ Disponible</span>
-        </div>
-        <div style="font-size:10.5px;color:rgba(255,255,255,.28);margin-top:8px;font-family:'JetBrains Mono',monospace">
-          Cliquez pour commander →
-        </div>
+          <div style="font-size:12px;font-weight:700;color:#5A9A35;background:rgba(45,90,27,.2);padding:6px 16px;border-radius:20px;border:1px solid rgba(45,90,27,.3)">
+            Explorer le marché →
+          </div>
+        </button>
+
+        <!-- Porte 2 : Export B2B -->
+        <button id="btn-export-home" style="
+          display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+          gap:16px;padding:28px 20px;border-radius:20px;cursor:pointer;text-align:center;
+          background:linear-gradient(135deg,rgba(196,154,60,.2),rgba(196,154,60,.05));
+          border:1.5px solid rgba(196,154,60,.4);
+          transition:all .25s;font-family:Outfit,sans-serif;
+          box-shadow:0 8px 32px rgba(196,154,60,.12);
+        ">
+          <div style="font-size:48px;line-height:1">🌍</div>
+          <div>
+            <div style="font-size:16px;font-weight:800;color:#C49A3C;margin-bottom:6px">Export B2B International</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.6">Sésame · Paprika · Cornes · Gomme arabique<br>→ Inde · Vietnam · Europe</div>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:#C49A3C;background:rgba(196,154,60,.12);padding:6px 16px;border-radius:20px;border:1px solid rgba(196,154,60,.25)">
+            Exporter mes produits →
+          </div>
+        </button>
+
+        <!-- Porte 3 : Mise en relation B2B -->
+        <button id="btn-b2b-home" style="
+          display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+          gap:16px;padding:28px 20px;border-radius:20px;cursor:pointer;text-align:center;
+          background:linear-gradient(135deg,rgba(200,75,47,.18),rgba(200,75,47,.04));
+          border:1.5px solid rgba(200,75,47,.35);
+          transition:all .25s;font-family:Outfit,sans-serif;
+          box-shadow:0 8px 32px rgba(200,75,47,.1);
+        ">
+          <div style="font-size:48px;line-height:1">🤝</div>
+          <div>
+            <div style="font-size:16px;font-weight:800;color:rgba(255,255,255,.9);margin-bottom:6px">Mise en Relation B2B</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.6">Producteurs locaux · Acheteurs internationaux · Points Focaux</div>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:#E07055;background:rgba(200,75,47,.12);padding:6px 16px;border-radius:20px;border:1px solid rgba(200,75,47,.2)">
+            Nous contacter →
+          </div>
+        </button>
+
       </div>
 
-      <!-- Barre stats en temps réel simulée -->
-      <div class="hc" style="padding:14px 18px">
-        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;margin-bottom:10px">📊 Activité en temps réel</div>
-        <div id="hero-activity" style="display:flex;flex-direction:column;gap:7px"></div>
+      <!-- KPIs -->
+      <div class="hkpis" style="max-width:600px;margin:0 auto 2rem">
+        <div class="kpic"><div class="kpin" id="kpi-producteurs">0</div><div class="kpil">Producteurs</div></div>
+        <div class="kpic"><div class="kpin" id="kpi-acheteurs">0</div><div class="kpil">Acheteurs</div></div>
+        <div class="kpic"><div class="kpin" id="kpi-exports">0</div><div class="kpil">Exports</div></div>
+        <div class="kpic"><div class="kpin" id="kpi-pays">0</div><div class="kpil">Pays</div></div>
       </div>
 
-      <!-- Badge pays connectés -->
-      <div class="hc" style="padding:13px 16px;display:flex;gap:10px;align-items:center">
-        <div style="font-size:1.6rem;flex-shrink:0">🌐</div>
-        <div>
-          <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px">Marchés actifs</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
-            <span style="font-size:11px;padding:2px 8px;border-radius:var(--rp);background:rgba(255,255,255,.07);color:rgba(255,255,255,.5)">🇮🇳 Inde</span>
-            <span style="font-size:11px;padding:2px 8px;border-radius:var(--rp);background:rgba(255,255,255,.07);color:rgba(255,255,255,.5)">🇻🇳 Vietnam</span>
-            <span style="font-size:11px;padding:2px 8px;border-radius:var(--rp);background:rgba(255,255,255,.07);color:rgba(255,255,255,.5)">🇫🇷 Europe</span>
-            <span style="font-size:11px;padding:2px 8px;border-radius:var(--rp);background:rgba(196,154,60,.12);color:var(--G);border:1px solid rgba(196,154,60,.2)">+ NE 🇳🇪</span>
-          </div>
-        </div>
-      </div>
+      <!-- Badge live -->
+      <div class="hero-live"><span class="live-dot"></span> MARCHÉ ACTIF · NIAMEY, NIGER</div>
+
     </div>
   </section>
 
@@ -2778,7 +2792,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 
 <div class="adm-top">
   <div class="adm-top-title">⚡ Centre de contrôle</div>
-  <div style="display:flex;align-items:center;gap:0">
+  <div style="display:flex;align-items:center;gap:6px">
     <button class="adm-back-btn" id="btn-dash-back">← Site</button>
     <button class="adm-logout-btn" id="btn-logout">🔓 Déconnexion</button>
   </div>
@@ -2854,8 +2868,14 @@ var EJS={
 };
 /* Email admin — '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' */
 var _adm=atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ=='); // '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+'
-/* Numéro WhatsApp admin — +22799851532 */
-var _wap=atob('MjI3OTk4NTE1MzI='); // +22799851532
+/* ══ NUMÉRO OFFICIEL KASSAN'MOU ══
+   Remplacez KM_PHONE_RAW et KM_PHONE_DISPLAY par votre vrai numéro
+   KM_PHONE_RAW    = numéro sans espaces ni + (pour liens WhatsApp & paiement)
+   KM_PHONE_DISPLAY = numéro formaté pour l'affichage
+   ══════════════════════════════════ */
+var KM_PHONE_RAW     = '22799851532';       // ← CHANGER ICI
+var KM_PHONE_DISPLAY = '+KM_PHONE_DISPLAY+';  // ← CHANGER ICI
+var _wap = KM_PHONE_RAW;
 
 /* ── Envoi email automatique vers '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' ── */
 function sendEmailAuto(data, type){
@@ -3301,9 +3321,9 @@ function openModal(type){
 
   if(type==='login'){
     h=X+'<div class="mh">Connexion</div><div class="msub">Accédez à votre compte Kassan\'Mou</div>'+
-      '<div class="fg"><label>Email</label><input type="email" placeholder="vous@exemple.com"></div>'+
-      '<div class="fg"><label>Mot de passe</label><input type="password" placeholder="••••••••"></div>'+
-      '<button class="bp" style="width:100%;padding:14px;margin-top:4px" id="mbtn-login">Se connecter</button>'+
+      '<div class="fg"><label>Email admin</label><input type="email" id="km-login-email" placeholder="kassannou@gmail.com" autocomplete="email"></div>'+
+      '<div class="fg"><label>Mot de passe</label><input type="password" id="km-login-pass" placeholder="••••••••" autocomplete="current-password"></div>'+
+      '<button class="bp" style="width:100%;padding:14px;margin-top:4px" id="mbtn-login">🔓 Connexion Admin</button>'+
       '<div style="text-align:center;font-size:13px;color:var(--Mu);margin-top:12px">Pas de compte ? <button style="color:var(--T);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;font-size:13px" id="mbtn-switch">S\'inscrire gratuitement</button></div>';
 
   } else if(type==='register'){
@@ -3490,6 +3510,7 @@ function openModal(type){
   g('mveil').onclick=function(e){if(e.target===g('mveil'))closeModal();};
 
   var sw=g('mbtn-switch');if(sw)sw.addEventListener('click',function(){closeModal();openModal('register');});
+  /* login géré par délégation kmDoLogin */
   var fb=g('mbtn-focal');if(fb)fb.addEventListener('click',function(){
     var nm=(g('focal-nom')||{}).value||'';
     var ct=(g('focal-contact')||{}).value||'';
@@ -4297,8 +4318,12 @@ async function doSupprimerProduit(id){
   if(!confirm('Supprimer ce produit définitivement ?'))return;
   var r=await kmDB.from('produits').delete().eq('id',id);
   if(r.error){toast('Erreur: '+r.error.message,true);return;}
-  toast('Produit supprimé.');
+  // Retirer immédiatement du cache mémoire → marketplace mise à jour sans rechargement
+  DB_PREMIUM.produits = DB_PREMIUM.produits.filter(function(p){ return p.id !== id; });
+  toast('✅ Produit supprimé de la marketplace.');
   dashTousProduits();
+  renderFeaturedStrip();
+  renderProdsPremium();
 }
 async function doToggleLivreur(id,st){
   if(!kmDB)return;
@@ -4351,51 +4376,56 @@ function initFilters(){
 }
 
 /* ══════════════════════════════
-   AUTHENTIFICATION ADMIN SÉCURISÉE
+   WIRE GLOBAL
+══════════════════════════════ */
+/* ══════════════════════════════
+   AUTHENTIFICATION ADMIN SÉCURISÉE v34
 ══════════════════════════════ */
 var KM_ADM_E = atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ=='); // kassannou@gmail.com
 var KM_ADM_P = atob('S2Fzc2FuTW91QDIwMjYh');          // KassanMou@2026!
 
+function kmResetLock(){
+  sessionStorage.removeItem('km_attempts');
+  sessionStorage.removeItem('km_lock');
+}
+
 function kmDoLogin(){
-  // Anti-brute force : 3 tentatives max, blocage 5 minutes
-  var now = Date.now();
-  var attempts = parseInt(sessionStorage.getItem('km_attempts')||'0');
   var lockUntil = parseInt(sessionStorage.getItem('km_lock')||'0');
-  if(now < lockUntil){
+  var now = Date.now();
+  if(lockUntil && now < lockUntil){
     var remaining = Math.ceil((lockUntil - now)/60000);
-    toast('⛔ Compte bloqué. Réessayez dans '+remaining+' min.', true);
+    toast('⛔ Trop de tentatives. Réessayez dans '+remaining+' min.', true);
     return;
   }
-  var emailInp = document.querySelector('#mbox input[type="email"]');
-  var passInp  = document.querySelector('#mbox input[type="password"]');
-  if(!emailInp || !passInp){return;}
+  var emailInp = document.getElementById('km-login-email') ||
+                 document.querySelector('#mbox input[type="email"]');
+  var passInp  = document.getElementById('km-login-pass') ||
+                 document.querySelector('#mbox input[type="password"]');
+  if(!emailInp){ toast('Champ email introuvable.', true); return; }
+  if(!passInp) { toast('Champ mot de passe introuvable.', true); return; }
   var em = (emailInp.value||'').trim().toLowerCase();
-  var pw = (passInp.value||'');
-  if(!em){toast('Veuillez entrer votre email.', true);return;}
-  if(!pw){toast('Veuillez entrer votre mot de passe.', true);return;}
+  var pw = (passInp.value||'').trim();
+  if(!em){ toast('Entrez votre email.', true); return; }
+  if(!pw){ toast('Entrez votre mot de passe.', true); return; }
   if(em === KM_ADM_E && pw === KM_ADM_P){
     sessionStorage.setItem('km_admin','1');
-    sessionStorage.removeItem('km_attempts');
-    sessionStorage.removeItem('km_lock');
+    kmResetLock();
     closeModal();
     goTo('dashboard');
     toast('✅ Bienvenue dans le Centre de contrôle !');
   } else {
-    attempts++;
-    sessionStorage.setItem('km_attempts', attempts);
-    if(attempts >= 3){
-      sessionStorage.setItem('km_lock', now + 5*60*1000);
+    var attempts = parseInt(sessionStorage.getItem('km_attempts')||'0') + 1;
+    sessionStorage.setItem('km_attempts', String(attempts));
+    if(attempts >= 5){
+      sessionStorage.setItem('km_lock', String(now + 5*60*1000));
       sessionStorage.setItem('km_attempts','0');
-      toast('⛔ 3 tentatives échouées. Accès bloqué 5 minutes.', true);
+      toast('⛔ 5 tentatives échouées. Accès bloqué 5 min.', true);
     } else {
-      toast('❌ Email ou mot de passe incorrect. ('+(3-attempts)+' essai(s) restant)', true);
+      toast('❌ Identifiants incorrects. ('+(5-attempts)+' essai(s) restant)', true);
     }
   }
 }
 
-/* ══════════════════════════════
-   WIRE GLOBAL
-══════════════════════════════ */
 function wire(){
   /* Nouveaux boutons home */
   var brp=g('btn-request-product');if(brp)brp.addEventListener('click',function(){openModal('request-product');});
@@ -4431,6 +4461,7 @@ function wire(){
   g('bn-home').addEventListener('click',function(){goTo('home');});
   g('bn-marketplace').addEventListener('click',function(){goTo('marketplace');});
   g('bn-post').addEventListener('click',function(){openModal('register');});
+  if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
   if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
   g('bn-account').addEventListener('click',function(){
     if(sessionStorage.getItem('km_admin')==='1'){goTo('dashboard');}
@@ -4472,7 +4503,7 @@ function wire(){
   });
   g('btn-contact-focal').addEventListener('click',function(){openModal('focal');});
   // Dashboard - onglets et retour
-  var bdb=g('btn-dash-back');if(bdb)bdb.addEventListener('click',function(){goTo('home');});
+  g('btn-dash-back').addEventListener('click',function(){goTo('home');});
   var blo=g('btn-logout');if(blo)blo.addEventListener('click',function(){
     sessionStorage.removeItem('km_admin');
     sessionStorage.removeItem('km_attempts');
@@ -4507,25 +4538,12 @@ function wire(){
 /* ══════════════════════════════════════════
    DONNÉES PREMIUM — Marketplace intégrée
 ══════════════════════════════════════════ */
+/* DB_PREMIUM — produits chargés depuis Supabase uniquement */
 var DB_PREMIUM = {
-  produits:[
-    {id:'pm1', vedette:true,  emoji:'🧴', cat:'cosmetique',  catLbl:'Cosmétique',   nom:'Huile de karité pure',        vendeur:'Boutique Amina',   zone:'Niamey · Plateau',  prix:3500,  unite:'250ml',    dispo:'immediat', delai:'24h',  badge:'p', neg:false, desc:'Karité 100% naturel du Niger, pressé à froid. Sans additifs. Idéal peau sèche et cheveux.'},
-    {id:'pm2', vedette:true,  emoji:'👗', cat:'vetements',   catLbl:'Vêtements',    nom:'Robe en bazin brodé',         vendeur:'Mode Zara Niger',  zone:'Niamey · Yantala',  prix:28000, unite:'pièce',    dispo:'commande', delai:'3 jours', badge:'v', neg:true,  desc:'Bazin riche de qualité supérieure. Broderies manuelles. Sur mesure possible.'},
-    {id:'pm3', vedette:true,  emoji:'🌰', cat:'alimentaire', catLbl:'Alimentation', nom:'Arachides grillées premium',  vendeur:'Coopérative Agro', zone:'Zinder',            prix:1200,  unite:'kg',       dispo:'immediat', delai:'48h',  badge:'e', neg:false, desc:'Arachides sélectionnées, triées et grillées artisanalement. Disponibles en vrac.'},
-    {id:'pm4', vedette:true,  emoji:'🪔', cat:'artisanat',   catLbl:'Artisanat',    nom:'Lampe en cuivre ciselé',      vendeur:'Artisan Oumarou',  zone:'Agadez',            prix:15000, unite:'pièce',    dispo:'commande', delai:'1 semaine', badge:'p', neg:true, desc:'Travail traditionnel touareg. Cuivre recyclé, finition dorée. Pièce unique.'},
-    {id:'pm5', vedette:false, emoji:'🌿', cat:'cosmetique',  catLbl:'Cosmétique',   nom:'Savon au neem & curcuma',     vendeur:'Bio Niger',        zone:'Niamey · Talladjé', prix:800,   unite:'pièce',    dispo:'immediat', delai:'24h',  badge:'n', neg:false, desc:'Savon artisanal naturel. Propriétés antiseptiques du neem.'},
-    {id:'pm6', vedette:false, emoji:'🥛', cat:'alimentaire', catLbl:'Alimentation', nom:'Lait caillé traditionnel',    vendeur:'Ferme Peule',      zone:'Tahoua',            prix:500,   unite:'500ml',    dispo:'immediat', delai:'Même jour', badge:'l', neg:false, desc:'Lait fermenté selon méthode traditionnelle peule.'},
-    {id:'pm7', vedette:false, emoji:'👞', cat:'vetements',   catLbl:'Vêtements',    nom:'Sandales en cuir tanné',      vendeur:'Maroquin Sahel',   zone:'Agadez',            prix:9500,  unite:'paire',    dispo:'immediat', delai:'48h',  badge:'v', neg:true,  desc:'Cuir de chameau tanné naturellement. Semelle renforcée. Tailles 36-46.'},
-    {id:'pm8', vedette:false, emoji:'🏺', cat:'artisanat',   catLbl:'Artisanat',    nom:'Pot en argile de Zinder',     vendeur:'Poterie Haussa',   zone:'Zinder',            prix:4500,  unite:'pièce',    dispo:'immediat', delai:'3 jours', badge:'v', neg:false, desc:'Poterie traditionnelle de Zinder. Cuite au bois.'},
-    {id:'pm9', vedette:false, emoji:'📱', cat:'tech',        catLbl:'Tech',         nom:'Chargeur solaire 20 000mAh',  vendeur:'Solar Niger',      zone:'Niamey · Plateau',  prix:22000, unite:'pièce',    dispo:'immediat', delai:'24h',  badge:'n', neg:false, desc:'Batterie solaire portable. 2 ports USB. Garantie 1 an.'},
-    {id:'pm10',vedette:false, emoji:'🌾', cat:'alimentaire', catLbl:'Alimentation', nom:'Mil en gros sac 50kg',        vendeur:'Grenier du Sahel', zone:'Maradi',            prix:18000, unite:'50kg',     dispo:'immediat', delai:'48h',  badge:'e', neg:true,  desc:'Mil blanc de la saison. Certifié sans OGM.'},
-    {id:'pm11',vedette:false, emoji:'🧣', cat:'vetements',   catLbl:'Vêtements',    nom:'Grand boubou homme',          vendeur:'Couture Issa',     zone:'Niamey · Yantala',  prix:35000, unite:'pièce',    dispo:'commande', delai:'1 semaine', badge:'p', neg:true, desc:'Tissu bazin importé. Broderies col et poignets.'},
-    {id:'pm12',vedette:false, emoji:'🏠', cat:'maison',      catLbl:'Maison',       nom:'Natte tressée en paille',     vendeur:'Artisane Fatima',  zone:'Dosso',             prix:5500,  unite:'2×3m',     dispo:'immediat', delai:'3 jours', badge:'l', neg:false, desc:'Natte tressée à la main. Paille de doum.'},
-  ],
-  livreurs:[
-    {id:'L01', nom:'Ibrahim Mahamane',  emoji:'🧑', tel:'+22799112233', telDisplay:'+227 99 11 22 33', zone:'Niamey centre · Plateau · Yantala', statut:'dispo'},
-    {id:'L02', nom:'Moussa Abdoulaye',  emoji:'👱', tel:'+22796445566', telDisplay:'+227 96 44 55 66', zone:'Niamey · Talladjé · Banizoumbou', statut:'dispo'},
-    {id:'L03', nom:'Salissou Issoufou', emoji:'👨', tel:'+22793221100', telDisplay:'+227 93 22 11 00', zone:'Niamey · Koira Kano · Gamkalé', statut:'busy'},
+  produits: [], /* Vidé - chargé depuis Supabase via kmLoadProduits() */
+  livreurs: [
+    /* Livreurs de secours si Supabase indisponible */
+    {id:'L01', nom:'Livreur KassanMou', emoji:'🛵', tel:'+22799851532', telDisplay:'+KM_PHONE_DISPLAY+', zone:'Niamey', statut:'dispo'}
   ]
 };
 
@@ -4545,10 +4563,7 @@ function waLinkPremium(p){return 'https://wa.me/'+_wap+'?text='+encodeURICompone
 function renderFeaturedStrip(){
   var el = g('fstrip-scroll'); if(!el) return;
   var list = DB_PREMIUM.produits.filter(function(p){return p.vedette;});
-  if(!list.length){
-    el.innerHTML='<div style="padding:20px 0;color:rgba(255,255,255,.3);font-size:13px;font-style:italic">Les produits vedettes apparaîtront ici après validation</div>';
-    return;
-  }
+  if(!list.length){ el.innerHTML='<div style="padding:20px;color:rgba(255,255,255,.3);font-size:13px">Les produits vedettes apparaîtront ici</div>'; return; }
   el.innerHTML = list.map(function(p,i){
     return '<div class="fcard" style="animation-delay:'+(i*.08)+'s" onclick="openDetailSheet(\''+p.id+'\')">' +
       '<div class="fcard-img">' +
@@ -4806,9 +4821,9 @@ function renderDetailStep2(p){
       selectedPay = c.dataset.pay;
       var numBox = g('pay-detail-box');
       var payLabels = {
-        orange_money: '🟠 <strong>Orange Money</strong> — Envoyez le montant au numéro <strong>+227 99 85 15 32</strong> puis envoyez la preuve de paiement sur WhatsApp.',
-        airtel_money: '🔴 <strong>Airtel Money</strong> — Envoyez le montant au numéro <strong>+227 99 85 15 32</strong> puis envoyez la preuve de paiement sur WhatsApp.',
-        flooz: '💙 <strong>Flooz (Moov)</strong> — Envoyez le montant au numéro <strong>+227 99 85 15 32</strong> puis envoyez la preuve de paiement sur WhatsApp.',
+        orange_money: '🟠 <strong>Orange Money</strong> — Envoyez le montant au numéro <strong>'+KM_PHONE_DISPLAY+'</strong> puis envoyez la preuve de paiement sur WhatsApp.',
+        airtel_money: '🔴 <strong>Airtel Money</strong> — Envoyez le montant au numéro <strong>'+KM_PHONE_DISPLAY+'</strong> puis envoyez la preuve de paiement sur WhatsApp.',
+        flooz: '💙 <strong>Flooz (Moov)</strong> — Envoyez le montant au numéro <strong>'+KM_PHONE_DISPLAY+'</strong> puis envoyez la preuve de paiement sur WhatsApp.',
         amana: '🏦 <strong>Dépôt Amana</strong> — Notre équipe vous communiquera les coordonnées du compte sur WhatsApp après confirmation de commande.',
         nita: '🏧 <strong>Dépôt Nita</strong> — Notre équipe vous communiquera les coordonnées du compte sur WhatsApp après confirmation de commande.',
         cash: '💵 <strong>Cash à la livraison</strong> — Vous payez directement le livreur à la réception de votre commande. Aucun transfert nécessaire avant.'
@@ -5016,7 +5031,7 @@ function renderDetailStep3(p, client){
             ? '✅ Vous avez choisi le <strong>paiement cash à la livraison</strong>.<br>Cliquez sur le bouton ci-dessous pour envoyer votre commande. Notre équipe vous rappellera pour confirmer <strong>l\'adresse et l\'heure de livraison</strong>.'
             : needBankInfo
               ? '🏦 Notre équipe va vous envoyer les <strong>coordonnées du compte '+( client.pay==='amana'?'Amana':'Nita')+'</strong> sur WhatsApp.<br>Après votre dépôt, envoyez la <strong>photo de la preuve de dépôt</strong> directement sur WhatsApp.'
-              : '💳 Effectuez le paiement <strong>'+payName+'</strong> au numéro <strong>+227 99 85 15 32</strong>.<br>Ensuite, envoyez la <strong>photo de la preuve de paiement</strong> sur WhatsApp. Notre équipe confirmera votre commande et organisera la livraison.'
+              : '💳 Effectuez le paiement <strong>'+payName+'</strong> au numéro <strong>'+KM_PHONE_DISPLAY+'</strong>.<br>Ensuite, envoyez la <strong>photo de la preuve de paiement</strong> sur WhatsApp. Notre équipe confirmera votre commande et organisera la livraison.'
           ) +
         '</div>' +
       '</div>' +
@@ -5258,10 +5273,6 @@ function animateHowSteps(mode){
 var KM_SUPABASE_URL = 'https://nifnobbeictkbprsixxe.supabase.co';
 var KM_SUPABASE_KEY = 'sb_publishable_xTHizuii8kXP1RNam9qvzg_HejUYPcT';
 var kmDB = null;
-var kmSession = null;
-var kmLoginAttempts = 0;
-var kmLoginBlocked = false;
-var kmLoginBlockedUntil = 0;
 try {
   kmDB = supabase.createClient(KM_SUPABASE_URL, KM_SUPABASE_KEY);
   console.log('[KM-DB] Connexion Supabase etablie');
@@ -5494,18 +5505,16 @@ document.addEventListener('DOMContentLoaded', function(){
   /* ── 3. WIRE GLOBAL (tous les boutons) ── */
   wire();
 
-  /* ── 3b. DÉLÉGATION LOGIN (dans DOMContentLoaded — 100% sûr) ── */
+  /* ── 3b. DÉLÉGATION LOGIN — dans DOMContentLoaded (100% safe) ── */
   document.addEventListener('click', function(e){
-    if(!e.target) return;
-    if(e.target.id === 'mbtn-login'){ kmDoLogin(); }
+    if(e.target && e.target.id === 'mbtn-login'){ kmDoLogin(); }
   });
   document.addEventListener('keydown', function(e){
     if(e.key !== 'Enter') return;
     var veil = g('mveil');
     if(!veil || !veil.classList.contains('on')) return;
     var mbox = g('mbox');
-    if(!mbox) return;
-    if(mbox.querySelector('#mbtn-login')) kmDoLogin();
+    if(mbox && mbox.querySelector('#mbtn-login')) kmDoLogin();
   });
 
   /* ── 4. FILTRES MARKETPLACE ── */
