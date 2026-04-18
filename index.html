@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
@@ -8913,7 +8915,8 @@ function wire(){
   });
   g('btn-contact-focal').addEventListener('click',function(){openModal('focal');});
   // Dashboard - onglets et retour
-  g('btn-dash-back').addEventListener('click',function(){goTo('home');});
+  var bdb=g('btn-dash-back');if(bdb)bdb.addEventListener('click',function(){goTo('home');});
+  var blo=g('btn-logout');if(blo)blo.addEventListener('click',async function(){if(kmDB){try{await kmDB.auth.signOut();}catch(e){}}kmSession=null;goTo('home');toast('Déconnecté.');});
   document.getElementById('adm-tabs-bar') && document.getElementById('adm-tabs-bar').addEventListener('click',function(e){
     var t=e.target.closest('.adm-tab');
     if(!t) return;
