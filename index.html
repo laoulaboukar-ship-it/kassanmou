@@ -4393,22 +4393,6 @@ function kmDoLogin(){
   }
 }
 
-// Délégation globale — fonctionne même si le bouton est créé dynamiquement
-document.addEventListener('click', function(e){
-  if(!e.target) return;
-  if(e.target.id === 'mbtn-login') kmDoLogin();
-});
-
-// Touche Entrée dans le modal login
-document.addEventListener('keydown', function(e){
-  if(e.key !== 'Enter') return;
-  var veil = g('mveil');
-  if(!veil || !veil.classList.contains('on')) return; // modal fermé
-  var mbox = g('mbox');
-  if(!mbox) return;
-  if(mbox.querySelector('#mbtn-login')) kmDoLogin(); // on est dans le modal login
-});
-
 /* ══════════════════════════════
    WIRE GLOBAL
 ══════════════════════════════ */
@@ -4429,10 +4413,17 @@ function wire(){
     var b=g('nl-'+p);if(b)b.addEventListener('click',function(){goTo(p);});
     var bm=g('mn-'+p);if(bm)bm.addEventListener('click',function(){goTo(p);});
   });
-  g('btn-login').addEventListener('click',function(){openModal('login');});
+  g('btn-login').addEventListener('click',function(){
+    if(sessionStorage.getItem('km_admin')==='1'){goTo('dashboard');}
+    else{openModal('login');}
+  });
   g('btn-register').addEventListener('click',function(){openModal('register');});
   g('burger-btn').addEventListener('click',toggleMN);
-  g('mn-login').addEventListener('click',function(){closeMN();openModal('login');});
+  g('mn-login').addEventListener('click',function(){
+    closeMN();
+    if(sessionStorage.getItem('km_admin')==='1'){goTo('dashboard');}
+    else{openModal('login');}
+  });
   g('mn-register').addEventListener('click',function(){closeMN();openModal('register');});
   g('lb-fr').addEventListener('click',function(){setLang('fr');});
   g('lb-en').addEventListener('click',function(){setLang('en');});
@@ -4441,7 +4432,10 @@ function wire(){
   g('bn-marketplace').addEventListener('click',function(){goTo('marketplace');});
   g('bn-post').addEventListener('click',function(){openModal('register');});
   if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
-  g('bn-account').addEventListener('click',function(){openModal('login');});
+  g('bn-account').addEventListener('click',function(){
+    if(sessionStorage.getItem('km_admin')==='1'){goTo('dashboard');}
+    else{openModal('login');}
+  });
   // Home
   g('btn-see-mkt').addEventListener('click',function(){goTo('marketplace');});
   var bex=g('btn-export-home');if(bex)bex.addEventListener('click',function(){goTo('about');});
@@ -5499,6 +5493,20 @@ document.addEventListener('DOMContentLoaded', function(){
 
   /* ── 3. WIRE GLOBAL (tous les boutons) ── */
   wire();
+
+  /* ── 3b. DÉLÉGATION LOGIN (dans DOMContentLoaded — 100% sûr) ── */
+  document.addEventListener('click', function(e){
+    if(!e.target) return;
+    if(e.target.id === 'mbtn-login'){ kmDoLogin(); }
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter') return;
+    var veil = g('mveil');
+    if(!veil || !veil.classList.contains('on')) return;
+    var mbox = g('mbox');
+    if(!mbox) return;
+    if(mbox.querySelector('#mbtn-login')) kmDoLogin();
+  });
 
   /* ── 4. FILTRES MARKETPLACE ── */
   initFilters();
