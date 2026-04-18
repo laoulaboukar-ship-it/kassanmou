@@ -4102,40 +4102,97 @@ async function dashLivreurs(){
 
 /* ─── COMMANDES ─────────────────────────────── */
 async function dashCommandes(){
-  var body=g('dash-body'), cmds=[];
+  var body=g('dash-body');
+  body.innerHTML='<div style="padding:20px;text-align:center;color:rgba(255,255,255,.4)">⏳ Chargement des commandes...</div>';
+  var cmds=[];
   if(kmDB){
     try{
-      var r=await kmDB.from('commandes').select('*').order('date_commande',{ascending:false}).limit(50);
+      var r=await kmDB.from('commandes')
+        .select('*')
+        .order('date_commande',{ascending:false})
+        .limit(100);
       if(r.data) cmds=r.data;
-    }catch(e){}
+      if(r.error) console.warn('[KM-CMD]',r.error.message);
+    }catch(e){console.warn('[KM-CMD]',e);}
   }
-  var sC={'en_attente':'osp','confirmée':'oss','en_livraison':'osc','livrée':'oss','annulée':'osc'};
-  var html='<div class="adm-box-title">Commandes ('+cmds.length+')</div>';
+
+  /* Stats rapides */
+  var enAttente = cmds.filter(function(x){return x.statut==='en_attente';}).length;
+  var enLivraison = cmds.filter(function(x){return x.statut==='en_livraison';}).length;
+  var livrees = cmds.filter(function(x){return x.statut==='livrée';}).length;
+  var caTotal = cmds.reduce(function(s,x){return s+parseFloat(x.montant_total||0);},0);
+
+  var sMap={
+    'en_attente':'adm-st-attente',
+    'confirmée':'adm-st-valide',
+    'en_livraison':'adm-st-attente',
+    'livrée':'adm-st-valide',
+    'annulée':'adm-st-refuse'
+  };
+
+  var html=
+    /* KPIs commandes */
+    '<div class="adm-kgrid" style="grid-template-columns:repeat(4,1fr)">'+
+      '<div class="adm-kcard"><div class="adm-kcard-val urgent">'+enAttente+'</div><div class="adm-kcard-lbl">En attente</div></div>'+
+      '<div class="adm-kcard"><div class="adm-kcard-val">'+enLivraison+'</div><div class="adm-kcard-lbl">En livraison</div></div>'+
+      '<div class="adm-kcard"><div class="adm-kcard-val">'+livrees+'</div><div class="adm-kcard-lbl">Livrées</div></div>'+
+      '<div class="adm-kcard"><div class="adm-kcard-val" style="font-size:18px">'+caTotal.toLocaleString('fr-FR')+'</div><div class="adm-kcard-lbl">FCFA total</div></div>'+
+    '</div>';
+
   if(!cmds.length){
-    html+='<div class="adm-box" style="text-align:center;padding:32px;color:#787874">Aucune commande.</div>';
+    html+='<div class="adm-box" style="text-align:center;padding:40px">'+
+      '<div style="font-size:40px;margin-bottom:12px">📦</div>'+
+      '<div style="color:rgba(255,255,255,.5);font-size:15px">Aucune commande reçue pour le moment.</div>'+
+      '<div style="color:rgba(255,255,255,.3);font-size:12px;margin-top:8px">Les commandes apparaitront ici des qu\'un client commande sur la marketplace.</div>'+
+    '</div>';
   } else {
-    html+='<div class="adm-box" style="padding:0">';
-    cmds.forEach(function(c,i){
-      var cStMap={'en_attente':'adm-st-attente','confirmée':'adm-st-valide','en_livraison':'adm-st-attente','livrée':'adm-st-valide','annulée':'adm-st-refuse'};
+    html+='<div class="adm-box-title">'+cmds.length+' commande(s) — Dernières en tête</div>'+
+    '<div class="adm-box" style="padding:0;overflow:hidden">';
+
+    cmds.forEach(function(cmd,i){
+      var waUrl='https://wa.me/'+cmd.acheteur_whatsapp.replace(/[^0-9]/g,'')+
+        '?text='+encodeURIComponent(
+          'Bonjour '+cmd.acheteur_nom+', votre commande Kassan\'Mou '+cmd.reference+' est confirmee. Notre livreur vous contactera bientot. Merci !'
+        );
       html+=
-        '<div style="padding:16px;border-bottom:1px solid rgba(255,255,255,.06)">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
-            '<div style="font-weight:700;font-size:13px;font-family:JetBrains Mono,monospace;color:#C49A3C">'+c.reference+'</div>'+
-            '<span class="'+(cStMap[c.statut]||'adm-st-attente')+'">'+c.statut+'</span>'+
+        '<div style="padding:16px;border-bottom:1px solid rgba(255,255,255,.06);'+(i%2===0?'background:rgba(255,255,255,.02)':'')+'">' +
+          /* En-tête commande */
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'+
+            '<div>'+
+              '<div style="font-weight:700;font-size:14px;font-family:JetBrains Mono,monospace;color:#C49A3C">'+cmd.reference+'</div>'+
+              '<div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px">'+new Date(cmd.date_commande).toLocaleString('fr-FR')+'</div>'+
+            '</div>'+
+            '<span class="'+(sMap[cmd.statut]||'adm-st-attente')+'" style="flex-shrink:0">'+cmd.statut+'</span>'+
           '</div>'+
-          '<div style="font-size:12px;color:rgba(255,255,255,.5)">👤 '+c.acheteur_nom+' &nbsp;·&nbsp; 📱 '+c.acheteur_telephone+'</div>'+
-          '<div style="font-size:12px;color:rgba(255,255,255,.5)">💰 '+parseFloat(c.montant_total||0).toLocaleString('fr-FR')+' FCFA &nbsp;·&nbsp; 📅 '+new Date(c.date_commande).toLocaleDateString('fr-FR')+'</div>'+
-          '<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">'+
-            '<button class="adm-btn adm-btn-g cmd-u" data-id="'+c.id+'" data-st="confirmee" style="padding:7px 12px;font-size:12px">✅ Confirmer</button>'+
-            '<button class="adm-btn adm-btn-n cmd-u" data-id="'+c.id+'" data-st="en_livraison" style="padding:7px 12px;font-size:12px">🛵 En livraison</button>'+
-            '<button class="adm-btn adm-btn-n cmd-u" data-id="'+c.id+'" data-st="livree" style="padding:7px 12px;font-size:12px">✓ Livrée</button>'+
+          /* Infos client */
+          '<div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px 12px;margin-bottom:10px">'+
+            '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px">👤 '+cmd.acheteur_nom+'</div>'+
+            '<div style="font-size:12px;color:rgba(255,255,255,.5)">📱 '+cmd.acheteur_telephone+'</div>'+
+            (cmd.notes?'<div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:4px;font-style:italic">📝 '+cmd.notes+'</div>':'')+
+          '</div>'+
+          /* Montant */
+          '<div style="display:flex;justify-content:space-between;margin-bottom:10px">'+
+            '<span style="font-size:13px;color:rgba(255,255,255,.5)">Montant total</span>'+
+            '<span style="font-size:14px;font-weight:700;color:#C49A3C">'+parseFloat(cmd.montant_total||0).toLocaleString('fr-FR')+' FCFA</span>'+
+          '</div>'+
+          /* Actions */
+          '<div style="display:flex;gap:6px;flex-wrap:wrap">'+
+            (cmd.statut==='en_attente'?
+              '<button class="adm-btn adm-btn-g cmd-u" data-id="'+cmd.id+'" data-st="confirmée" style="padding:8px 14px;font-size:12px">✅ Confirmer</button>':'')+
+            (cmd.statut!=='livrée'&&cmd.statut!=='annulée'?
+              '<button class="adm-btn adm-btn-n cmd-u" data-id="'+cmd.id+'" data-st="en_livraison" style="padding:8px 14px;font-size:12px">🛵 En livraison</button>'+
+              '<button class="adm-btn adm-btn-g cmd-u" data-id="'+cmd.id+'" data-st="livrée" style="padding:8px 14px;font-size:12px">✓ Livrée</button>':'')+
+            '<a href="'+waUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:10px;background:rgba(37,211,102,.15);color:#25D366;text-decoration:none;font-size:12px;font-weight:700;border:1px solid rgba(37,211,102,.25)">💬 WhatsApp client</a>'+
           '</div>'+
         '</div>';
     });
     html+='</div>';
   }
+
   body.innerHTML=html;
-  body.querySelectorAll('.cmd-u').forEach(function(b){b.onclick=function(){doUpdateCommande(b.dataset.id,b.dataset.st);};});
+  body.querySelectorAll('.cmd-u').forEach(function(b){
+    b.onclick=function(){doUpdateCommande(b.dataset.id,b.dataset.st);};
+  });
 }
 
 /* ─── FORMULAIRE LIVREUR ─────────────────────── */
