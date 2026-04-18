@@ -1591,6 +1591,13 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
   color:var(--G,#C49A3C);transition:all .15s;
 }
 .adm-back-btn:hover{background:rgba(196,154,60,.22)}
+.adm-logout-btn{
+  padding:7px 14px;border-radius:20px;
+  background:rgba(220,50,50,.12);border:1px solid rgba(220,50,50,.3);
+  font-family:Outfit,sans-serif;font-size:12px;font-weight:600;cursor:pointer;
+  color:#e07070;transition:all .15s;margin-left:8px;
+}
+.adm-logout-btn:hover{background:rgba(220,50,50,.25);color:#ff9090}
 .adm-tabs{
   display:flex;gap:6px;overflow-x:auto;padding:10px 20px;
   background:rgba(10,22,10,.95);
@@ -2771,9 +2778,9 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 
 <div class="adm-top">
   <div class="adm-top-title">⚡ Centre de contrôle</div>
-  <div style="display:flex;gap:8px;align-items:center">
+  <div style="display:flex;align-items:center;gap:0">
     <button class="adm-back-btn" id="btn-dash-back">← Site</button>
-    <button class="adm-back-btn" id="btn-dash-logout" style="background:rgba(200,50,50,.25);color:#ff8080;border-color:rgba(200,50,50,.4)">🔒 Déconnexion</button>
+    <button class="adm-logout-btn" id="btn-logout">🔓 Déconnexion</button>
   </div>
 </div>
 <div class="adm-tabs" id="adm-tabs-bar">
@@ -3145,13 +3152,12 @@ function goTo(page){
   if(page==='tracking'){g('bn-tracking')&&g('bn-tracking').classList.add('on');}
   if(page==='dashboard'){
     if(sessionStorage.getItem('km_admin')!=='1'){
-      document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
-      var ph=g('page-home');if(ph)ph.classList.add('on');
-      curPage='home';
-      setTimeout(function(){openModal('login');toast('🔒 Accès réservé à l\'administrateur.',true);},100);
+      goTo('home');
+      setTimeout(function(){openModal('login');},150);
       return;
     }
-    g('bn-account')&&g('bn-account').classList.add('on');renderDash('overview');
+    g('bn-account')&&g('bn-account').classList.add('on');
+    renderDash('overview');
   }
   if(page==='livraison'){if(g('bn-livraison'))g('bn-livraison').classList.add('on');if(g('nl-livraison'))g('nl-livraison').classList.add('on');renderLivreursPage();}
   closeMN();
@@ -3484,57 +3490,6 @@ function openModal(type){
   g('mveil').onclick=function(e){if(e.target===g('mveil'))closeModal();};
 
   var sw=g('mbtn-switch');if(sw)sw.addEventListener('click',function(){closeModal();openModal('register');});
-  /* ── SÉCURITÉ ADMIN : tentatives & verrouillage ── */
-  /* ── LOGIN ADMIN — touche Enter dans le champ mot de passe ── */
-  document.addEventListener('keydown', function(e){
-    if(e.key !== 'Enter') return;
-    var btn = document.getElementById('mbtn-login');
-    if(btn) btn.click();
-  });
-
-  /* ── LOGIN ADMIN — délégation événement (bouton créé dynamiquement) ── */
-  var _kmLoginAttempts = parseInt(sessionStorage.getItem('km_login_attempts')||'0');
-  var _kmLockUntil    = parseInt(sessionStorage.getItem('km_lock_until')||'0');
-
-  document.addEventListener('click', function(e){
-    if(!e.target || e.target.id !== 'mbtn-login') return;
-
-    var emailInp=document.querySelector('#mbox input[type="email"]');
-    var passInp=document.querySelector('#mbox input[type="password"]');
-    var email=(emailInp?emailInp.value.trim().toLowerCase():'');
-    var pass=(passInp?passInp.value:'');
-
-    var now=Date.now();
-    if(now < _kmLockUntil){
-      var resteSec=Math.ceil((_kmLockUntil-now)/1000);
-      toast('🔒 Trop de tentatives. Réessayez dans '+resteSec+'s.',true);return;
-    }
-    if(!email){toast('Veuillez entrer votre email.',true);return;}
-    if(!pass){toast('Veuillez entrer votre mot de passe.',true);return;}
-
-    var _ae=atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==');
-    var _ap=atob('S2Fzc2FuTW91QDIwMjYh');
-
-    if(email===_ae && pass===_ap){
-      _kmLoginAttempts=0;
-      sessionStorage.removeItem('km_login_attempts');
-      sessionStorage.removeItem('km_lock_until');
-      sessionStorage.setItem('km_admin','1');
-      closeModal();goTo('dashboard');toast("✅ Bienvenue Admin Kassan'Mou !");
-    } else {
-      _kmLoginAttempts++;
-      sessionStorage.setItem('km_login_attempts',_kmLoginAttempts);
-      if(_kmLoginAttempts>=3){
-        _kmLockUntil=Date.now()+(5*60*1000);
-        sessionStorage.setItem('km_lock_until',_kmLockUntil);
-        _kmLoginAttempts=0;
-        sessionStorage.setItem('km_login_attempts','0');
-        toast('🔒 3 tentatives échouées. Compte bloqué 5 minutes.',true);
-      } else {
-        toast('❌ Email ou mot de passe incorrect. ('+_kmLoginAttempts+'/3)',true);
-      }
-    }
-  });
   var fb=g('mbtn-focal');if(fb)fb.addEventListener('click',function(){
     var nm=(g('focal-nom')||{}).value||'';
     var ct=(g('focal-contact')||{}).value||'';
@@ -4396,6 +4351,65 @@ function initFilters(){
 }
 
 /* ══════════════════════════════
+   AUTHENTIFICATION ADMIN SÉCURISÉE
+══════════════════════════════ */
+var KM_ADM_E = atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ=='); // kassannou@gmail.com
+var KM_ADM_P = atob('S2Fzc2FuTW91QDIwMjYh');          // KassanMou@2026!
+
+function kmDoLogin(){
+  // Anti-brute force : 3 tentatives max, blocage 5 minutes
+  var now = Date.now();
+  var attempts = parseInt(sessionStorage.getItem('km_attempts')||'0');
+  var lockUntil = parseInt(sessionStorage.getItem('km_lock')||'0');
+  if(now < lockUntil){
+    var remaining = Math.ceil((lockUntil - now)/60000);
+    toast('⛔ Compte bloqué. Réessayez dans '+remaining+' min.', true);
+    return;
+  }
+  var emailInp = document.querySelector('#mbox input[type="email"]');
+  var passInp  = document.querySelector('#mbox input[type="password"]');
+  if(!emailInp || !passInp){return;}
+  var em = (emailInp.value||'').trim().toLowerCase();
+  var pw = (passInp.value||'');
+  if(!em){toast('Veuillez entrer votre email.', true);return;}
+  if(!pw){toast('Veuillez entrer votre mot de passe.', true);return;}
+  if(em === KM_ADM_E && pw === KM_ADM_P){
+    sessionStorage.setItem('km_admin','1');
+    sessionStorage.removeItem('km_attempts');
+    sessionStorage.removeItem('km_lock');
+    closeModal();
+    goTo('dashboard');
+    toast('✅ Bienvenue dans le Centre de contrôle !');
+  } else {
+    attempts++;
+    sessionStorage.setItem('km_attempts', attempts);
+    if(attempts >= 3){
+      sessionStorage.setItem('km_lock', now + 5*60*1000);
+      sessionStorage.setItem('km_attempts','0');
+      toast('⛔ 3 tentatives échouées. Accès bloqué 5 minutes.', true);
+    } else {
+      toast('❌ Email ou mot de passe incorrect. ('+(3-attempts)+' essai(s) restant)', true);
+    }
+  }
+}
+
+// Délégation globale — fonctionne même si le bouton est créé dynamiquement
+document.addEventListener('click', function(e){
+  if(!e.target) return;
+  if(e.target.id === 'mbtn-login') kmDoLogin();
+});
+
+// Touche Entrée dans le modal login
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Enter') return;
+  var veil = g('mveil');
+  if(!veil || !veil.classList.contains('on')) return; // modal fermé
+  var mbox = g('mbox');
+  if(!mbox) return;
+  if(mbox.querySelector('#mbtn-login')) kmDoLogin(); // on est dans le modal login
+});
+
+/* ══════════════════════════════
    WIRE GLOBAL
 ══════════════════════════════ */
 function wire(){
@@ -4426,7 +4440,6 @@ function wire(){
   g('bn-home').addEventListener('click',function(){goTo('home');});
   g('bn-marketplace').addEventListener('click',function(){goTo('marketplace');});
   g('bn-post').addEventListener('click',function(){openModal('register');});
-  if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
   if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
   g('bn-account').addEventListener('click',function(){openModal('login');});
   // Home
@@ -4466,15 +4479,13 @@ function wire(){
   g('btn-contact-focal').addEventListener('click',function(){openModal('focal');});
   // Dashboard - onglets et retour
   var bdb=g('btn-dash-back');if(bdb)bdb.addEventListener('click',function(){goTo('home');});
-  var logoutBtn=g('btn-dash-logout');
-  if(logoutBtn){logoutBtn.addEventListener('click',function(){
+  var blo=g('btn-logout');if(blo)blo.addEventListener('click',function(){
     sessionStorage.removeItem('km_admin');
-    sessionStorage.removeItem('km_login_attempts');
-    sessionStorage.removeItem('km_lock_until');
+    sessionStorage.removeItem('km_attempts');
+    sessionStorage.removeItem('km_lock');
     goTo('home');
-    toast('✅ Déconnexion réussie.');
-  });}
-  var blo=g('btn-logout');if(blo)blo.addEventListener('click',async function(){if(kmDB){try{await kmDB.auth.signOut();}catch(e){}}kmSession=null;goTo('home');toast('Déconnecté.');});
+    toast('🔓 Déconnecté. À bientôt !');
+  });
   document.getElementById('adm-tabs-bar') && document.getElementById('adm-tabs-bar').addEventListener('click',function(e){
     var t=e.target.closest('.adm-tab');
     if(!t) return;

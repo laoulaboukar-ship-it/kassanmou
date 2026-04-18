@@ -1,11 +1,11 @@
 /* ================================================
-   Kassan'Mou — Service Worker PWA
+   Kassan'Mou — Service Worker PWA v33
    Stratégie : Cache-first pour ressources statiques
    Network-first pour données dynamiques
    Optimisé pour connexions 3G Niger
    ================================================ */
 
-const CACHE_NAME = 'kassanmou-v33-1776535755';
+const CACHE_NAME = 'kassanmou-v33-20260418';
 const OFFLINE_URL = '/';
 
 /* Ressources à mettre en cache immédiatement à l'installation */
@@ -83,7 +83,6 @@ self.addEventListener('fetch', function(event) {
           }
           return response;
         }).catch(function() {
-          /* Pas de fonts en offline — la page reste lisible avec font système */
           return new Response('', { status: 408 });
         });
       })
@@ -110,8 +109,7 @@ self.addEventListener('fetch', function(event) {
     return;
   }
 
-  /* Stratégie principale — Stale-While-Revalidate pour la page principale
-     Renvoie le cache immédiatement (rapide en 3G), met à jour en arrière-plan */
+  /* Stratégie principale — Stale-While-Revalidate */
   event.respondWith(
     caches.match(request).then(function(cached) {
       var networkFetch = fetch(request).then(function(response) {
@@ -123,32 +121,27 @@ self.addEventListener('fetch', function(event) {
         }
         return response;
       }).catch(function() {
-        /* Mode hors-ligne : renvoyer la page principale en cache */
         return caches.match(OFFLINE_URL);
       });
-
-      /* Si on a un cache, l'envoyer immédiatement et mettre à jour en fond */
       return cached || networkFetch;
     })
   );
 });
 
-/* ── PUSH NOTIFICATIONS (pour les futures notifs automatiques) ── */
+/* ── PUSH NOTIFICATIONS ── */
 self.addEventListener('push', function(event) {
   var data = {};
   if (event.data) {
-    try { data = event.data.json(); } catch(e) { data = { title: 'Kassan\'Mou', body: event.data.text() }; }
+    try { data = event.data.json(); } catch(e) { data = { title: "Kassan'Mou", body: event.data.text() }; }
   }
-
   var options = {
-    body: data.body || 'Nouvelle activité sur Kassan\'Mou',
+    body: data.body || "Nouvelle activité sur Kassan'Mou",
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     vibrate: [200, 100, 200],
     data: { url: data.url || '/' },
     actions: data.actions || []
   };
-
   event.waitUntil(
     self.registration.showNotification(data.title || "Kassan'Mou", options)
   );
@@ -158,7 +151,6 @@ self.addEventListener('push', function(event) {
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   var targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/';
-
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
       for (var i = 0; i < clientList.length; i++) {
@@ -171,4 +163,4 @@ self.addEventListener('notificationclick', function(event) {
   );
 });
 
-console.log('[KM-SW] Service Worker Kassan\'Mou actif — Mode offline ready');
+console.log("[KM-SW] Service Worker Kassan'Mou v33 actif — Cache kassanmou-v33-20260418");
