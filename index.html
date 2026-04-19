@@ -1907,7 +1907,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
       <p class="mknl-lead">
         La première marketplace premium 100% nigérienne.<br>
         Alimentaire · Cosmétique · Artisanat · Mode · Électronique · Parfumerie<br>
-        <strong>Livraison partout à Niamey — 100 FCFA.</strong>
+        <strong>Livraison partout à Niamey — 1 000 FCFA.</strong>
       </p>
 
       <!-- 2 Boutons CTA -->
@@ -1923,7 +1923,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
           <span class="mknl-btn-ico">🛒</span>
           <span class="mknl-btn-text">
             <span class="mknl-btn-main">Acheter maintenant</span>
-            <span class="mknl-btn-sub">Produits vérifiés · Livraison 100F</span>
+            <span class="mknl-btn-sub">Produits vérifiés · Livraison 1 000 F</span>
           </span>
         </button>
       </div>
@@ -1949,7 +1949,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
         <div class="mknl-trust-sep"></div>
         <div class="mknl-trust-item">
           <span class="mknl-trust-ico">🛵</span>
-          <span>Livraison Niamey — 100 FCFA</span>
+          <span>Livraison Niamey — 1 000 FCFA</span>
         </div>
         <div class="mknl-trust-sep"></div>
         <div class="mknl-trust-item">
@@ -2229,7 +2229,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
             <div class="export-item">Opportunités Europe / Asie / Afrique de l'Ouest</div>
             <div class="export-item">Normes et certifications : Bio EU, Fair Trade, ISO 22000</div>
           </div>
-          <button class="bgold" onclick="openModal('sell')">Publier mon produit export →</button>
+          <button class="bgold" onclick="openModal('export-b2b')">🌍 Soumettre ma demande d'export →</button>
         </div>
         <div class="export-card light">
           <span class="export-ico">🤝</span>
@@ -3428,6 +3428,17 @@ function openModal(type){
 
       '<div class="fg"><label>Message libre (optionnel)</label><textarea id="exp-msg" rows="3" placeholder="Décrivez votre situation, vos besoins, vos questions..." style="border:1.5px solid var(--B);border-radius:var(--rs);padding:10px 12px;font-size:14px;width:100%;font-family:Outfit,sans-serif;outline:none;resize:vertical"></textarea></div>'+
 
+      '<div class="fg">'+
+        '<label>📸 Photos de votre produit (optionnel — jusqu\'à 4 photos)</label>'+
+        '<div id="exp-photo-zone" style="border:2px dashed var(--B);border-radius:var(--rm);padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-top:6px" onclick="g(\'exp-file-input\').click()">'+
+          '<div style="font-size:2rem;margin-bottom:8px">📷</div>'+
+          '<div style="font-size:13px;color:var(--Mu)">Cliquez pour ajouter des photos de votre produit</div>'+
+          '<div style="font-size:12px;color:var(--Mu);margin-top:4px">JPG, PNG · Max 5MB chacune</div>'+
+        '</div>'+
+        '<input type="file" id="exp-file-input" accept="image/*" multiple style="display:none">'+
+        '<div id="exp-photo-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>'+
+      '</div>'+
+
       '<button class="bp" style="width:100%;padding:14px;font-size:15px;margin-top:4px" id="mbtn-export">🌍 Soumettre ma demande d\'export</button>';
 
     } else if(type==='sell'){
@@ -3605,7 +3616,34 @@ function openModal(type){
   var sw=g('mbtn-switch');if(sw)sw.addEventListener('click',function(){closeModal();openModal('register');});
   /* login géré par délégation kmDoLogin */
   /* Handler export B2B */
-  var expBtn=g('mbtn-export');if(expBtn)expBtn.addEventListener('click',function(){
+  /* Câblage upload photos export */
+  var expFileInput = g('exp-file-input');
+  var expUploadedPhotos = [];
+  if(expFileInput){
+    expFileInput.addEventListener('change', function(){
+      var files = expFileInput.files;
+      for(var i=0; i<Math.min(files.length, 4-expUploadedPhotos.length); i++){
+        (function(file){
+          var reader = new FileReader();
+          reader.onload = function(e){
+            expUploadedPhotos.push({base64: e.target.result, name: file.name});
+            var preview = g('exp-photo-preview');
+            if(preview){
+              var thumb = document.createElement('div');
+              thumb.style.cssText = 'position:relative;display:inline-block';
+              thumb.innerHTML = '<img src="'+e.target.result+'" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid var(--B)">';
+              preview.appendChild(thumb);
+            }
+            var zone = g('exp-photo-zone');
+            if(zone && expUploadedPhotos.length >= 4) zone.style.display = 'none';
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+    });
+  }
+
+  var expBtn=g('mbtn-export');if(expBtn)expBtn.addEventListener('click',async function(){
     var nom=(g('exp-nom')||{value:''}).value.trim();
     var tel=(g('exp-tel')||{value:''}).value.trim();
     var region=(g('exp-region')||{value:''}).value.trim();
@@ -3643,17 +3681,42 @@ function openModal(type){
       '_Kassan\'Mou · Export Niger → Monde_'
     ].filter(Boolean).join('\n');
     openWhatsApp(waMsg);
-    /* Sauvegarder dans Supabase si disponible */
+    /* Uploader les photos vers Supabase Storage */
+    var photoUrls = [];
+    if(kmDB && typeof expUploadedPhotos !== 'undefined' && expUploadedPhotos.length > 0){
+      for(var pi=0; pi<expUploadedPhotos.length; pi++){
+        try{
+          var ph = expUploadedPhotos[pi];
+          var arr = ph.base64.split(',');
+          var mime = arr[0].match(/:(.*?);/)[1];
+          var bstr = atob(arr[1]);
+          var u8 = new Uint8Array(bstr.length);
+          for(var bi=0;bi<bstr.length;bi++) u8[bi]=bstr.charCodeAt(bi);
+          var blob = new Blob([u8], {type:mime});
+          var path = 'export/'+Date.now()+'-'+pi+'.'+mime.split('/')[1];
+          var up = await kmDB.storage.from('produits-photos').upload(path, blob, {upsert:true});
+          if(!up.error){
+            var pub = kmDB.storage.from('produits-photos').getPublicUrl(path);
+            if(pub.data) photoUrls.push(pub.data.publicUrl);
+          }
+        }catch(e){}
+      }
+    }
+
+    /* Sauvegarder dans Supabase */
     if(kmDB){
       kmDB.from('export_demandes').insert({
-        nom:nom,telephone:tel,email:email||null,region:region,
-        produit:produitFinal,volume:volume,frequence:freq,
-        certifications:certs.join(','),marches:marchés.join(','),
-        message:msg||null,statut:'nouveau'
+        nom:nom, telephone:tel, email:email||null, region:region,
+        produit:produitFinal, volume:volume, frequence:freq,
+        certifications:certs.join(','), marches:marchés.join(','),
+        message:msg||null, statut:'nouveau',
+        photos: photoUrls.length > 0 ? photoUrls : null
       }).then(function(r){
-        if(!r.error) console.log('[KM-EXPORT] Demande sauvegardée');
+        if(!r.error) console.log('[KM-EXPORT] Demande sauvegardée avec '+photoUrls.length+' photo(s)');
+        else console.warn('[KM-EXPORT]', r.error.message);
       });
     }
+    expUploadedPhotos = [];
     closeModal();
     toast('✅ Demande envoyée ! Notre équipe vous contacte sous 48h.');
   });
