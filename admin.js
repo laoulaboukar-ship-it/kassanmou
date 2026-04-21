@@ -3,17 +3,20 @@ async function loadProducts() {
 
   try {
     const { data: userData } = await supabase.auth.getUser();
+    console.log("USER:", userData);
 
     if (!userData.user) {
       alert("Non connecté");
       return;
     }
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', userData.user.id)
       .single();
+
+    console.log("PROFILE:", profile, profileError);
 
     if (!profile || profile.role !== 'admin') {
       alert("Accès refusé");
@@ -22,16 +25,12 @@ async function loadProducts() {
 
     const { data: products, error } = await supabase.from('products').select('*');
 
-    if (error) {
-      console.error(error);
-      alert("Erreur chargement produits");
-      return;
-    }
+    console.log("PRODUCTS:", products, error);
 
     document.getElementById("products").textContent = JSON.stringify(products, null, 2);
 
   } catch (e) {
-    console.error(e);
+    console.error("ERROR:", e);
     alert("Erreur technique");
   }
 }
