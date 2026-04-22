@@ -5,35 +5,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="km-version" content="v36-1776625738">
-<script>
-/* FORCE REFRESH - supprime l'ancien SW et recharge */
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(function(regs){
-    var needReload = false;
-    regs.forEach(function(reg){
-      var swUrl = reg.active ? reg.active.scriptURL : '';
-      if(swUrl.indexOf('kassanmou') > -1){
-        reg.update(); /* Force vérification de mise à jour */
-      }
-    });
-  });
-}
-/* Vérifier si la version a changé */
-var kmStoredVersion = sessionStorage.getItem('km_app_version');
-var kmCurrentVersion = 'v36-1776625738';
-if(kmStoredVersion && kmStoredVersion !== kmCurrentVersion){
-  sessionStorage.clear();
-  sessionStorage.setItem('km_app_version', kmCurrentVersion);
-  /* Ne pas recharger si déjà en cours de chargement */
-  if(!sessionStorage.getItem('km_reloading')){
-    sessionStorage.setItem('km_reloading', '1');
-    window.location.reload(true);
-  }
-} else {
-  sessionStorage.setItem('km_app_version', kmCurrentVersion);
-  sessionStorage.removeItem('km_reloading');
-}
-</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
@@ -3204,13 +3176,39 @@ function goTo(page){
   }
   if(page==='tracking'){g('bn-tracking')&&g('bn-tracking').classList.add('on');}
   if(page==='dashboard'){
-    if(sessionStorage.getItem('km_admin')!=='1'){
-      goTo('home');
-      setTimeout(function(){openModal('login');},150);
-      return;
-    }
     g('bn-account')&&g('bn-account').classList.add('on');
-    renderDash('overview');
+    /* Attendre que l'auth Supabase soit initialisée */
+    function tryOpenDash(attempt){
+      if(!kmAuthReady && attempt < 20){
+        setTimeout(function(){ tryOpenDash(attempt+1); }, 150);
+        return;
+      }
+      if(!kmIsAdmin){
+        /* Vérifier une dernière fois via Supabase */
+        if(kmDB){
+          kmDB.auth.getSession().then(function(r){
+            var sess = r.data && r.data.session;
+            var email = sess && sess.user ? sess.user.email : '';
+            if(sess && kmCheckAdmin(email)){
+              kmSession = sess;
+              kmUser = sess.user;
+              kmIsAdmin = true;
+              renderDash('overview');
+            } else {
+              goTo('home');
+              setTimeout(function(){openModal('login');},200);
+              toast('Connexion admin requise.',true);
+            }
+          });
+        } else {
+          goTo('home');
+          setTimeout(function(){openModal('login');},200);
+        }
+        return;
+      }
+      renderDash('overview');
+    }
+    tryOpenDash(0);
   }
   if(page==='livraison'){if(g('bn-livraison'))g('bn-livraison').classList.add('on');if(g('nl-livraison'))g('nl-livraison').classList.add('on');renderLivreursPage();}
   closeMN();
@@ -4625,52 +4623,150 @@ function initFilters(){
 /* ══════════════════════════════
    AUTHENTIFICATION ADMIN SÉCURISÉE v34
 ══════════════════════════════ */
-var KM_ADM_E = atob('a2Fzc2FubW91QGdtYWlsLmNvbQ=='); // kassanmou@gmail.com
-var KM_ADM_P = atob('S2Fzc2FuTW91QDIwMjYh');          // KassanMou@2026!
+/* ═══════════════════════════════════════════════════════════
+   KASSAN'MOU — AUTH SUPABASE RÉEL
+   - Pas de mot de passe dans le code
+   - Session persistante via Supabase
+   - Vérification admin via email whitelist
+   - Anti-brute force
+   ═══════════════════════════════════════════════════════════ */
 
-function kmResetLock(){
-  sessionStorage.removeItem('km_attempts');
-  sessionStorage.removeItem('km_lock');
+var kmSession   = null;   /* Session Supabase active */
+var kmUser      = null;   /* Utilisateur connecté */
+var kmIsAdmin   = false;  /* Est-ce un admin ? */
+var kmAuthReady = false;  /* Auth initialisée */
+
+/* Liste des emails admins — seuls ces emails accèdent au dashboard */
+var KM_ADMIN_EMAILS = ['kassanmou@gmail.com'];
+
+function kmCheckAdmin(email) {
+  return email && KM_ADMIN_EMAILS.some(function(e) {
+    return e.toLowerCase() === email.toLowerCase();
+  });
 }
 
-function kmDoLogin(){
-  var lockUntil = parseInt(sessionStorage.getItem('km_lock')||'0');
-  var now = Date.now();
-  if(lockUntil && now < lockUntil){
-    var remaining = Math.ceil((lockUntil - now)/60000);
-    toast('⛔ Trop de tentatives. Réessayez dans '+remaining+' min.', true);
+/* ── Initialiser l'auth Supabase au démarrage ── */
+function kmInitAuth() {
+  if (!kmDB) { kmAuthReady = true; return; }
+
+  /* Écouter les changements de session */
+  kmDB.auth.onAuthStateChange(function(event, session) {
+    kmSession = session;
+    kmUser    = session ? session.user : null;
+    kmIsAdmin = kmUser ? kmCheckAdmin(kmUser.email) : false;
+    kmAuthReady = true;
+
+    console.log('[KM-AUTH] Event:', event, '| Admin:', kmIsAdmin);
+
+    if (event === 'SIGNED_IN' && kmIsAdmin) {
+      /* Rediriger vers dashboard si on était sur la page login */
+      var veil = g('mveil');
+      if (veil && veil.classList.contains('on')) {
+        closeModal();
+        goTo('dashboard');
+        toast('✅ Bienvenue ! Centre de contrôle ouvert.');
+      }
+    }
+
+    if (event === 'SIGNED_OUT') {
+      kmIsAdmin = false;
+      kmSession = null;
+      kmUser = null;
+    }
+  });
+
+  /* Récupérer session existante */
+  kmDB.auth.getSession().then(function(r) {
+    if (r.data && r.data.session) {
+      kmSession = r.data.session;
+      kmUser    = r.data.session.user;
+      kmIsAdmin = kmUser ? kmCheckAdmin(kmUser.email) : false;
+      console.log('[KM-AUTH] Session restaurée:', kmUser.email, '| Admin:', kmIsAdmin);
+    }
+    kmAuthReady = true;
+  });
+}
+
+/* ── LOGIN avec Supabase Auth ── */
+var kmLoginAttempts = 0;
+var kmLoginBlockedUntil = 0;
+
+async function kmDoLogin() {
+  /* Anti-brute force */
+  if (kmLoginBlockedUntil > Date.now()) {
+    var mins = Math.ceil((kmLoginBlockedUntil - Date.now()) / 60000);
+    toast('Trop de tentatives. Attendez ' + mins + ' min.', true);
     return;
   }
-  var emailInp = document.getElementById('km-login-email') ||
-                 document.querySelector('#mbox input[type="email"]');
-  var passInp  = document.getElementById('km-login-pass') ||
-                 document.querySelector('#mbox input[type="password"]');
-  if(!emailInp){ toast('Champ email introuvable.', true); return; }
-  if(!passInp) { toast('Champ mot de passe introuvable.', true); return; }
-  var em = (emailInp.value||'').trim().toLowerCase();
-  var pw = (passInp.value||'').trim();
-  if(!em){ toast('Entrez votre email.', true); return; }
-  if(!pw){ toast('Entrez votre mot de passe.', true); return; }
-  if(em === KM_ADM_E && pw === KM_ADM_P){
-    sessionStorage.setItem('km_admin','1');
-    sessionStorage.removeItem('km_attempts');
-    sessionStorage.removeItem('km_lock');
-    kmResetLock();
+
+  /* Récupérer les champs */
+  var emailInp = g('km-login-email') || document.querySelector('#mbox input[type="email"]');
+  var passInp  = g('km-login-pass')  || document.querySelector('#mbox input[type="password"]');
+
+  var email = emailInp ? emailInp.value.trim() : '';
+  var pass  = passInp  ? passInp.value.trim()  : '';
+
+  if (!email) { toast('Email obligatoire.', true); return; }
+  if (!pass)  { toast('Mot de passe obligatoire.', true); return; }
+  if (!kmDB)  { toast('Connexion serveur non disponible.', true); return; }
+
+  /* Désactiver le bouton */
+  var btn = g('mbtn-login');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Connexion...'; }
+
+  try {
+    var res = await kmDB.auth.signInWithPassword({ email: email, password: pass });
+
+    if (res.error) {
+      kmLoginAttempts++;
+      if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
+
+      if (kmLoginAttempts >= 5) {
+        kmLoginBlockedUntil = Date.now() + 5 * 60 * 1000;
+        kmLoginAttempts = 0;
+        toast('5 échecs — bloqué 5 minutes.', true);
+      } else {
+        toast('Identifiants incorrects (' + kmLoginAttempts + '/5).', true);
+      }
+      return;
+    }
+
+    /* Connexion réussie — vérifier si admin */
+    var userEmail = res.data.user ? res.data.user.email : '';
+    if (!kmCheckAdmin(userEmail)) {
+      await kmDB.auth.signOut();
+      if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
+      toast('Accès réservé à l\'administrateur.', true);
+      return;
+    }
+
+    /* Admin confirmé */
+    kmLoginAttempts = 0;
+    kmSession = res.data.session;
+    kmUser    = res.data.user;
+    kmIsAdmin = true;
+    if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
     closeModal();
     goTo('dashboard');
-    toast('✅ Bienvenue dans le Centre de contrôle !');
-  } else {
-    var attempts = parseInt(sessionStorage.getItem('km_attempts')||'0') + 1;
-    sessionStorage.setItem('km_attempts', String(attempts));
-    if(attempts >= 5){
-      sessionStorage.setItem('km_lock', String(now + 5*60*1000));
-      sessionStorage.setItem('km_attempts','0');
-      toast('⛔ 5 tentatives échouées. Accès bloqué 5 min.', true);
-    } else {
-      toast('❌ Identifiants incorrects. ('+(5-attempts)+' essai(s) restant)', true);
-    }
+    toast('✅ Bienvenue ! Centre de contrôle ouvert.');
+
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
+    console.error('[KM-AUTH]', e);
+    toast('Erreur de connexion. Réessayez.', true);
   }
 }
+
+/* ── LOGOUT ── */
+async function kmDoLogout() {
+  if (kmDB) { try { await kmDB.auth.signOut(); } catch(e) {} }
+  kmSession = null;
+  kmUser    = null;
+  kmIsAdmin = false;
+  goTo('home');
+  toast('Déconnecté avec succès.');
+}
+
 
 function wire(){
   /* Nouveaux boutons home */
@@ -4690,14 +4786,14 @@ function wire(){
     var bm=g('mn-'+p);if(bm)bm.addEventListener('click',function(){goTo(p);});
   });
   g('btn-login').addEventListener('click',function(){
-    if(sessionStorage.getItem('km_admin')==='1'){goTo('dashboard');}
+    if(kmIsAdmin){goTo('dashboard');}
     else{openModal('login');}
   });
   g('btn-register').addEventListener('click',function(){openModal('register');});
   g('burger-btn').addEventListener('click',toggleMN);
   g('mn-login').addEventListener('click',function(){
     closeMN();
-    if(sessionStorage.getItem('km_admin')==='1'){goTo('dashboard');}
+    if(kmIsAdmin){goTo('dashboard');}
     else{openModal('login');}
   });
   g('mn-register').addEventListener('click',function(){closeMN();openModal('register');});
@@ -4710,7 +4806,7 @@ function wire(){
   if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
   if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
   g('bn-account').addEventListener('click',function(){
-    if(sessionStorage.getItem('km_admin')==='1'){goTo('dashboard');}
+    if(kmIsAdmin){goTo('dashboard');}
     else{openModal('login');}
   });
   // Home
@@ -4750,13 +4846,7 @@ function wire(){
   g('btn-contact-focal').addEventListener('click',function(){openModal('focal');});
   // Dashboard - onglets et retour
   g('btn-dash-back').addEventListener('click',function(){goTo('home');});
-  var blo=g('btn-logout');if(blo)blo.addEventListener('click',function(){
-    sessionStorage.removeItem('km_admin');
-    sessionStorage.removeItem('km_attempts');
-    sessionStorage.removeItem('km_lock');
-    goTo('home');
-    toast('🔓 Déconnecté. À bientôt !');
-  });
+  var blo=g('btn-logout');if(blo)blo.addEventListener('click',function(){kmDoLogout();});;
   document.getElementById('adm-tabs-bar') && document.getElementById('adm-tabs-bar').addEventListener('click',function(e){
     var t=e.target.closest('.adm-tab');
     if(!t) return;
@@ -5728,6 +5818,9 @@ document.addEventListener('DOMContentLoaded', function(){
   initHeroKPIs();
   renderHeroActivity();
   initHeroLiveCard();
+
+  /* ── AUTH SUPABASE ── */
+  kmInitAuth();
 
   /* ── CHARGER LES PRODUITS DEPUIS SUPABASE ── */
   /* On attend que Supabase réponde avant de rendre la marketplace */

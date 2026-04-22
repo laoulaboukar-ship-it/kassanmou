@@ -5,7 +5,7 @@
    Optimisé pour connexions 3G Niger
    ================================================ */
 
-const CACHE_NAME = 'kassanmou-v1776625753-20260418';
+const CACHE_NAME = 'kassanmou-v1776859928-20260418';
 const OFFLINE_URL = '/';
 
 /* Ressources à mettre en cache immédiatement à l'installation */
