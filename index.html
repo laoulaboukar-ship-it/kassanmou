@@ -3355,7 +3355,6 @@ function openModal(type){
       '<div class="fg"><label>Email admin</label><input type="email" id="km-login-email" placeholder="kassanmou@gmail.com" autocomplete="email"></div>'+
       '<div class="fg"><label>Mot de passe</label><input type="password" id="km-login-pass" placeholder="••••••••" autocomplete="current-password"></div>'+
       '<button class="bp" style="width:100%;padding:14px;margin-top:4px" id="mbtn-login">🔓 Se connecter</button>'+
-      '<div style="margin-top:10px;text-align:center"><button onclick="sessionStorage.clear();toast(\'Blocage réinitialisé.\')" style="background:none;border:none;font-size:12px;color:var(--Mu);cursor:pointer;font-family:Outfit,sans-serif">Problème de connexion ? Cliquez ici</button></div>'+
       '<div style="text-align:center;font-size:13px;color:var(--Mu);margin-top:12px">Pas de compte ? <button style="color:var(--T);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;font-size:13px" id="mbtn-switch">S\'inscrire gratuitement</button></div>';
 
   } else if(type==='register'){
@@ -3644,6 +3643,22 @@ function openModal(type){
   var cls=g('mcls-btn');
   if(cls)cls.addEventListener('click',closeModal);
   g('mveil').onclick=function(e){if(e.target===g('mveil'))closeModal();};
+
+  /* ── CÂBLAGE LOGIN DIRECT ── */
+  var loginBtn = document.getElementById('mbtn-login');
+  if(loginBtn){
+    loginBtn.onclick = function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      kmDoLogin();
+    };
+  }
+  /* Enter dans les champs login */
+  var loginEmail = document.getElementById('km-login-email');
+  var loginPass  = document.getElementById('km-login-pass');
+  function onLoginEnter(e){ if(e.key==='Enter'){ e.preventDefault(); kmDoLogin(); } }
+  if(loginEmail) loginEmail.addEventListener('keydown', onLoginEnter);
+  if(loginPass)  loginPass.addEventListener('keydown', onLoginEnter);
 
   var sw=g('mbtn-switch');if(sw)sw.addEventListener('click',function(){closeModal();openModal('register');});
   /* login géré par délégation kmDoLogin */
@@ -5845,16 +5860,7 @@ document.addEventListener('DOMContentLoaded', function(){
   wire();
 
   /* ── 3b. DÉLÉGATION LOGIN — dans DOMContentLoaded (100% safe) ── */
-  document.addEventListener('click', function(e){
-    if(e.target && e.target.id === 'mbtn-login'){ kmDoLogin(); }
-  });
-  document.addEventListener('keydown', function(e){
-    if(e.key !== 'Enter') return;
-    var veil = g('mveil');
-    if(!veil || !veil.classList.contains('on')) return;
-    var mbox = g('mbox');
-    if(mbox && mbox.querySelector('#mbtn-login')) kmDoLogin();
-  });
+  /* login câblé directement dans openModal */
 
   /* ── 4. FILTRES MARKETPLACE ── */
   initFilters();
