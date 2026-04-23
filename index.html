@@ -3177,14 +3177,19 @@ function goTo(page){
   if(page==='tracking'){g('bn-tracking')&&g('bn-tracking').classList.add('on');}
   if(page==='dashboard'){
     g('bn-account')&&g('bn-account').classList.add('on');
-    /* Attendre que l'auth Supabase soit initialisée */
+    /* Si kmIsAdmin est déjà true (vient de kmDoLogin), on rend directement */
+    if(kmIsAdmin){
+      renderDash('overview');
+      return;
+    }
+    /* Sinon, attendre que l'auth soit prête puis vérifier */
     function tryOpenDash(attempt){
       if(!kmAuthReady && attempt < 20){
         setTimeout(function(){ tryOpenDash(attempt+1); }, 150);
         return;
       }
       if(!kmIsAdmin){
-        /* Vérifier une dernière fois via Supabase */
+        /* Vérifier une dernière fois via Supabase (session persistée) */
         if(kmDB){
           kmDB.auth.getSession().then(function(r){
             var sess = r.data && r.data.session;
@@ -3355,6 +3360,7 @@ function openModal(type){
       '<div class="fg"><label>Email admin</label><input type="email" id="km-login-email" placeholder="kassanmou@gmail.com" autocomplete="email"></div>'+
       '<div class="fg"><label>Mot de passe</label><input type="password" id="km-login-pass" placeholder="••••••••" autocomplete="current-password"></div>'+
       '<button class="bp" style="width:100%;padding:14px;margin-top:4px" id="mbtn-login">🔓 Se connecter</button>'+
+      '<div id="km-login-status" style="display:none;margin-top:10px;padding:10px 12px;border-radius:8px;font-size:13px;font-family:Outfit,sans-serif"></div>'+
       '<div style="text-align:center;font-size:13px;color:var(--Mu);margin-top:12px">Pas de compte ? <button style="color:var(--T);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;font-size:13px" id="mbtn-switch">S\'inscrire gratuitement</button></div>';
 
   } else if(type==='register'){
@@ -4666,22 +4672,17 @@ function kmInitAuth() {
 
   /* Écouter les changements de session */
   kmDB.auth.onAuthStateChange(function(event, session) {
+    /* NOTE : on met à jour les variables mais on NE redirige PAS ici.
+       La redirection est gérée uniquement par kmDoLogin() pour éviter
+       la race condition entre onAuthStateChange et le retour de signInWithPassword. */
     kmSession = session;
     kmUser    = session ? session.user : null;
-    kmIsAdmin = kmUser ? kmCheckAdmin(kmUser.email) : false;
-    kmAuthReady = true;
-
-    console.log('[KM-AUTH] Event:', event, '| Admin:', kmIsAdmin);
-
-    if (event === 'SIGNED_IN' && kmIsAdmin) {
-      /* Rediriger vers dashboard si on était sur la page login */
-      var veil = g('mveil');
-      if (veil && veil.classList.contains('on')) {
-        closeModal();
-        goTo('dashboard');
-        toast('✅ Bienvenue ! Centre de contrôle ouvert.');
-      }
+    /* Ne pas écraser kmIsAdmin si déjà true (kmDoLogin vient de le setter) */
+    if (!kmIsAdmin) {
+      kmIsAdmin = kmUser ? kmCheckAdmin(kmUser.email) : false;
     }
+    kmAuthReady = true;
+    console.log('[KM-AUTH] Event:', event, '| Admin:', kmIsAdmin);
 
     if (event === 'SIGNED_OUT') {
       kmIsAdmin = false;
@@ -4690,16 +4691,43 @@ function kmInitAuth() {
     }
   });
 
-  /* Récupérer session existante */
+  /* Récupérer session existante au démarrage (reconnexion auto) */
   kmDB.auth.getSession().then(function(r) {
     if (r.data && r.data.session) {
       kmSession = r.data.session;
       kmUser    = r.data.session.user;
       kmIsAdmin = kmUser ? kmCheckAdmin(kmUser.email) : false;
       console.log('[KM-AUTH] Session restaurée:', kmUser.email, '| Admin:', kmIsAdmin);
+      /* Si admin revient sur le site avec session active -> dashboard auto */
+      if (kmIsAdmin) {
+        renderDash('overview');
+        goTo('dashboard');
+        toast('Session restaurée. Bienvenue !');
+      }
     }
     kmAuthReady = true;
   });
+}
+
+/* ── Afficher un message d'erreur/succès dans le modal login ── */
+function kmSetLoginStatus(msg, type) {
+  var el = document.getElementById('km-login-status');
+  if (!el) return;
+  el.style.display = 'block';
+  if (type === 'error') {
+    el.style.background = '#3D1008';
+    el.style.color = '#ffaaaa';
+    el.style.border = '1px solid #8B0000';
+  } else if (type === 'ok') {
+    el.style.background = '#0a3d1a';
+    el.style.color = '#aaffcc';
+    el.style.border = '1px solid #1a7a3a';
+  } else {
+    el.style.background = '#1a2a3d';
+    el.style.color = '#aaccff';
+    el.style.border = '1px solid #2a4a6d';
+  }
+  el.textContent = msg;
 }
 
 /* ── LOGIN avec Supabase Auth ── */
@@ -4714,61 +4742,123 @@ async function kmDoLogin() {
     return;
   }
 
-  /* Récupérer les champs */
-  var emailInp = g('km-login-email') || document.querySelector('#mbox input[type="email"]');
-  var passInp  = g('km-login-pass')  || document.querySelector('#mbox input[type="password"]');
+  /* Récupérer les champs — cherche dans tout le document */
+  var emailInp = g('km-login-email') || document.querySelector('input[type="email"]');
+  var passInp  = g('km-login-pass')  || document.querySelector('input[type="password"]');
 
   var email = emailInp ? emailInp.value.trim() : '';
   var pass  = passInp  ? passInp.value.trim()  : '';
 
   if (!email) { toast('Email obligatoire.', true); return; }
   if (!pass)  { toast('Mot de passe obligatoire.', true); return; }
-  if (!kmDB)  { toast('Connexion serveur non disponible.', true); return; }
 
   /* Désactiver le bouton */
   var btn = g('mbtn-login');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Connexion...'; }
+  kmSetLoginStatus('⏳ Connexion en cours...', 'info');
 
-  try {
-    var res = await kmDB.auth.signInWithPassword({ email: email, password: pass });
+  /* ── CAS 1 : Supabase SDK disponible ── */
+  if (kmDB) {
+    try {
+      var res = await kmDB.auth.signInWithPassword({ email: email, password: pass });
 
-    if (res.error) {
-      kmLoginAttempts++;
+      if (res.error) {
+        kmLoginAttempts++;
+        if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
+        var errCode = res.error.code || res.error.message || '';
+        if (errCode.indexOf('email_not_confirmed') !== -1 || errCode.indexOf('not confirmed') !== -1) {
+          toast('⚠️ Email non confirmé. Allez dans Supabase → Users → Confirm.', true);
+        kmSetLoginStatus('⚠️ Email non confirmé dans Supabase. Contactez l\'administrateur Supabase pour confirmer ce compte.', 'error');
+        } else if (kmLoginAttempts >= 5) {
+          kmLoginBlockedUntil = Date.now() + 5 * 60 * 1000;
+          kmLoginAttempts = 0;
+          toast('5 échecs — bloqué 5 minutes.', true);
+        } else {
+          toast('Identifiants incorrects (' + kmLoginAttempts + '/5). ' + (res.error.message || ''), true);
+          kmSetLoginStatus('❌ ' + (res.error.message || 'Identifiants incorrects') + ' (tentative ' + kmLoginAttempts + '/5)', 'error');
+        }
+        return;
+      }
+
+      /* Connexion réussie — vérifier si admin */
+      var userEmail = res.data.user ? res.data.user.email : '';
+      if (!kmCheckAdmin(userEmail)) {
+        await kmDB.auth.signOut();
+        if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
+        toast('Accès réservé à l\'administrateur.', true);
+        return;
+      }
+
+      /* ✅ Admin confirmé — mettre à jour AVANT de naviguer (corrige la race condition) */
+      kmLoginAttempts = 0;
+      kmSession = res.data.session;
+      kmUser    = res.data.user;
+      kmIsAdmin = true;
+      kmAuthReady = true;
       if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
+      kmSetLoginStatus('✅ Connexion réussie !', 'ok');
+      closeModal();
+      renderDash('overview');
+      goTo('dashboard');
+      toast('✅ Bienvenue ! Centre de contrôle ouvert.');
+      return;
 
-      if (kmLoginAttempts >= 5) {
-        kmLoginBlockedUntil = Date.now() + 5 * 60 * 1000;
-        kmLoginAttempts = 0;
-        toast('5 échecs — bloqué 5 minutes.', true);
+    } catch(e) {
+      console.error('[KM-AUTH] Supabase exception:', e);
+      /* Fallback vers API REST directe */
+    }
+  }
+
+  /* ── CAS 2 : Fallback REST direct (si SDK échoue ou non dispo) ── */
+  try {
+    var resp = await fetch('https://nifnobbeictkbprsixxe.supabase.co/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'sb_publishable_xTHizuii8kXP1RNam9qvzg_HejUYPcT',
+        'Authorization': 'Bearer sb_publishable_xTHizuii8kXP1RNam9qvzg_HejUYPcT'
+      },
+      body: JSON.stringify({ email: email, password: pass })
+    });
+
+    var data = await resp.json();
+
+    if (!resp.ok || data.error) {
+      if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
+      var msg = data.error_description || data.msg || data.message || 'Erreur inconnue';
+      if (msg.indexOf('not confirmed') !== -1 || (data.error || '').indexOf('email_not_confirmed') !== -1) {
+        toast('⚠️ Email non confirmé dans Supabase. Confirmez le compte dans le dashboard Supabase.', true);
+      kmSetLoginStatus('⚠️ Email non confirmé dans Supabase Auth. Allez sur supabase.com → votre projet → Authentication → Users → kassanmou@gmail.com → Confirm email manually.', 'error');
       } else {
-        toast('Identifiants incorrects (' + kmLoginAttempts + '/5).', true);
+        toast('Identifiants incorrects : ' + msg, true);
       }
       return;
     }
 
-    /* Connexion réussie — vérifier si admin */
-    var userEmail = res.data.user ? res.data.user.email : '';
-    if (!kmCheckAdmin(userEmail)) {
-      await kmDB.auth.signOut();
+    /* REST réussi */
+    var restEmail = data.user ? data.user.email : email;
+    if (!kmCheckAdmin(restEmail)) {
       if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
       toast('Accès réservé à l\'administrateur.', true);
       return;
     }
 
-    /* Admin confirmé */
+    /* ✅ Admin via REST */
     kmLoginAttempts = 0;
-    kmSession = res.data.session;
-    kmUser    = res.data.user;
+    kmSession = { access_token: data.access_token, refresh_token: data.refresh_token };
+    kmUser    = data.user;
     kmIsAdmin = true;
+    kmAuthReady = true;
     if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
     closeModal();
+    renderDash('overview');
     goTo('dashboard');
     toast('✅ Bienvenue ! Centre de contrôle ouvert.');
 
-  } catch(e) {
+  } catch(netErr) {
     if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
-    console.error('[KM-AUTH]', e);
-    toast('Erreur de connexion. Réessayez.', true);
+    console.error('[KM-AUTH] Erreur réseau:', netErr);
+    toast('Erreur réseau. Vérifiez votre connexion internet.', true);
   }
 }
 
