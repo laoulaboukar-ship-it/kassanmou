@@ -2820,14 +2820,14 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   <div class="adm-top-title" style="color:#E8C060">🏪 Mon espace vendeur</div>
   <div style="display:flex;align-items:center;gap:6px">
     <button class="adm-back-btn" id="btn-vendeur-back">← Site</button>
-    <button class="adm-logout-btn" id="btn-vendeur-logout" style="background:#3D2000;color:#E8C060">🔓 Déconnexion</button>
+    <button class="adm-logout-btn" id="btn-vendeur-logout" style="background:#3D2000;color:#E8C060">🔓 Déco.</button>
   </div>
 </div>
 <div class="adm-tabs" id="vendeur-tabs-bar" style="background:#2a1500">
-  <button class="adm-tab on" data-vtab="vendeur-overview" style="color:#E8C060">📊 Tableau de bord</button>
-  <button class="adm-tab" data-vtab="vendeur-produits">🌾 Mes produits</button>
-  <button class="adm-tab" data-vtab="vendeur-commissions">💰 Mes commissions</button>
-  <button class="adm-tab" data-vtab="vendeur-commandes">📦 Mes ventes</button>
+  <button class="adm-tab on" data-vtab="vendeur-overview" style="color:#E8C060">📊 Bord</button>
+  <button class="adm-tab" data-vtab="vendeur-produits">🌾 Produits</button>
+  <button class="adm-tab" data-vtab="vendeur-commissions">💰 Commissions</button>
+  <button class="adm-tab" data-vtab="vendeur-commandes">📦 Ventes</button>
 </div>
 <div class="adm-body" id="vendeur-dash-body"></div>
 </div>
@@ -3183,10 +3183,7 @@ function toast(msg,err){
 }
 
 function goTo(page){
-  /* Espace vendeur : ouvrir modal sans cacher la page courante */
-  if(page==='vendeur'){
-    if(!kmVendeurSession){ openVendeurLoginModal(); return; }
-  }
+  if(page==='vendeur' && !kmVendeurSession){ openVendeurLoginModal(); return; }
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
   var pg=g('page-'+page);if(!pg)return;
   pg.classList.add('on');curPage=page;window.scrollTo(0,0);
@@ -4222,9 +4219,9 @@ function renderDash(tab){
   var body = g('dash-body');
   if(!body) return;
   body.innerHTML = '<div style="padding:40px;text-align:center;color:#787874">⏳ Chargement...</div>';
-  if(tab==='overview')              dashOverview();
-  else if(tab==='admin')            dashEnAttente();
-  else if(tab==='allprod')          dashTousProduits();
+  if(tab==='overview')       dashOverview();
+  else if(tab==='admin')     dashEnAttente();
+  else if(tab==='allprod')   dashTousProduits();
   else if(tab==='vendeurs_admin')   dashVendeurs();
   else if(tab==='commissions_admin')dashCommissions();
   else if(tab==='livreurs')         dashLivreurs();
@@ -4234,35 +4231,25 @@ function renderDash(tab){
 /* ─── OVERVIEW ─────────────────────────────── */
 async function dashOverview(){
   var body=g('dash-body');
-  var s={p:0,a:0,v:0,l:0,c:0,vend:0,comm_due:0,comm_payee:0,ca:0};
+  var s={p:0,a:0,v:0,l:0,c:0};
   if(kmDB){
     try{
       var r1=await kmDB.from('produits').select('statut');
       if(r1.data){
         s.p=r1.data.length;
         s.a=r1.data.filter(function(x){return x.statut==='en_attente';}).length;
-        s.v=r1.data.filter(function(x){return x.statut==='é';}).length;
+        s.v=r1.data.filter(function(x){return x.statut==='valid\u00e9';}).length;
       }
       var r2=await kmDB.from('livreurs').select('id',{count:'exact',head:true});
       if(r2.count!=null) s.l=r2.count;
-      var r3=await kmDB.from('commandes').select('montant_total');
-      if(r3.data){ s.c=r3.data.length; r3.data.forEach(function(x){s.ca+=(parseFloat(x.montant_total)||0);}); }
-      var r4=await kmDB.from('vendeurs').select('id',{count:'exact',head:true});
-      if(r4.count!=null) s.vend=r4.count;
-      try{
-        var r5=await kmDB.from('commissions').select('montant,statut');
-        if(r5.data){ r5.data.forEach(function(x){
-          if(x.statut==='due')   s.comm_due  +=(parseFloat(x.montant)||0);
-          if(x.statut==='payee') s.comm_payee+=(parseFloat(x.montant)||0);
-        });}
-      }catch(e2){}
+      var r3=await kmDB.from('commandes').select('id',{count:'exact',head:true});
+      if(r3.count!=null) s.c=r3.count;
     }catch(e){console.warn(e);}
   }
   var now=new Date().toLocaleString('fr-FR');
   var alert_html = s.a>0
     ? '<div class="adm-alert"><span class="adm-alert-txt">\u26a1 '+s.a+' produit(s) en attente</span><button class="adm-btn adm-btn-r adm-goto" data-goto="admin">Valider \u2192</button></div>'
     : '';
-  var caFmt=(s.ca>=1000000?(Math.round(s.ca/100000)/10)+' M FCFA':(s.ca>=1000?Math.round(s.ca/1000)+'K FCFA':s.ca+' FCFA'));
   var kpi_html =
     '<div class="adm-kgrid">'+
       '<div class="adm-kcard adm-goto" data-goto="admin">'+
@@ -4273,37 +4260,23 @@ async function dashOverview(){
         '<div class="adm-kcard-val">'+s.p+'</div>'+
         '<div class="adm-kcard-lbl">\ud83c\udf3e Produits</div>'+
       '</div>'+
-      '<div class="adm-kcard adm-goto" data-goto="vendeurs_admin">'+
-        '<div class="adm-kcard-val">'+s.vend+'</div>'+
-        '<div class="adm-kcard-lbl">\ud83d\udc65 Vendeurs</div>'+
+      '<div class="adm-kcard adm-goto" data-goto="livreurs">'+
+        '<div class="adm-kcard-val">'+s.l+'</div>'+
+        '<div class="adm-kcard-lbl">\ud83d\udee5\ufe0f Livreurs</div>'+
       '</div>'+
       '<div class="adm-kcard adm-goto" data-goto="commandes_admin">'+
         '<div class="adm-kcard-val">'+s.c+'</div>'+
         '<div class="adm-kcard-lbl">\ud83d\udce6 Commandes</div>'+
-      '</div>'+
-    '</div>'+
-    '<div class="adm-kgrid" style="grid-template-columns:repeat(3,1fr);margin-top:10px">'+
-      '<div class="adm-kcard" style="border-left:3px solid #E8C060">'+
-        '<div class="adm-kcard-val" style="color:#E8C060;font-size:16px">'+caFmt+'</div>'+
-        '<div class="adm-kcard-lbl">\ud83d\udcb0 CA total</div>'+
-      '</div>'+
-      '<div class="adm-kcard adm-goto" data-goto="commissions_admin" style="border-left:3px solid #E85D24">'+
-        '<div class="adm-kcard-val'+(s.comm_due>0?' urgent':'')+'" style="'+(s.comm_due>0?'color:#E85D24':'')+';font-size:16px">'+(s.comm_due>0?Math.round(s.comm_due).toLocaleString()+' F':'0 F')+'</div>'+
-        '<div class="adm-kcard-lbl">\u26a0\ufe0f Commissions dues</div>'+
-      '</div>'+
-      '<div class="adm-kcard adm-goto" data-goto="commissions_admin" style="border-left:3px solid #4CAF50">'+
-        '<div class="adm-kcard-val" style="color:#4CAF50;font-size:16px">'+(s.comm_payee>0?Math.round(s.comm_payee).toLocaleString()+' F':'0 F')+'</div>'+
-        '<div class="adm-kcard-lbl">\u2705 Commissions encaissées</div>'+
       '</div>'+
     '</div>';
   var actions_html =
     '<div class="adm-box">'+
       '<div class="adm-box-title">Actions rapides</div>'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
-        '<button class="adm-btn adm-btn-g adm-goto" data-goto="admin" style="justify-content:center;padding:14px">\u23f3 Valider produits</button>'+
-        '<button class="adm-btn adm-btn-n adm-goto" data-goto="vendeurs_admin" style="justify-content:center;padding:14px">\ud83d\udc65 Vendeurs</button>'+
-        '<button class="adm-btn adm-btn-n adm-goto" data-goto="commissions_admin" style="justify-content:center;padding:14px;background:#3D1A00;color:#E8C060;border:1px solid #8B6914">\ud83d\udcb0 Commissions</button>'+
-        '<button class="adm-btn adm-btn-n adm-goto" data-goto="commandes_admin" style="justify-content:center;padding:14px">\ud83d\udce6 Commandes</button>'+
+        '<button class="adm-btn adm-btn-g adm-goto" data-goto="admin" style="justify-content:center;padding:14px">Valider produits</button>'+
+        '<button class="adm-btn adm-btn-n adm-goto" data-goto="livreurs" style="justify-content:center;padding:14px">Livreurs</button>'+
+        '<button class="adm-btn adm-btn-n adm-goto" data-goto="allprod" style="justify-content:center;padding:14px">Tous produits</button>'+
+        '<button class="adm-btn adm-btn-n adm-goto" data-goto="commandes_admin" style="justify-content:center;padding:14px">Commandes</button>'+
       '</div>'+
     '</div>';
   var footer_html = '<div class="adm-box" style="font-size:12px;color:rgba(255,255,255,.35);text-align:center">Mise \u00e0 jour : '+now+'</div>';
@@ -4616,19 +4589,7 @@ async function doValiderProduit(id,code){
   if(!kmDB){toast('Non connecté',true);return;}
   var r=await kmDB.from('produits').update({statut:'validé',date_validation:new Date().toISOString()}).eq('id',id);
   if(r.error){toast('Erreur: '+r.error.message,true);return;}
-  try{
-    var pRes=await kmDB.from('produits').select('vendeur_id,nom,pack_publication').eq('id',id).single();
-    if(pRes.data){
-      var packPrix={'7jours':2000,'30jours':5000,'90jours':15000,'annuel':50000}[pRes.data.pack_publication]||5000;
-      await kmDB.from('commissions').insert({
-        vendeur_id:pRes.data.vendeur_id, produit_id:id,
-        produit_nom:pRes.data.nom||'Produit',
-        montant:Math.round(packPrix*0.02), taux:2, base_calcul:packPrix,
-        statut:'due', type:'publication'
-      });
-    }
-  }catch(e2){console.warn('[KM-COMM]',e2);}
-  toast('\u2705 Produit validé ! Commission 2% enregistrée.');
+  toast('✅ Produit validé et mis en ligne !');
   kmLoadProduits();
   dashEnAttente();
 }
@@ -4926,245 +4887,220 @@ async function kmDoLogin() {
 }
 
 /* ── LOGOUT ── */
-/* ═══════════════════════════════════════════════════════
-   DASHBOARD ADMIN — VENDEURS
-═══════════════════════════════════════════════════════ */
+
+var kmVendeurSession=null;
+
+/* ═══ ADMIN: VENDEURS ═══ */
 async function dashVendeurs(){
   var body=g('dash-body');
-  if(!kmDB){body.innerHTML='<div style="padding:30px;color:#aaa">Supabase non connecté.</div>';return;}
-  body.innerHTML='<div style="padding:30px;text-align:center;color:#aaa">⏳ Chargement...</div>';
+  if(!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecté.</p>';return;}
+  body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   try{
-    var res=await kmDB.from('vendeurs').select('*').order('created_at',{ascending:false});
-    var vendeurs=res.data||[];
-    var prodRes=await kmDB.from('produits').select('vendeur_id,statut,prix');
-    var prods=prodRes.data||[];
-    var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:14px">👥 Vendeurs inscrits ('+vendeurs.length+')</div>';
-    if(!vendeurs.length){html+='<div style="text-align:center;padding:40px;color:#666">Aucun vendeur inscrit.</div>';}
-    vendeurs.forEach(function(v){
-      var myP=prods.filter(function(p){return p.vendeur_id===v.id;});
-      var nbV=myP.filter(function(p){return p.statut==='validé';}).length;
-      var dateInsc=v.created_at?new Date(v.created_at).toLocaleDateString('fr-FR'):'—';
+    var rv=await kmDB.from('vendeurs').select('*').order('created_at',{ascending:false});
+    var rp=await kmDB.from('produits').select('vendeur_id,statut');
+    var vends=rv.data||[], prods=rp.data||[];
+    var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:14px">Vendeurs ('+vends.length+')</div>';
+    vends.forEach(function(v){
+      var mp=prods.filter(function(p){return p.vendeur_id===v.id;});
+      var nv=mp.filter(function(p){return p.statut==='valid\u00e9';}).length;
       var ini=(v.nom||'?').charAt(0).toUpperCase();
-      html+=
-        '<div style="background:#1a2a1a;border-radius:12px;padding:16px;margin-bottom:12px;border:1px solid #2a3a2a">'+
-          '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">'+
-            '<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#C49A3C,#E8C060);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#1E1200;flex-shrink:0">'+ini+'</div>'+
-            '<div style="flex:1;min-width:0">'+
-              '<div style="font-weight:700;color:#fff;font-size:15px">'+kmEsc(v.nom)+'</div>'+
-              '<div style="font-size:12px;color:#888;margin-top:2px">'+kmEsc(v.email||v.telephone||'—')+' · Inscrit le '+dateInsc+'</div>'+
-            '</div>'+
-            '<span style="background:#1a3a1a;color:#4CAF50;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">'+nbV+' actif(s)</span>'+
-          '</div>'+
-          '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">'+
-            '<div style="background:#0F1F0A;border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;font-weight:700;color:#E8C060">'+myP.length+'</div><div style="font-size:11px;color:#888">Total produits</div></div>'+
-            '<div style="background:#0F1F0A;border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;font-weight:700;color:#4CAF50">'+nbV+'</div><div style="font-size:11px;color:#888">Validés</div></div>'+
-            '<div style="background:#0F1F0A;border-radius:8px;padding:10px;text-align:center"><div style="font-size:12px;font-weight:700;color:#C49A3C">'+kmEsc(v.type_vendeur||'—')+'</div><div style="font-size:11px;color:#888">Profil</div></div>'+
-          '</div>'+
-          '<div style="display:flex;gap:8px">'+
-            '<button onclick="dashVendeurDetail(''+v.id+'')" style="flex:1;padding:8px;background:#2a4a2a;color:#8BC34A;border:1px solid #4CAF50;border-radius:8px;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px;font-weight:600">📋 Voir détail</button>'+
-            (v.telephone?'<a href="https://wa.me/'+v.telephone.replace(/[^0-9]/g,'')+'" target="_blank" style="padding:8px 14px;background:#1a3a1a;color:#25D366;border:1px solid #25D366;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600">💬 WhatsApp</a>':'')+
-          '</div>'+
-        '</div>';
+      var d=v.created_at?new Date(v.created_at).toLocaleDateString('fr-FR'):'—';
+      html+='<div style="background:#1a2a1a;border-radius:12px;padding:16px;margin-bottom:12px;border:1px solid #2a3a2a">'
+           +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">'
+           +'<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#C49A3C,#E8C060);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#1E1200">'+ini+'</div>'
+           +'<div style="flex:1"><div style="font-weight:700;color:#fff">'+kmEsc(v.nom)+'</div>'
+           +'<div style="font-size:12px;color:#888">'+kmEsc(v.email||v.telephone||'—')+' · '+d+'</div></div>'
+           +'<span style="background:#1a3a1a;color:#4CAF50;padding:4px 10px;border-radius:20px;font-size:12px">'+nv+' actif(s)</span>'
+           +'</div>'
+           +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">'
+           +'<div style="background:#0F1F0A;border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;font-weight:700;color:#E8C060">'+mp.length+'</div><div style="font-size:11px;color:#888">Total</div></div>'
+           +'<div style="background:#0F1F0A;border-radius:8px;padding:10px;text-align:center"><div style="font-size:18px;font-weight:700;color:#4CAF50">'+nv+'</div><div style="font-size:11px;color:#888">Validés</div></div>'
+           +'<div style="background:#0F1F0A;border-radius:8px;padding:10px;text-align:center"><div style="font-size:12px;font-weight:700;color:#C49A3C">'+kmEsc(v.type_vendeur||'—')+'</div><div style="font-size:11px;color:#888">Profil</div></div>'
+           +'</div>'
+           +'<div style="display:flex;gap:8px">'
+           +'<button class="km-detail-btn" data-vid="'+v.id+'" style="flex:1;padding:8px;background:#2a4a2a;color:#8BC34A;border:1px solid #4CAF50;border-radius:8px;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px">Voir détail</button>'
+           +(v.telephone?'<a href="https://wa.me/'+v.telephone.replace(/[^0-9]/g,'')+'" target="_blank" style="padding:8px 14px;background:#1a3a1a;color:#25D366;border:1px solid #25D366;border-radius:8px;text-decoration:none;font-size:13px">WhatsApp</a>':'')
+           +'</div>'
+           +'</div>';
     });
     html+='</div>';
     body.innerHTML=html;
-  }catch(e){body.innerHTML='<div style="padding:30px;color:#f44">Erreur: '+kmEsc(e.message)+'</div>';}
+    body.addEventListener('click',function(e){
+      var btn=e.target.closest('.km-detail-btn');
+      if(btn) dashVendeurDetail(btn.dataset.vid);
+    });
+  }catch(e){body.innerHTML='<p style="padding:30px;color:#f44">Erreur: '+kmEsc(e.message)+'</p>';}
 }
 
 async function dashVendeurDetail(vid){
   var body=g('dash-body');
-  body.innerHTML='<div style="padding:30px;text-align:center;color:#aaa">⏳ Chargement...</div>';
+  body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   try{
     var vR=await kmDB.from('vendeurs').select('*').eq('id',vid).single();
-    var v=vR.data;
     var pR=await kmDB.from('produits').select('*').eq('vendeur_id',vid).order('created_at',{ascending:false});
-    var prods=pR.data||[];
     var cR=await kmDB.from('commissions').select('*').eq('vendeur_id',vid);
-    var comms=cR.data||[];
+    var v=vR.data, prods=pR.data||[], comms=cR.data||[];
     var due=comms.filter(function(x){return x.statut==='due';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
     var paye=comms.filter(function(x){return x.statut==='payee';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
-    var html=
-      '<div style="padding:16px">'+
-      '<button onclick="renderDash('vendeurs_admin')" style="background:#2a3a2a;color:#8BC34A;border:1px solid #4CAF50;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px;margin-bottom:16px">← Retour</button>'+
-      '<div style="background:#1a2a1a;border-radius:12px;padding:18px;margin-bottom:14px;border:1px solid #2a3a2a">'+
-        '<div style="font-size:18px;font-weight:800;color:#E8C060;margin-bottom:8px">'+kmEsc(v.nom||'Vendeur')+'</div>'+
-        '<div style="font-size:13px;color:#aaa;line-height:1.9">📧 '+kmEsc(v.email||'—')+'<br>📞 '+kmEsc(v.telephone||'—')+'<br>📍 '+kmEsc(v.ville||v.region||'—')+'<br>🏷 '+kmEsc(v.type_vendeur||'—')+'</div>'+
-      '</div>'+
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">'+
-        '<div style="background:#3D1A00;border-radius:10px;padding:14px;text-align:center;border:1px solid #8B4513">'+
-          '<div style="font-size:22px;font-weight:800;color:#E85D24">'+Math.round(due).toLocaleString()+' F</div>'+
-          '<div style="font-size:12px;color:#C49A3C;margin-top:4px">⚠️ Commissions dues</div>'+
-        '</div>'+
-        '<div style="background:#0a2a0a;border-radius:10px;padding:14px;text-align:center;border:1px solid #2a6a2a">'+
-          '<div style="font-size:22px;font-weight:800;color:#4CAF50">'+Math.round(paye).toLocaleString()+' F</div>'+
-          '<div style="font-size:12px;color:#8BC34A;margin-top:4px">✅ Commissions payées</div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="adm-box-title" style="margin-bottom:10px">🌾 Produits ('+prods.length+')</div>';
+    var html='<div style="padding:16px">'
+      +'<button id="km-back-vendeurs" style="background:#2a3a2a;color:#8BC34A;border:1px solid #4CAF50;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px;margin-bottom:16px">← Retour</button>'
+      +'<div style="background:#1a2a1a;border-radius:12px;padding:18px;margin-bottom:14px;border:1px solid #2a3a2a">'
+      +'<div style="font-size:18px;font-weight:800;color:#E8C060;margin-bottom:8px">'+kmEsc(v.nom||'Vendeur')+'</div>'
+      +'<div style="font-size:13px;color:#aaa;line-height:1.9">'+kmEsc(v.email||'—')+'<br>'+kmEsc(v.telephone||'—')+'<br>'+kmEsc(v.ville||v.region||'—')+'</div>'
+      +'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">'
+      +'<div style="background:#3D1A00;border-radius:10px;padding:14px;text-align:center;border:1px solid #8B4513"><div style="font-size:22px;font-weight:800;color:#E85D24">'+Math.round(due).toLocaleString()+' F</div><div style="font-size:12px;color:#C49A3C;margin-top:4px">Commissions dues</div></div>'
+      +'<div style="background:#0a2a0a;border-radius:10px;padding:14px;text-align:center;border:1px solid #2a6a2a"><div style="font-size:22px;font-weight:800;color:#4CAF50">'+Math.round(paye).toLocaleString()+' F</div><div style="font-size:12px;color:#8BC34A;margin-top:4px">Commissions payées</div></div>'
+      +'</div>'
+      +'<div class="adm-box-title" style="margin-bottom:10px">Produits ('+prods.length+')</div>';
     prods.forEach(function(p){
-      var sc=p.statut==='validé'?'#4CAF50':p.statut==='refusé'?'#f44':'#E8C060';
-      html+='<div style="background:#1a2a1a;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;border:1px solid #2a3a2a">'+
-        '<div style="flex:1"><div style="font-weight:700;color:#fff">'+kmEsc(p.nom||'Produit')+'</div>'+
-        '<div style="font-size:12px;color:#888">'+kmEsc(p.categorie||'')+(p.prix?' · '+p.prix+' FCFA':'')+'</div></div>'+
-        '<span style="color:'+sc+';font-size:12px;font-weight:700">'+p.statut+'</span></div>';
+      var sc=p.statut==='valid\u00e9'?'#4CAF50':p.statut==='refus\u00e9'?'#f44':'#E8C060';
+      html+='<div style="background:#1a2a1a;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;border:1px solid #2a3a2a">'
+           +'<div style="flex:1"><div style="font-weight:700;color:#fff">'+kmEsc(p.nom||'Produit')+'</div>'
+           +'<div style="font-size:12px;color:#888">'+kmEsc(p.categorie||'')+(p.prix?' · '+p.prix+' FCFA':'')+'</div></div>'
+           +'<span style="color:'+sc+';font-size:12px;font-weight:700">'+p.statut+'</span></div>';
     });
     html+='</div>';
     body.innerHTML=html;
-  }catch(e){body.innerHTML='<div style="padding:30px;color:#f44">Erreur: '+kmEsc(e.message)+'</div>';}
+    document.getElementById('km-back-vendeurs').onclick=function(){renderDash('vendeurs_admin');};
+  }catch(e){body.innerHTML='<p style="padding:30px;color:#f44">Erreur: '+kmEsc(e.message)+'</p>';}
 }
 
-/* ═══════════════════════════════════════════════════════
-   DASHBOARD ADMIN — COMMISSIONS
-═══════════════════════════════════════════════════════ */
+/* ═══ ADMIN: COMMISSIONS ═══ */
 async function dashCommissions(){
   var body=g('dash-body');
-  if(!kmDB){body.innerHTML='<div style="padding:30px;color:#aaa">Supabase non connecté.</div>';return;}
-  body.innerHTML='<div style="padding:30px;text-align:center;color:#aaa">⏳ Chargement...</div>';
+  if(!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecté.</p>';return;}
+  body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   try{
     var res=await kmDB.from('commissions').select('*,vendeurs(nom,telephone)').order('created_at',{ascending:false});
     var comms=res.data||[];
     var due=comms.filter(function(x){return x.statut==='due';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
     var paye=comms.filter(function(x){return x.statut==='payee';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
-    window._kmCommsData=comms;
-    var html='<div style="padding:16px">'+
-      '<div class="adm-box-title" style="margin-bottom:14px">💰 Commissions Kassan'Mou (2%)</div>'+
-      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">'+
-        '<div style="background:#1a2a1a;border-radius:10px;padding:14px;text-align:center;border:1px solid #2a3a2a"><div style="font-size:18px;font-weight:800;color:#E8C060">'+Math.round(due+paye).toLocaleString()+' F</div><div style="font-size:11px;color:#888;margin-top:4px">Total généré</div></div>'+
-        '<div style="background:#3D1A00;border-radius:10px;padding:14px;text-align:center;border:1px solid #8B4513"><div style="font-size:18px;font-weight:800;color:#E85D24">'+Math.round(due).toLocaleString()+' F</div><div style="font-size:11px;color:#C49A3C;margin-top:4px">⚠️ À encaisser</div></div>'+
-        '<div style="background:#0a2a0a;border-radius:10px;padding:14px;text-align:center;border:1px solid #2a6a2a"><div style="font-size:18px;font-weight:800;color:#4CAF50">'+Math.round(paye).toLocaleString()+' F</div><div style="font-size:11px;color:#8BC34A;margin-top:4px">✅ Encaissé</div></div>'+
-      '</div>'+
-      '<div style="display:flex;gap:8px;margin-bottom:14px">'+
-        '<button onclick="dashCommFiltrer('tout')" style="padding:8px 14px;border-radius:20px;border:1px solid #4CAF50;background:#0a2a0a;color:#4CAF50;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px;font-weight:700">Tout</button>'+
-        '<button onclick="dashCommFiltrer('due')" style="padding:8px 14px;border-radius:20px;border:1px solid #E85D24;background:#1a0a00;color:#E85D24;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px">⚠️ Dues</button>'+
-        '<button onclick="dashCommFiltrer('payee')" style="padding:8px 14px;border-radius:20px;border:1px solid #555;background:#1a1a1a;color:#aaa;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px">✅ Payées</button>'+
-      '</div>'+
-      '<div id="comm-list">'+buildCommList(comms,'tout')+'</div>'+
-      '</div>';
+    window._kmComms=comms;
+    var html='<div style="padding:16px">'
+      +'<div class="adm-box-title" style="margin-bottom:14px">Commissions Kassan\'Mou (2%)</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">'
+      +'<div style="background:#1a2a1a;border-radius:10px;padding:14px;text-align:center;border:1px solid #2a3a2a"><div style="font-size:18px;font-weight:800;color:#E8C060">'+Math.round(due+paye).toLocaleString()+' F</div><div style="font-size:11px;color:#888;margin-top:4px">Total</div></div>'
+      +'<div style="background:#3D1A00;border-radius:10px;padding:14px;text-align:center;border:1px solid #8B4513"><div style="font-size:18px;font-weight:800;color:#E85D24">'+Math.round(due).toLocaleString()+' F</div><div style="font-size:11px;color:#C49A3C;margin-top:4px">A encaisser</div></div>'
+      +'<div style="background:#0a2a0a;border-radius:10px;padding:14px;text-align:center;border:1px solid #2a6a2a"><div style="font-size:18px;font-weight:800;color:#4CAF50">'+Math.round(paye).toLocaleString()+' F</div><div style="font-size:11px;color:#8BC34A;margin-top:4px">Encaisse</div></div>'
+      +'</div>'
+      +'<div id="km-comm-filters" style="display:flex;gap:8px;margin-bottom:14px">'
+      +'<button class="km-cf" data-f="tout" style="padding:8px 14px;border-radius:20px;border:1px solid #4CAF50;background:#0a2a0a;color:#4CAF50;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px;font-weight:700">Tout</button>'
+      +'<button class="km-cf" data-f="due" style="padding:8px 14px;border-radius:20px;border:1px solid #E85D24;background:#1a0a00;color:#E85D24;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px">Dues</button>'
+      +'<button class="km-cf" data-f="payee" style="padding:8px 14px;border-radius:20px;border:1px solid #555;background:#1a1a1a;color:#aaa;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px">Payees</button>'
+      +'</div>'
+      +'<div id="km-comm-list">'+buildCommList(comms,'tout')+'</div>'
+      +'</div>';
     body.innerHTML=html;
-  }catch(e){body.innerHTML='<div style="padding:30px;color:#f44">Erreur: '+kmEsc(e.message)+'</div>';}
-}
-
-function dashCommFiltrer(f){
-  var el=document.getElementById('comm-list');
-  if(el&&window._kmCommsData) el.innerHTML=buildCommList(window._kmCommsData,f);
+    /* Delegation pour filtres et boutons payer */
+    body.addEventListener('click',function(e){
+      var cf=e.target.closest('.km-cf');
+      if(cf){ document.getElementById('km-comm-list').innerHTML=buildCommList(window._kmComms,cf.dataset.f); return; }
+      var bp=e.target.closest('.km-paye-btn');
+      if(bp){ kmMarquerPaye(bp.dataset.cid); return; }
+      var bd=e.target.closest('.km-due-btn');
+      if(bd){ kmMarquerDue(bd.dataset.cid); return; }
+    });
+  }catch(e){body.innerHTML='<p style="padding:30px;color:#f44">Erreur: '+kmEsc(e.message)+'</p>';}
 }
 
 function buildCommList(comms,filtre){
   var list=filtre==='tout'?comms:comms.filter(function(x){return x.statut===filtre;});
-  if(!list.length) return '<div style="text-align:center;padding:40px;color:#666">Aucune commission.</div>';
-  var html='';
+  if(!list.length) return '<p style="text-align:center;padding:40px;color:#666">Aucune commission.</p>';
+  var h='';
   list.forEach(function(comm){
-    var vNom=(comm.vendeurs&&comm.vendeurs.nom)?comm.vendeurs.nom:'Vendeur inconnu';
+    var vNom=(comm.vendeurs&&comm.vendeurs.nom)?comm.vendeurs.nom:'Inconnu';
     var vTel=(comm.vendeurs&&comm.vendeurs.telephone)?comm.vendeurs.telephone:'';
     var isDue=comm.statut==='due';
-    var date=comm.created_at?new Date(comm.created_at).toLocaleDateString('fr-FR'):'—';
-    html+=
-      '<div id="cr-'+comm.id+'" style="background:'+(isDue?'#2a1a0a':'#0a1a0a')+';border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid '+(isDue?'#8B4513':'#1a4a1a')+'">'+
-        '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+
-          '<div style="flex:1;min-width:140px">'+
-            '<div style="font-weight:700;color:#fff;font-size:14px">'+kmEsc(vNom)+'</div>'+
-            '<div style="font-size:12px;color:#888;margin-top:2px">'+kmEsc(comm.produit_nom||'—')+' · '+date+'</div>'+
-            '<div style="font-size:11px;color:#666">'+({publication:'📦 Publication',vente:'🛍️ Vente'}[comm.type]||comm.type||'—')+'</div>'+
-          '</div>'+
-          '<div style="text-align:right;flex-shrink:0">'+
-            '<div style="font-size:18px;font-weight:800;color:'+(isDue?'#E85D24':'#4CAF50')+'">'+Math.round(parseFloat(comm.montant)||0).toLocaleString()+' F</div>'+
-          '</div>'+
-        '</div>'+
-        '<div style="display:flex;gap:8px;margin-top:10px">'+
-          (isDue?
-            '<button onclick="kmMarquerPaye(''+comm.id+'')" style="flex:1;padding:8px;background:#0a2a0a;color:#4CAF50;border:1px solid #4CAF50;border-radius:8px;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px;font-weight:700">✅ Marquer payé</button>'
-           :'<button onclick="kmMarquerDue(''+comm.id+'')" style="flex:1;padding:8px;background:#2a1a0a;color:#E85D24;border:1px solid #E85D24;border-radius:8px;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px">↩ Remettre en dû</button>')+
-          (vTel?'<a href="https://wa.me/'+vTel.replace(/[^0-9]/g,'')+'" target="_blank" style="padding:8px 14px;background:#1a3a1a;color:#25D366;border:1px solid #25D366;border-radius:8px;text-decoration:none;font-size:13px">💬</a>':'')+
-        '</div>'+
-      '</div>';
+    var d=comm.created_at?new Date(comm.created_at).toLocaleDateString('fr-FR'):'—';
+    var typeLabel=comm.type==='publication'?'Publication':comm.type==='vente'?'Vente':'Commission';
+    h+='<div id="cr-'+comm.id+'" style="background:'+(isDue?'#2a1a0a':'#0a1a0a')+';border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid '+(isDue?'#8B4513':'#1a4a1a')+'">'
+      +'<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
+      +'<div style="flex:1;min-width:140px">'
+      +'<div style="font-weight:700;color:#fff">'+kmEsc(vNom)+'</div>'
+      +'<div style="font-size:12px;color:#888;margin-top:2px">'+kmEsc(comm.produit_nom||'—')+' · '+d+' · '+typeLabel+'</div>'
+      +'</div>'
+      +'<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:'+(isDue?'#E85D24':'#4CAF50')+'">'+Math.round(parseFloat(comm.montant)||0).toLocaleString()+' F</div></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:10px">'
+      +(isDue
+        ?'<button class="km-paye-btn" data-cid="'+comm.id+'" style="flex:1;padding:8px;background:#0a2a0a;color:#4CAF50;border:1px solid #4CAF50;border-radius:8px;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px;font-weight:700">Marquer paye</button>'
+        :'<button class="km-due-btn" data-cid="'+comm.id+'" style="flex:1;padding:8px;background:#2a1a0a;color:#E85D24;border:1px solid #E85D24;border-radius:8px;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px">Remettre en du</button>')
+      +(vTel?'<a href="https://wa.me/'+vTel.replace(/[^0-9]/g,'')+'" target="_blank" style="padding:8px 14px;background:#1a3a1a;color:#25D366;border:1px solid #25D366;border-radius:8px;text-decoration:none;font-size:13px">WA</a>':'')
+      +'</div>'
+      +'</div>';
   });
-  return html;
+  return h;
 }
 
 async function kmMarquerPaye(id){
   if(!kmDB)return;
   var el=document.getElementById('cr-'+id);if(el)el.style.opacity='0.5';
   var r=await kmDB.from('commissions').update({statut:'payee',payee_le:new Date().toISOString()}).eq('id',id);
-  if(!r.error){
-    if(window._kmCommsData){var x=window._kmCommsData.find(function(y){return y.id===id;});if(x)x.statut='payee';}
-    toast('✅ Commission marquée payée'); dashCommissions();
-  }else{if(el)el.style.opacity='1';toast('Erreur: '+r.error.message,true);}
+  if(!r.error){toast('Commission marquee payee');dashCommissions();}
+  else{if(el)el.style.opacity='1';toast('Erreur: '+r.error.message,true);}
 }
 async function kmMarquerDue(id){
   if(!kmDB)return;
   var r=await kmDB.from('commissions').update({statut:'due',payee_le:null}).eq('id',id);
-  if(!r.error){
-    if(window._kmCommsData){var x=window._kmCommsData.find(function(y){return y.id===id;});if(x)x.statut='due';}
-    toast('Commission remise en dû'); dashCommissions();
-  }else{toast('Erreur: '+r.error.message,true);}
+  if(!r.error){toast('Commission remise en du');dashCommissions();}
+  else{toast('Erreur: '+r.error.message,true);}
 }
 
-/* ═══════════════════════════════════════════════════════
-   PORTAIL VENDEUR
-═══════════════════════════════════════════════════════ */
-var kmVendeurSession=null;
-
+/* ═══ PORTAIL VENDEUR ═══ */
 function openVendeurLoginModal(){
-  var box=g('mbox'), veil=g('mveil');
+  var box=g('mbox'),veil=g('mveil');
   box.className='mbox center-modal';
-  box.innerHTML=
-    '<button class="mcls" id="mcls-btn">✕</button>'+
-    '<div class="mh" style="color:#E8C060">🏪 Espace Vendeur</div>'+
-    '<div class="msub">Connectez-vous avec l'email utilisé lors de votre inscription.</div>'+
-    '<div class="fg"><label>Email</label><input type="email" id="vl-email" placeholder="votre@email.com" style="border:1.5px solid #8B6914;background:#1a0a00;color:#fff;border-radius:8px;padding:11px 13px;font-size:15px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'+
-    '<div class="fg"><label>Mot de passe</label><input type="password" id="vl-pass" placeholder="••••••••" style="border:1.5px solid #8B6914;background:#1a0a00;color:#fff;border-radius:8px;padding:11px 13px;font-size:15px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'+
-    '<div id="vl-status" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:13px"></div>'+
-    '<button id="vl-btn" style="width:100%;padding:14px;margin-top:12px;background:linear-gradient(135deg,#C49A3C,#E8C060);color:#1E1200;border:none;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:Outfit,sans-serif">🔓 Accéder à mon espace</button>'+
-    '<div style="text-align:center;font-size:12px;color:#888;margin-top:10px">Pas encore inscrit ? <button onclick="closeModal();openModal('sell')" style="color:#E8C060;background:none;border:none;cursor:pointer;font-family:Outfit,sans-serif;font-size:12px">Publiez votre premier produit</button></div>';
+  box.innerHTML='<button class="mcls" id="mcls-btn">X</button>'
+    +'<div class="mh" style="color:#E8C060">Espace Vendeur</div>'
+    +'<div class="msub">Connectez-vous avec votre email.</div>'
+    +'<div class="fg"><label>Email</label><input type="email" id="vl-email" placeholder="votre@email.com" style="border:1.5px solid #8B6914;background:#1a0a00;color:#fff;border-radius:8px;padding:11px 13px;font-size:15px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'
+    +'<div class="fg"><label>Mot de passe</label><input type="password" id="vl-pass" placeholder="..." style="border:1.5px solid #8B6914;background:#1a0a00;color:#fff;border-radius:8px;padding:11px 13px;font-size:15px;width:100%;font-family:Outfit,sans-serif;outline:none"></div>'
+    +'<div id="vl-status" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:13px"></div>'
+    +'<button id="vl-btn" style="width:100%;padding:14px;margin-top:12px;background:linear-gradient(135deg,#C49A3C,#E8C060);color:#1E1200;border:none;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:Outfit,sans-serif">Acceder a mon espace</button>';
   veil.classList.add('on');
-  g('mcls-btn').onclick=closeModal;
-  g('vl-btn').onclick=doVendeurLogin;
-  g('vl-pass').onkeydown=function(e){if(e.key==='Enter')doVendeurLogin();};
+  document.getElementById('mcls-btn').onclick=closeModal;
+  document.getElementById('vl-btn').onclick=doVendeurLogin;
+  document.getElementById('vl-pass').onkeydown=function(e){if(e.key==='Enter')doVendeurLogin();};
 }
 
 async function doVendeurLogin(){
   var email=(g('vl-email').value||'').trim();
   var pass=(g('vl-pass').value||'').trim();
   var btn=g('vl-btn');
-  if(!email){showVlStatus('Email obligatoire','error');return;}
-  if(!pass){showVlStatus('Mot de passe obligatoire','error');return;}
-  btn.disabled=true; btn.textContent='⏳ Connexion...';
-  showVlStatus('Connexion en cours...','info');
+  if(!email){kmVlStatus('Email obligatoire','error');return;}
+  if(!pass){kmVlStatus('Mot de passe obligatoire','error');return;}
+  btn.disabled=true;btn.textContent='Connexion...';
+  kmVlStatus('Connexion...','info');
   if(kmDB){
     var res=await kmDB.auth.signInWithPassword({email:email,password:pass});
-    btn.disabled=false; btn.textContent='🔓 Accéder à mon espace';
+    btn.disabled=false;btn.textContent='Acceder a mon espace';
     if(!res.error){
       var vR=await kmDB.from('vendeurs').select('*').eq('email',email).maybeSingle();
-      if(vR.data){
-        kmVendeurSession=vR.data;
-        closeModal(); goTo('vendeur'); renderVendeurDash('vendeur-overview');
-        toast('✅ Bienvenue '+kmVendeurSession.nom+' !');
-      } else {
-        var nV=await kmDB.from('vendeurs').insert({nom:email.split('@')[0],email:email,telephone:'',type_vendeur:'Vendeur'}).select().single();
-        if(nV.data){kmVendeurSession=nV.data; closeModal(); goTo('vendeur'); renderVendeurDash('vendeur-overview'); toast('✅ Espace créé !');}
-        else{showVlStatus('Connexion OK mais profil introuvable.','error');}
-      }
-    } else {
-      showVlStatus('❌ '+(res.error.message||'Identifiants incorrects'),'error');
+      if(vR.data){kmVendeurSession=vR.data;closeModal();goTo('vendeur');renderVendeurDash('vendeur-overview');toast('Bienvenue '+kmVendeurSession.nom+' !');}
+      else{kmVlStatus('Compte non reconnu comme vendeur.','error');}
+      return;
     }
+    kmVlStatus('Identifiants incorrects: '+(res.error.message||''),'error');
     return;
   }
-  btn.disabled=false; btn.textContent='🔓 Accéder à mon espace';
-  showVlStatus('Serveur non disponible.','error');
+  btn.disabled=false;btn.textContent='Acceder a mon espace';
+  kmVlStatus('Serveur non disponible.','error');
 }
 
-function showVlStatus(msg,type){
+function kmVlStatus(msg,type){
   var el=g('vl-status');if(!el)return;
   el.style.display='block';
-  var s={error:{background:'#3D1008',color:'#ffaaaa',border:'1px solid #8B0000'},ok:{background:'#0a3d1a',color:'#aaffcc',border:'1px solid #1a7a3a'},info:{background:'#1a2a3d',color:'#aaccff',border:'1px solid #2a4a6d'}};
-  Object.assign(el.style,s[type]||s.info); el.textContent=msg;
+  var s={error:'background:#3D1008;color:#ffaaaa;border:1px solid #8B0000',ok:'background:#0a3d1a;color:#aaffcc;border:1px solid #1a7a3a',info:'background:#1a2a3d;color:#aaccff;border:1px solid #2a4a6d'};
+  el.setAttribute('style','display:block;padding:10px;border-radius:8px;font-size:13px;'+s[type]);
+  el.textContent=msg;
 }
 
 function renderVendeurDash(tab){
   document.querySelectorAll('[data-vtab]').forEach(function(b){b.classList.toggle('on',b.dataset.vtab===tab);});
-  var body=g('vendeur-dash-body'); if(!body)return;
-  body.innerHTML='<div style="padding:40px;text-align:center;color:#aaa">⏳ Chargement...</div>';
-  if(tab==='vendeur-overview')      vendeurOverview();
+  var body=g('vendeur-dash-body');if(!body)return;
+  body.innerHTML='<p style="padding:40px;text-align:center;color:#aaa">Chargement...</p>';
+  if(tab==='vendeur-overview')       vendeurOverview();
   else if(tab==='vendeur-produits')  vendeurProduits();
   else if(tab==='vendeur-commissions')vendeurCommissions();
   else if(tab==='vendeur-commandes') vendeurCommandes();
@@ -5172,87 +5108,88 @@ function renderVendeurDash(tab){
 
 async function vendeurOverview(){
   var body=g('vendeur-dash-body');
-  if(!kmVendeurSession){body.innerHTML='<div style="padding:30px;text-align:center"><button onclick="openVendeurLoginModal()" style="padding:14px 28px;background:#E8C060;color:#1E1200;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">🔓 Se connecter</button></div>';return;}
-  var vid=kmVendeurSession.id, s={p:0,v:0,a:0,ca:0,due:0,paye:0};
+  if(!kmVendeurSession){body.innerHTML='<div style="padding:30px;text-align:center"><button id="vl-open" style="padding:14px 28px;background:#E8C060;color:#1E1200;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Se connecter</button></div>';document.getElementById('vl-open').onclick=openVendeurLoginModal;return;}
+  var vid=kmVendeurSession.id,s={p:0,v:0,a:0,due:0,paye:0};
   if(kmDB){
     try{
       var r1=await kmDB.from('produits').select('statut').eq('vendeur_id',vid);
-      if(r1.data){s.p=r1.data.length;s.v=r1.data.filter(function(x){return x.statut==='validé';}).length;s.a=r1.data.filter(function(x){return x.statut==='en_attente';}).length;}
+      if(r1.data){s.p=r1.data.length;s.v=r1.data.filter(function(x){return x.statut==='valid\u00e9';}).length;s.a=r1.data.filter(function(x){return x.statut==='en_attente';}).length;}
       var r3=await kmDB.from('commissions').select('montant,statut').eq('vendeur_id',vid);
       if(r3.data){r3.data.forEach(function(x){if(x.statut==='due')s.due+=parseFloat(x.montant)||0;if(x.statut==='payee')s.paye+=parseFloat(x.montant)||0;});}
     }catch(e){}
   }
   var ini=(kmVendeurSession.nom||'V').charAt(0).toUpperCase();
-  body.innerHTML=
-    '<div style="padding:16px">'+
-    '<div style="background:linear-gradient(135deg,#2a1500,#1a0a00);border-radius:14px;padding:18px;margin-bottom:16px;border:1px solid #8B6914">'+
-      '<div style="display:flex;align-items:center;gap:14px">'+
-        '<div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#C49A3C,#E8C060);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;color:#1E1200;flex-shrink:0">'+ini+'</div>'+
-        '<div><div style="font-size:18px;font-weight:800;color:#E8C060">'+kmEsc(kmVendeurSession.nom||'Vendeur')+'</div>'+
-        '<div style="font-size:13px;color:#aaa;margin-top:2px">'+kmEsc(kmVendeurSession.email||kmVendeurSession.telephone||'')+'</div>'+
-        '<div style="font-size:12px;color:#888">🏷 '+kmEsc(kmVendeurSession.type_vendeur||'Vendeur')+'</div></div>'+
-      '</div>'+
-    '</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">'+
-      '<div style="background:#1a2a1a;border-radius:10px;padding:14px;text-align:center;border:1px solid #2a4a2a"><div style="font-size:24px;font-weight:800;color:#4CAF50">'+s.v+'</div><div style="font-size:12px;color:#888;margin-top:4px">✅ Produits actifs</div></div>'+
-      '<div style="background:#2a2a0a;border-radius:10px;padding:14px;text-align:center;border:1px solid #4a4a1a"><div style="font-size:24px;font-weight:800;color:#E8C060">'+s.a+'</div><div style="font-size:12px;color:#888;margin-top:4px">⏳ En attente</div></div>'+
-      '<div style="background:#3D1A00;border-radius:10px;padding:14px;text-align:center;border:1px solid '+(s.due>0?'#8B4513':'#2a3a2a')+'"><div style="font-size:18px;font-weight:800;color:'+(s.due>0?'#E85D24':'#4CAF50')+'">'+(s.due>0?Math.round(s.due).toLocaleString()+' F':'0 F')+'</div><div style="font-size:12px;color:#888;margin-top:4px">'+(s.due>0?'⚠️ Commissions dues':'✅ Aucune commission due')+'</div></div>'+
-      '<div style="background:#0a1a0a;border-radius:10px;padding:14px;text-align:center;border:1px solid #1a4a1a"><div style="font-size:18px;font-weight:800;color:#4CAF50">'+Math.round(s.paye).toLocaleString()+' F</div><div style="font-size:12px;color:#888;margin-top:4px">✅ Commissions payées</div></div>'+
-    '</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
-      '<button onclick="renderVendeurDash('vendeur-produits')" style="padding:14px;background:#2a4a2a;color:#8BC34A;border:1px solid #4CAF50;border-radius:10px;cursor:pointer;font-family:Outfit,sans-serif;font-size:14px;font-weight:700">🌾 Mes produits</button>'+
-      '<button onclick="renderVendeurDash('vendeur-commissions')" style="padding:14px;background:#3D1A00;color:#E8C060;border:1px solid #8B6914;border-radius:10px;cursor:pointer;font-family:Outfit,sans-serif;font-size:14px;font-weight:700">💰 Mes commissions</button>'+
-    '</div>'+
-    '</div>';
+  body.innerHTML='<div style="padding:16px">'
+    +'<div style="background:linear-gradient(135deg,#2a1500,#1a0a00);border-radius:14px;padding:18px;margin-bottom:16px;border:1px solid #8B6914">'
+    +'<div style="display:flex;align-items:center;gap:14px">'
+    +'<div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#C49A3C,#E8C060);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;color:#1E1200">'+ini+'</div>'
+    +'<div><div style="font-size:18px;font-weight:800;color:#E8C060">'+kmEsc(kmVendeurSession.nom||'Vendeur')+'</div>'
+    +'<div style="font-size:13px;color:#aaa;margin-top:2px">'+kmEsc(kmVendeurSession.email||kmVendeurSession.telephone||'')+'</div></div>'
+    +'</div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">'
+    +'<div style="background:#1a2a1a;border-radius:10px;padding:14px;text-align:center;border:1px solid #2a4a2a"><div style="font-size:24px;font-weight:800;color:#4CAF50">'+s.v+'</div><div style="font-size:12px;color:#888;margin-top:4px">Produits actifs</div></div>'
+    +'<div style="background:#2a2a0a;border-radius:10px;padding:14px;text-align:center;border:1px solid #4a4a1a"><div style="font-size:24px;font-weight:800;color:#E8C060">'+s.a+'</div><div style="font-size:12px;color:#888;margin-top:4px">En attente</div></div>'
+    +'<div style="background:'+(s.due>0?'#3D1A00':'#1a2a1a')+';border-radius:10px;padding:14px;text-align:center;border:1px solid '+(s.due>0?'#8B4513':'#2a3a2a')+'"><div style="font-size:18px;font-weight:800;color:'+(s.due>0?'#E85D24':'#4CAF50')+'">'+Math.round(s.due).toLocaleString()+' F</div><div style="font-size:12px;color:#888;margin-top:4px">Commissions dues</div></div>'
+    +'<div style="background:#0a1a0a;border-radius:10px;padding:14px;text-align:center;border:1px solid #1a4a1a"><div style="font-size:18px;font-weight:800;color:#4CAF50">'+Math.round(s.paye).toLocaleString()+' F</div><div style="font-size:12px;color:#888;margin-top:4px">Commissions payees</div></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    +'<button id="vd-btn-prods" style="padding:14px;background:#2a4a2a;color:#8BC34A;border:1px solid #4CAF50;border-radius:10px;cursor:pointer;font-family:Outfit,sans-serif;font-size:14px;font-weight:700">Mes produits</button>'
+    +'<button id="vd-btn-comms" style="padding:14px;background:#3D1A00;color:#E8C060;border:1px solid #8B6914;border-radius:10px;cursor:pointer;font-family:Outfit,sans-serif;font-size:14px;font-weight:700">Mes commissions</button>'
+    +'</div></div>';
+  document.getElementById('vd-btn-prods').onclick=function(){renderVendeurDash('vendeur-produits');};
+  document.getElementById('vd-btn-comms').onclick=function(){renderVendeurDash('vendeur-commissions');};
 }
 
 async function vendeurProduits(){
   var body=g('vendeur-dash-body');
-  if(!kmVendeurSession||!kmDB){body.innerHTML='<div style="padding:30px;color:#aaa">Non connecté.</div>';return;}
-  body.innerHTML='<div style="padding:30px;text-align:center;color:#aaa">⏳ Chargement...</div>';
+  if(!kmVendeurSession||!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecte.</p>';return;}
+  body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   var r=await kmDB.from('produits').select('*').eq('vendeur_id',kmVendeurSession.id).order('created_at',{ascending:false});
   var prods=r.data||[];
-  var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:14px;color:#E8C060">🌾 Mes produits ('+prods.length+')</div>';
-  if(!prods.length){html+='<div style="text-align:center;padding:40px;color:#666">Aucun produit encore.<br><br><button onclick="goTo('home');setTimeout(function(){openModal('sell');},200)" style="padding:12px 24px;background:#E8C060;color:#1E1200;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">+ Publier mon premier produit</button></div>';}
+  var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:14px;color:#E8C060">Mes produits ('+prods.length+')</div>';
+  if(!prods.length){html+='<p style="text-align:center;padding:40px;color:#666">Aucun produit encore.</p>';}
   prods.forEach(function(p){
-    var sc=p.statut==='validé'?'#4CAF50':p.statut==='refusé'?'#f44':'#E8C060';
-    var sb=p.statut==='validé'?'#0a2a0a':p.statut==='refusé'?'#2a0a0a':'#2a2a0a';
-    html+='<div style="background:#1a2a1a;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #2a3a2a">'+
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'+
-        '<div style="font-weight:700;color:#fff;font-size:15px;flex:1">'+kmEsc(p.nom||'Produit')+'</div>'+
-        '<span style="background:'+sb+';color:'+sc+';padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-left:8px">'+p.statut+'</span>'+
-      '</div>'+
-      '<div style="font-size:12px;color:#888;line-height:1.8">📂 '+kmEsc(p.categorie||'—')+' · 💵 '+(p.prix?p.prix+' FCFA/'+p.unite:'—')+' · 📦 Pack '+kmEsc(p.pack_publication||'—')+'</div>'+
-      (p.statut==='en_attente'?'<div style="margin-top:8px;padding:8px;background:#2a2a0a;border-radius:8px;font-size:12px;color:#E8C060;border-left:3px solid #E8C060">⏳ En cours de validation (sous 48h)</div>':'')+
-    '</div>';
+    var sc=p.statut==='valid\u00e9'?'#4CAF50':p.statut==='refus\u00e9'?'#f44':'#E8C060';
+    var sb=p.statut==='valid\u00e9'?'#0a2a0a':p.statut==='refus\u00e9'?'#2a0a0a':'#2a2a0a';
+    html+='<div style="background:#1a2a1a;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #2a3a2a">'
+         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
+         +'<div style="font-weight:700;color:#fff;font-size:15px;flex:1">'+kmEsc(p.nom||'Produit')+'</div>'
+         +'<span style="background:'+sb+';color:'+sc+';padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-left:8px">'+p.statut+'</span>'
+         +'</div>'
+         +'<div style="font-size:12px;color:#888">'+kmEsc(p.categorie||'—')+(p.prix?' · '+p.prix+' FCFA':'')+'</div>'
+         +'</div>';
   });
-  html+='<div style="margin-top:16px"><button onclick="goTo('home');setTimeout(function(){openModal('sell');},200)" style="width:100%;padding:14px;background:linear-gradient(135deg,#C49A3C,#E8C060);color:#1E1200;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:Outfit,sans-serif">+ Publier un nouveau produit</button></div></div>';
+  html+='</div>';
   body.innerHTML=html;
 }
 
 async function vendeurCommissions(){
   var body=g('vendeur-dash-body');
-  if(!kmVendeurSession||!kmDB){body.innerHTML='<div style="padding:30px;color:#aaa">Non connecté.</div>';return;}
-  body.innerHTML='<div style="padding:30px;text-align:center;color:#aaa">⏳ Chargement...</div>';
+  if(!kmVendeurSession||!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecte.</p>';return;}
+  body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   var r=await kmDB.from('commissions').select('*').eq('vendeur_id',kmVendeurSession.id).order('created_at',{ascending:false});
   var comms=r.data||[];
   var due=comms.filter(function(x){return x.statut==='due';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
   var paye=comms.filter(function(x){return x.statut==='payee';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
-  var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:14px;color:#E8C060">💰 Mes commissions (2%)</div>'+
-    '<div style="background:#1a1a1a;border-radius:12px;padding:14px;margin-bottom:14px;font-size:13px;color:#aaa;line-height:2">📌 Kassan'Mou prélève <strong style="color:#E8C060">2%</strong> sur chaque publication.<br>⚠️ À payer : <strong style="color:#E85D24">'+Math.round(due).toLocaleString()+' FCFA</strong><br>✅ Payé : <strong style="color:#4CAF50">'+Math.round(paye).toLocaleString()+' FCFA</strong></div>';
-  if(!comms.length){html+='<div style="text-align:center;padding:40px;color:#666">Aucune commission pour le moment.</div>';}
+  var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:14px;color:#E8C060">Mes commissions (2%)</div>'
+    +'<div style="background:#1a1a1a;border-radius:12px;padding:14px;margin-bottom:14px;font-size:13px;color:#aaa;line-height:2">'
+    +'Kassan\'Mou prélève 2% sur chaque publication.<br>'
+    +'A payer : <strong style="color:#E85D24">'+Math.round(due).toLocaleString()+' FCFA</strong><br>'
+    +'Paye : <strong style="color:#4CAF50">'+Math.round(paye).toLocaleString()+' FCFA</strong>'
+    +'</div>';
+  if(!comms.length){html+='<p style="text-align:center;padding:40px;color:#666">Aucune commission.</p>';}
   comms.forEach(function(comm){
     var isDue=comm.statut==='due';
-    var date=comm.created_at?new Date(comm.created_at).toLocaleDateString('fr-FR'):'—';
-    html+='<div style="background:'+(isDue?'#2a1500':'#0a1a0a')+';border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid '+(isDue?'#8B4513':'#1a4a1a')+'">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center">'+
-        '<div><div style="font-weight:700;color:#fff;font-size:14px">'+({publication:'📦 Publication',vente:'🛍️ Vente'}[comm.type]||'Commission')+'</div>'+
-        '<div style="font-size:12px;color:#888;margin-top:2px">'+kmEsc(comm.produit_nom||'—')+' · '+date+'</div></div>'+
-        '<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:'+(isDue?'#E85D24':'#4CAF50')+'">'+Math.round(parseFloat(comm.montant)||0).toLocaleString()+' F</div>'+
-        '<div style="font-size:11px;padding:3px 8px;border-radius:20px;background:'+(isDue?'#3D1008':'#0a2a0a')+';color:'+(isDue?'#E85D24':'#4CAF50')+';margin-top:4px">'+(isDue?'⚠️ À payer':'✅ Payé')+'</div></div>'+
-      '</div>'+
-      (isDue?'<div style="margin-top:8px;padding:8px;background:#1a0800;border-radius:8px;font-size:12px;color:#C49A3C">💬 Réglez via WhatsApp : <a href="https://wa.me/22799851532" target="_blank" style="color:#25D366">+227 99 85 15 32</a></div>':'')+
-    '</div>';
+    var d=comm.created_at?new Date(comm.created_at).toLocaleDateString('fr-FR'):'—';
+    html+='<div style="background:'+(isDue?'#2a1500':'#0a1a0a')+';border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid '+(isDue?'#8B4513':'#1a4a1a')+'">'
+         +'<div style="display:flex;justify-content:space-between;align-items:center">'
+         +'<div><div style="font-weight:700;color:#fff">'+(comm.type==='publication'?'Publication':'Vente')+'</div>'
+         +'<div style="font-size:12px;color:#888;margin-top:2px">'+kmEsc(comm.produit_nom||'—')+' · '+d+'</div></div>'
+         +'<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:'+(isDue?'#E85D24':'#4CAF50')+'">'+Math.round(parseFloat(comm.montant)||0).toLocaleString()+' F</div>'
+         +'<div style="font-size:11px;padding:3px 8px;border-radius:20px;background:'+(isDue?'#3D1008':'#0a2a0a')+';color:'+(isDue?'#E85D24':'#4CAF50')+';margin-top:4px\">'+(isDue?'A payer':'Paye')+'</div></div>'
+         +'</div>'
+         +(isDue?'<div style="margin-top:8px;padding:8px;background:#1a0800;border-radius:8px;font-size:12px;color:#C49A3C">Reglez via <a href="https://wa.me/22799851532" target="_blank" style="color:#25D366">WhatsApp +227 99 85 15 32</a></div>':'')
+         +'</div>';
   });
   html+='</div>';
   body.innerHTML=html;
@@ -5260,25 +5197,24 @@ async function vendeurCommissions(){
 
 async function vendeurCommandes(){
   var body=g('vendeur-dash-body');
-  if(!kmVendeurSession||!kmDB){body.innerHTML='<div style="padding:30px;color:#aaa">Non connecté.</div>';return;}
-  body.innerHTML='<div style="padding:30px;text-align:center;color:#aaa">⏳ Chargement...</div>';
+  if(!kmVendeurSession||!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecte.</p>';return;}
+  body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   var r=await kmDB.from('commandes').select('*').eq('vendeur_nom',kmVendeurSession.nom).order('created_at',{ascending:false});
   var cmds=r.data||[];
   var ca=cmds.reduce(function(s,x){return s+(parseFloat(x.montant_total)||0);},0);
-  var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:6px;color:#E8C060">📦 Mes ventes ('+cmds.length+')</div>'+
-    '<div style="font-size:13px;color:#888;margin-bottom:14px">CA total : <strong style="color:#E8C060">'+Math.round(ca).toLocaleString()+' FCFA</strong></div>';
-  if(!cmds.length){html+='<div style="text-align:center;padding:40px;color:#666">Aucune vente encore.<br>Vos premières commandes apparaîtront ici dès qu'un client achète un de vos produits.</div>';}
+  var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:6px;color:#E8C060">Mes ventes ('+cmds.length+')</div>'
+    +'<div style="font-size:13px;color:#888;margin-bottom:14px">CA : <strong style="color:#E8C060">'+Math.round(ca).toLocaleString()+' FCFA</strong></div>';
+  if(!cmds.length){html+='<p style="text-align:center;padding:40px;color:#666">Aucune vente encore.</p>';}
   cmds.forEach(function(cmd){
-    var sc=cmd.statut==='livré'?'#4CAF50':cmd.statut==='annulé'?'#f44':'#E8C060';
-    var date=cmd.created_at?new Date(cmd.created_at).toLocaleDateString('fr-FR'):'—';
-    html+='<div style="background:#1a2a1a;border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid #2a3a2a">'+
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
-        '<div style="flex:1"><div style="font-weight:700;color:#fff;font-size:14px">'+kmEsc(cmd.produit_nom||'Produit')+'</div>'+
-        '<div style="font-size:12px;color:#888;margin-top:2px">👤 '+kmEsc(cmd.acheteur_nom||'Acheteur')+' · 📅 '+date+'</div>'+
-        '<div style="font-size:11px;color:#666">Réf: '+kmEsc(cmd.reference||'—')+'</div></div>'+
-        '<div style="text-align:right;flex-shrink:0;margin-left:10px"><div style="font-size:16px;font-weight:800;color:#E8C060">'+Math.round(parseFloat(cmd.montant_total)||0).toLocaleString()+' F</div>'+
-        '<span style="color:'+sc+';font-size:11px;font-weight:700">'+kmEsc(cmd.statut||'—')+'</span></div>'+
-      '</div></div>';
+    var sc=cmd.statut==='livr\u00e9'?'#4CAF50':cmd.statut==='annul\u00e9'?'#f44':'#E8C060';
+    var d=cmd.created_at?new Date(cmd.created_at).toLocaleDateString('fr-FR'):'—';
+    html+='<div style="background:#1a2a1a;border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid #2a3a2a">'
+         +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+         +'<div style="flex:1"><div style="font-weight:700;color:#fff">'+kmEsc(cmd.produit_nom||'Produit')+'</div>'
+         +'<div style="font-size:12px;color:#888;margin-top:2px">'+kmEsc(cmd.acheteur_nom||'Acheteur')+' · '+d+'</div></div>'
+         +'<div style="text-align:right;flex-shrink:0;margin-left:10px"><div style="font-size:16px;font-weight:800;color:#E8C060">'+Math.round(parseFloat(cmd.montant_total)||0).toLocaleString()+' F</div>'
+         +'<span style="color:'+sc+';font-size:11px">'+kmEsc(cmd.statut||'—')+'</span></div>'
+         +'</div></div>';
   });
   html+='</div>';
   body.innerHTML=html;
@@ -6270,24 +6206,11 @@ async function kmSaveProduit(d) {
     }
     d.photos = photoUrls;
 
-    /* Upsert vendeur : ne pas créer de doublon */
     var vendeurId=null;
-    if(d.email){
-      var vEx=await kmDB.from('vendeurs').select('id').eq('email',d.email).maybeSingle();
-      if(vEx.data) vendeurId=vEx.data.id;
-    }
-    if(!vendeurId && d.tel){
-      var vEx2=await kmDB.from('vendeurs').select('id').eq('telephone',d.tel).maybeSingle();
-      if(vEx2.data) vendeurId=vEx2.data.id;
-    }
-    if(!vendeurId){
-      var vRes=await kmDB.from('vendeurs').insert({
-        nom:d.vendeurNom||'Vendeur', email:d.email||'',
-        telephone:d.tel||'', whatsapp:d.tel||'',
-        type_vendeur:d.typeVendeur||'Vendeur', region:d.region||'', ville:d.ville||''
-      }).select().single();
-      if(vRes.data) vendeurId=vRes.data.id;
-    }
+    if(d.email){var vEx=await kmDB.from('vendeurs').select('id').eq('email',d.email).maybeSingle();if(vEx.data)vendeurId=vEx.data.id;}
+    if(!vendeurId&&d.tel){var vEx2=await kmDB.from('vendeurs').select('id').eq('telephone',d.tel).maybeSingle();if(vEx2.data)vendeurId=vEx2.data.id;}
+    var vRes={data:{id:vendeurId}};
+    if(!vendeurId){vRes=await kmDB.from('vendeurs').insert({nom:d.vendeurNom||'Vendeur',email:d.email||'',telephone:d.tel||'',whatsapp:d.tel||'',type_vendeur:d.typeVendeur||'Vendeur',region:d.region||'',ville:d.ville||''}).select().single();if(vRes.data)vendeurId=vRes.data.id;}
     var durees={'7jours':7,'30jours':30,'90jours':90,'annuel':365};
     var exp=new Date(); exp.setDate(exp.getDate()+(durees[d.pack]||30));
     var pRes = await kmDB.from('produits').insert({
@@ -6385,27 +6308,10 @@ document.addEventListener('DOMContentLoaded', function(){
   /* ── 3. WIRE GLOBAL (tous les boutons) ── */
   wire();
 
-  /* ── PORTAIL VENDEUR — boutons + tabs ── */
-  var bvBack=g('btn-vendeur-back');
-  if(bvBack) bvBack.onclick=function(){ goTo('home'); };
-
-  var bvOut=g('btn-vendeur-logout');
-  if(bvOut) bvOut.onclick=function(){
-    kmVendeurSession=null;
-    if(kmDB) kmDB.auth.signOut();
-    goTo('home');
-    toast('Déconnecté de l'espace vendeur.');
-  };
-
-  var vtBar=document.getElementById('vendeur-tabs-bar');
-  if(vtBar){
-    vtBar.addEventListener('click',function(e){
-      var t=e.target.closest('[data-vtab]');
-      if(!t) return;
-      renderVendeurDash(t.dataset.vtab);
-    });
-  }
-
+  var bvB=g('btn-vendeur-back');if(bvB)bvB.onclick=function(){goTo('home');};
+  var bvO=g('btn-vendeur-logout');if(bvO)bvO.onclick=function(){kmVendeurSession=null;if(kmDB)kmDB.auth.signOut();goTo('home');toast('Espace vendeur ferm\u00e9.');};
+  var vtB=document.getElementById('vendeur-tabs-bar');
+  if(vtB){vtB.addEventListener('click',function(e){var t=e.target.closest('[data-vtab]');if(!t)return;renderVendeurDash(t.dataset.vtab);});}
   /* ── 3b. DÉLÉGATION LOGIN — dans DOMContentLoaded (100% safe) ── */
   /* login câblé directement dans openModal */
 
