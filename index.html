@@ -55,7 +55,7 @@
   --dark2:#111108;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;height:100%}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;height:100%;overflow-x:hidden}
 body{font-family:'Outfit',sans-serif;background:var(--CR);color:var(--S);overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font-family:inherit}
 a{text-decoration:none;color:inherit}
@@ -106,16 +106,18 @@ img{max-width:100%}
 /* ════════════════════════════════════════
    BOTTOM NAV MOBILE (app-like)
 ════════════════════════════════════════ */
-#bnav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bnav);
+#bnav{display:none;position:fixed;bottom:0;left:0;right:0;width:100%;max-width:100vw;height:var(--bnav);
   background:rgba(250,250,247,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-top:1px solid var(--B);z-index:900;
   align-items:stretch;padding:0;padding-bottom:env(safe-area-inset-bottom)}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;border:none;background:none;cursor:pointer;color:var(--Mu);transition:all .15s;
-  font-family:'Outfit',sans-serif;padding:6px 2px}
+.bni{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;border:none;background:none;cursor:pointer;color:var(--Mu);transition:all .15s;
+  font-family:'Outfit',sans-serif;font-size:9px;font-weight:500;padding:6px 2px;
+  -webkit-tap-highlight-color:transparent;overflow:hidden}
 .bni.on{color:var(--O)}
-.bni-ico{font-size:20px;line-height:1}
+.bni-ico{font-size:20px;line-height:1;display:block}
 .bni-lbl{font-size:10px;font-weight:600;letter-spacing:.02em}
+@media(max-width:360px){.bni-lbl{display:none}.bni{padding:8px 2px}}
 .bni-post{background:var(--T);color:#fff;border-radius:14px;width:52px;height:52px;margin-top:-18px;
   box-shadow:0 4px 16px rgba(200,75,47,.35);flex-direction:column;gap:2px}
 .bni-post .bni-ico{font-size:22px}
@@ -1760,9 +1762,10 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 <nav id="bnav">
   <button class="bni on" id="bn-home"><span class="bni-ico">🏠</span><span class="bni-lbl">Accueil</span></button>
   <button class="bni" id="bn-marketplace"><span class="bni-ico">🛒</span><span class="bni-lbl">Marché</span></button>
-  <button class="bni bni-post" id="bn-post"><span class="bni-ico">＋</span><span class="bni-lbl">Vendre/Acheter</span></button>
+  <button class="bni bni-post" id="bn-post"><span class="bni-ico">＋</span><span class="bni-lbl">Vendre</span></button>
   <button class="bni" id="bn-tracking"><span class="bni-ico">📦</span><span class="bni-lbl">Suivi</span></button>
-  <button class="bni" id="bn-account"><span class="bni-ico">🏪</span><span class="bni-lbl">Mon espace</span></button>
+  <button class="bni" id="bn-livraison"><span class="bni-ico">🛵</span><span class="bni-lbl">Livraison</span></button>
+  <button class="bni" id="bn-account"><span class="bni-ico">🏪</span><span class="bni-lbl">Espace</span></button>
 </nav>
 
 <!-- ═══════════════════════════════════
@@ -6312,6 +6315,22 @@ document.addEventListener('DOMContentLoaded', function(){
   var bvO=g('btn-vendeur-logout');if(bvO)bvO.onclick=function(){kmVendeurSession=null;if(kmDB)kmDB.auth.signOut();goTo('home');toast('Espace vendeur ferm\u00e9.');};
   var vtB=document.getElementById('vendeur-tabs-bar');
   if(vtB){vtB.addEventListener('click',function(e){var t=e.target.closest('[data-vtab]');if(!t)return;renderVendeurDash(t.dataset.vtab);});}
+  /* ═══ DÉLÉGATION GLOBALE LOGIN — capture TOUS les clics mbtn-login ═══ */
+  document.body.addEventListener('click', function(e){
+    /* Bouton connexion admin */
+    if(e.target && (e.target.id === 'mbtn-login' || e.target.closest('#mbtn-login'))){
+      e.preventDefault(); e.stopPropagation();
+      kmDoLogin();
+      return;
+    }
+    /* Bouton connexion vendeur */
+    if(e.target && (e.target.id === 'vl-btn' || e.target.closest('#vl-btn'))){
+      e.preventDefault(); e.stopPropagation();
+      doVendeurLogin();
+      return;
+    }
+  });
+
   /* ── 3b. DÉLÉGATION LOGIN — dans DOMContentLoaded (100% safe) ── */
   /* login câblé directement dans openModal */
 
@@ -6338,16 +6357,6 @@ document.addEventListener('DOMContentLoaded', function(){
   /* ── 7. BOUTON LIVRAISON (bottom nav + desktop nav) ── */
   /* Ajoute le bouton Livraison dans la bottom nav si absent */
   var bnav = document.getElementById('bnav');
-  if(bnav && !g('bn-livraison')){
-    var btnLivr = document.createElement('button');
-    btnLivr.className = 'bni';
-    btnLivr.id = 'bn-livraison';
-    btnLivr.innerHTML = '<span class="bni-ico">🛵</span><span class="bni-lbl">Livraison</span>';
-    btnLivr.addEventListener('click', function(){ goTo('livraison'); });
-    bnav.appendChild(btnLivr);
-  } else if(g('bn-livraison')){
-    g('bn-livraison').addEventListener('click', function(){ goTo('livraison'); });
-  }
 
   /* Lien livraison dans menu mobile overlay si absent */
   var mnav = document.getElementById('mnav');
