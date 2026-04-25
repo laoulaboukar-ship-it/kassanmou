@@ -3608,16 +3608,46 @@ function openModal(type){
         '<div class="photo-grid" id="photo-preview"></div>'+
       '</div>'+
 
-      // Pack
-      '<div class="fg"><label>Pack de publication</label>'+
-        '<select id="prod-pack">'+
-          '<option value="2000">Découverte — 2.000 FCFA / 7 jours (1 photo · test)</option>'+
-          '<option value="5000" selected>Standard — 5.000 FCFA / 30 jours (jusqu\'à 3 photos)</option>'+
-          '<option value="15000">Premium ⭐ — 15.000 FCFA / 90 jours (jusqu\'à 8 photos, en tête de liste)</option>'+
-          '<option value="50000">Pack Annuel — 50.000 FCFA / an (produits illimités)</option>'+
-        '</select>'+
+      // Pack tarifaire — cartes visuelles
+      '<input type="hidden" id="prod-pack" value="5000">'+
+      '<div class="fg">'+
+        '<label>Choisissez votre offre annuelle</label>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">'+
+
+          '<div id="km-card-std" onclick="kmSelectPack(\'5000\')" style="cursor:pointer;border:2px solid #1D9E75;border-radius:12px;padding:14px 10px;background:#E1F5EE;position:relative">'+
+            '<div style="font-weight:800;font-size:15px;color:#085041;margin-bottom:4px">Standard</div>'+
+            '<div style="font-size:24px;font-weight:900;color:#1D9E75;line-height:1.1">5 000</div>'+
+            '<div style="font-size:11px;color:#0F6E56;margin-bottom:8px">FCFA / an</div>'+
+            '<div style="font-size:11px;color:#085041;line-height:1.8">'+
+              '✓ Listé sur le marché<br>'+
+              '✓ Visible en catégorie<br>'+
+              '✓ Dashboard vendeur<br>'+
+              '✓ Jusqu&#39;à 5 photos'+
+            '</div>'+
+            '<div style="margin-top:8px;padding:6px;background:#085041;border-radius:6px;font-size:10px;font-weight:700;color:#E1F5EE;text-align:center">+ 2% par vente</div>'+
+            '<div id="km-chk-std" style="position:absolute;top:8px;right:8px;width:22px;height:22px;background:#1D9E75;border-radius:50%;text-align:center;line-height:22px;color:#fff;font-size:13px;font-weight:700">✓</div>'+
+          '</div>'+
+
+          '<div id="km-card-ved" onclick="kmSelectPack(\'15000\')" style="cursor:pointer;border:2px solid #ccc;border-radius:12px;padding:14px 10px;background:#fafafa;position:relative">'+
+            '<div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#BA7517;color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap">⭐ VEDETTE</div>'+
+            '<div style="font-weight:800;font-size:15px;color:#412402;margin-bottom:4px;margin-top:4px">Vedette</div>'+
+            '<div style="font-size:24px;font-weight:900;color:#BA7517;line-height:1.1">15 000</div>'+
+            '<div style="font-size:11px;color:#633806;margin-bottom:8px">FCFA / an</div>'+
+            '<div style="font-size:11px;color:#412402;line-height:1.8">'+
+              '✓ Toujours EN TÊTE<br>'+
+              '✓ Badge Vedette<br>'+
+              '✓ Priorité recherches<br>'+
+              '✓ Jusqu&#39;à 10 photos'+
+            '</div>'+
+            '<div style="margin-top:8px;padding:6px;background:#BA7517;border-radius:6px;font-size:10px;font-weight:700;color:#fff;text-align:center">+ 2% par vente</div>'+
+            '<div id="km-chk-ved" style="display:none;position:absolute;top:8px;right:8px;width:22px;height:22px;background:#BA7517;border-radius:50%;text-align:center;line-height:22px;color:#fff;font-size:13px;font-weight:700">✓</div>'+
+          '</div>'+
+
+        '</div>'+
+        '<div id="km-pack-info" style="margin-top:8px;padding:10px 12px;background:#E1F5EE;border-radius:8px;font-size:12px;color:#085041;border-left:3px solid #1D9E75">'+
+          '✅ Standard sélectionné — 5 000 FCFA/an + 2% de commission sur chaque vente via Kassan&#39;Mou'+
+        '</div>'+
       '</div>'+
-      '<div style="background:var(--SD);border-radius:var(--rs);padding:10px 13px;font-size:12px;color:var(--Sm);margin-top:-10px;margin-bottom:10px">⏱ Durée affichée sur votre annonce · Produit retiré automatiquement à expiration · Renouvelable</div>'+
 
       '<div class="fg"><label>Votre contact (pour vous envoyer le code)</label>'+
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
@@ -3626,7 +3656,7 @@ function openModal(type){
         '</div>'+
       '</div>'+
 
-      '<button class="bp" style="width:100%;padding:14px;margin-top:4px;font-size:16px" id="mbtn-sell" onclick="submitProduct(window._selectedModes||[])">✅ Soumettre pour validation</button>'+
+      '<button class="bp" style="width:100%;padding:14px;margin-top:4px;font-size:16px" id="mbtn-sell" onclick="kmShowConfirmTarif(window._selectedModes||[])">Voir les conditions et confirmer →</button>'+
       '<p style="font-size:12px;color:var(--Mu);text-align:center;margin-top:8px">Après validation par notre équipe, vous recevrez votre code de mise en ligne par SMS et Email.</p>';
 
   } else if(type==='request-product'){
@@ -5221,6 +5251,95 @@ async function vendeurCommandes(){
   });
   html+='</div>';
   body.innerHTML=html;
+}
+
+/* ═══════════════════════════════════════════════
+   SÉLECTION PACK + CONFIRMATION AVANT SOUMISSION
+═══════════════════════════════════════════════ */
+
+function kmSelectPack(val){
+  var isStd = (val === '5000');
+  var inp = document.getElementById('prod-pack');
+  if(inp) inp.value = val;
+
+  var cs = document.getElementById('km-card-std');
+  var cv = document.getElementById('km-card-ved');
+  var ks = document.getElementById('km-chk-std');
+  var kv = document.getElementById('km-chk-ved');
+  var info = document.getElementById('km-pack-info');
+
+  if(cs){ cs.style.border = isStd ? '2px solid #1D9E75' : '2px solid #ccc'; cs.style.background = isStd ? '#E1F5EE' : '#fafafa'; }
+  if(cv){ cv.style.border = isStd ? '2px solid #ccc' : '2px solid #BA7517'; cv.style.background = isStd ? '#fafafa' : '#FAEEDA'; }
+  if(ks) ks.style.display = isStd ? 'block' : 'none';
+  if(kv) kv.style.display = isStd ? 'none' : 'block';
+
+  if(info){
+    if(isStd){
+      info.style.cssText = 'margin-top:8px;padding:10px 12px;background:#E1F5EE;border-radius:8px;font-size:12px;color:#085041;border-left:3px solid #1D9E75';
+      info.innerHTML = "&#x2705; Standard sélectionné — 5 000 FCFA/an + 2% de commission sur chaque vente via Kassan’Mou";
+    } else {
+      info.style.cssText = 'margin-top:8px;padding:10px 12px;background:#FAEEDA;border-radius:8px;font-size:12px;color:#412402;border-left:3px solid #BA7517';
+      info.innerHTML = "&#x2B50; Vedette sélectionné — 15 000 FCFA/an + 2% de commission · Votre produit toujours EN TÊTE de liste";
+    }
+  }
+}
+
+function kmShowConfirmTarif(modes){
+  var packVal  = (document.getElementById('prod-pack')||{value:'5000'}).value;
+  var isVed    = (packVal === '15000');
+  var packNom  = isVed ? "Vedette ⭐" : "Standard";
+  var packPrix = isVed ? "15 000" : "5 000";
+  var packCol  = isVed ? "#BA7517" : "#1D9E75";
+  var packBg   = isVed ? "#FAEEDA" : "#E1F5EE";
+  var packTxt  = isVed ? "#412402" : "#085041";
+
+  var nomProd = (document.getElementById('prod-nom')    ||{value:""}).value || "votre produit";
+  var vendNom = (document.getElementById('prod-vendeur')||{value:""}).value || "";
+  var tel     = (document.getElementById('prod-phone')  ||{value:""}).value || "";
+  var email   = (document.getElementById('prod-email')  ||{value:""}).value || "";
+
+  var box = document.getElementById('mbox');
+  var veil = document.getElementById('mveil');
+  if(!box||!veil) return;
+
+  box.innerHTML =
+    "<button class='mcls' id='conf-back' style='top:14px;left:14px;right:auto'>←</button>"
+   +"<div class='mh' style='padding-left:30px'>Confirmez votre offre</div>"
+   +"<div class='msub'>Vérifiez les conditions avant de soumettre.</div>"
+
+   +"<div style='background:#f5f5f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#333;line-height:1.8'>"
+   +"<div style='font-weight:700;font-size:15px;color:#1a1a1a;margin-bottom:4px'>"+kmEsc(nomProd)+"</div>"
+   +(vendNom ? "<div>Vendeur : "+kmEsc(vendNom)+"</div>" : "")
+   +(tel     ? "<div>Tél/WhatsApp : "+kmEsc(tel)+"</div>" : "")
+   +(email   ? "<div>Email : "+kmEsc(email)+"</div>" : "")
+   +"</div>"
+
+   +"<div style='background:"+packBg+";border:2px solid "+packCol+";border-radius:12px;padding:16px;margin-bottom:14px;text-align:center'>"
+   +"<div style='font-size:13px;font-weight:600;color:"+packTxt+";margin-bottom:4px'>Offre choisie</div>"
+   +"<div style='font-size:26px;font-weight:900;color:"+packCol+"'>"+packNom+"</div>"
+   +"<div style='font-size:28px;font-weight:900;color:"+packCol+";margin:4px 0'>"+packPrix+" FCFA</div>"
+   +"<div style='font-size:12px;color:"+packTxt+"'>par an · renouvelable</div>"
+   +"</div>"
+
+   +"<div style='background:#fff8e1;border-left:4px solid #F9A825;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#5D4037;line-height:1.9'>"
+   +"<div style='font-weight:700;font-size:13px;color:#E65100;margin-bottom:6px'>&#x1F4CB; Conditions — Commission Kassan’Mou</div>"
+   +"En publiant sur Kassan’Mou, vous acceptez :<br>"
+   +"• Une <strong>commission de 2%</strong> sur chaque vente via la plateforme<br>"
+   +"• Le paiement de l’abonnement annuel <strong>"+packPrix+" FCFA</strong> à la validation<br>"
+   +"• Kassan’Mou assure la mise en relation acheteurs/vendeurs<br>"
+   +"• Vous restez propriétaire de votre stock et de vos prix"
+   +"</div>"
+
+   +"<div style='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px'>"
+   +"<button id='conf-cancel' style='padding:13px;background:#f0f0ea;color:#555;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:Outfit,sans-serif'>Modifier</button>"
+   +"<button id='conf-ok' style='padding:13px;background:"+packCol+";color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif'>&#x2705; Je confirme</button>"
+   +"</div>"
+   +"<p style='font-size:11px;color:#aaa;text-align:center;margin-top:10px'>Un message de confirmation vous sera envoyé par WhatsApp/Email après validation.</p>";
+
+  veil.classList.add('on');
+  document.getElementById('conf-back').onclick   = function(){ openModal('sell'); };
+  document.getElementById('conf-cancel').onclick = function(){ openModal('sell'); };
+  document.getElementById('conf-ok').onclick     = function(){ submitProduct(modes); };
 }
 
 async function kmDoLogout() {
