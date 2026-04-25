@@ -2892,7 +2892,8 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 var EJS={
   publicKey:'qm379MRdiK-Ez0yPq',
   serviceId:'service_5sapdz7',
-  templateProd:'template_6sdif0e'
+  templateProd:'template_6sdif0e',
+  templateVendeur:'template_9tuct6s'
 };
 /* Email admin — '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' */
 var _adm=atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ=='); // '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+'
@@ -4619,10 +4620,24 @@ async function formModifierLivreur(id){
 
 /* ─── ACTIONS SUPABASE ─────────────────────── */
 async function doValiderProduit(id,code){
-  if(!kmDB){toast('Non connecté',true);return;}
-  var r=await kmDB.from('produits').update({statut:'validé',date_validation:new Date().toISOString()}).eq('id',id);
-  if(r.error){toast('Erreur: '+r.error.message,true);return;}
-  toast('✅ Produit validé et mis en ligne !');
+  if(!kmDB){toast("Non connecté",true);return;}
+  var r=await kmDB.from('produits').update({statut:"validé",date_validation:new Date().toISOString()}).eq('id',id);
+  if(r.error){toast("Erreur: "+r.error.message,true);return;}
+  var prodData=null,vendData=null;
+  try{
+    var pR=await kmDB.from('produits').select('*').eq('id',id).single();
+    if(pR.data){
+      prodData=pR.data;
+      var px=({'7jours':2000,'30jours':5000,'90jours':15000,'annuel':50000}[prodData.pack_publication])||5000;
+      await kmDB.from('commissions').insert({vendeur_id:prodData.vendeur_id,produit_id:id,produit_nom:prodData.nom||"Produit",montant:Math.round(px*0.02),taux:2,base_calcul:px,statut:"due",type:"publication"});
+      if(prodData.vendeur_id){
+        var vR=await kmDB.from('vendeurs').select('*').eq('id',prodData.vendeur_id).single();
+        if(vR.data) vendData=vR.data;
+      }
+    }
+  }catch(e2){console.warn('[KM-COMM]',e2);}
+  toast("✅ Produit validé ! Envoi notifications...");
+  if(prodData) await kmEnvoyerNotifValidation(prodData,vendData);
   kmLoadProduits();
   dashEnAttente();
 }
@@ -5340,6 +5355,93 @@ function kmShowConfirmTarif(modes){
   document.getElementById('conf-back').onclick   = function(){ openModal('sell'); };
   document.getElementById('conf-cancel').onclick = function(){ openModal('sell'); };
   document.getElementById('conf-ok').onclick     = function(){ submitProduct(modes); };
+}
+
+
+/* === v41-B NOTIFICATIONS VENDEUR === */
+
+async function kmEnvoyerNotifValidation(prod,vendeur){
+  var nomProd  = prod.nom || "Produit";
+  var packVal  = prod.pack_publication || "30jours";
+  var packPrix = ({'7jours':2000,'30jours':5000,'90jours':15000,'annuel':50000}[packVal]) || 5000;
+  var isVed    = (packPrix >= 15000);
+  var packNom  = isVed ? "Vedette" : "Standard";
+  var prixStr  = packPrix.toLocaleString() + " FCFA/an";
+  var email    = (vendeur&&vendeur.email)     || prod.email     || "";
+  var tel      = (vendeur&&vendeur.telephone) || prod.telephone || "";
+  var nomVend  = (vendeur&&vendeur.nom)       || "Cher vendeur";
+  var dateExp  = prod.date_expiration ? new Date(prod.date_expiration).toLocaleDateString('fr-FR') : "dans un an";
+
+  /* Email via EmailJS */
+  if(email && typeof emailjs !== 'undefined'){
+    try{
+      var corps = [
+        "Bonjour "+nomVend+",",
+        "",
+        "Votre produit \"" + nomProd + "\" est maintenant EN LIGNE sur Kassan'Mou.",
+        "",
+        "=== Votre abonnement ===",
+        "Offre       : " + packNom,
+        "Abonnement  : " + prixStr,
+        "Valable jusqu'au : " + dateExp,
+        "",
+        "=== Commission Kassan'Mou ===",
+        "2% sur chaque vente via la plateforme.",
+        "Exemple : 100 000 FCFA vendu = 2 000 FCFA de commission.",
+        "",
+        "Suivez vos ventes dans votre espace vendeur.",
+        "Contact : WhatsApp +227 99 85 15 32",
+        "",
+        "Merci de faire confiance a Kassan'Mou !"
+      ].join("\n");
+      await emailjs.send(EJS.serviceId, EJS.templateVendeur, {
+        to_email:    email,
+        to_name:     nomVend,
+        subject:     "Votre produit est en ligne sur Kassan'Mou !",
+        message:     corps,
+        produit_nom: nomProd,
+        pack_nom:    packNom,
+        pack_prix:   prixStr,
+        date_exp:    dateExp
+      });
+      toast("Email envoye a "+email);
+    }catch(e){ console.warn('[KM-NOTIF] email err:',e); toast("Email non envoye",true); }
+  }
+
+  /* WhatsApp pre-rempli */
+  if(tel){
+    var telN = tel.replace(/[^0-9]/g,'');
+    if(telN.length <= 8) telN = '227' + telN;
+    var msg = "Bonjour " + nomVend + " !\n"
+            + "Votre produit *" + nomProd + "* est EN LIGNE sur Kassan'Mou !\n\n"
+            + "*Abonnement :* " + packNom + " - " + prixStr + "\n"
+            + "*Valable jusqu'au :* " + dateExp + "\n\n"
+            + "*Commission Kassan'Mou :*\n"
+            + "2% sur chaque vente via la plateforme.\n"
+            + "Ex: 100 000 FCFA vendu = 2 000 FCFA de commission.\n\n"
+            + "Suivez vos ventes sur l'appli > Mon espace\n"
+            + "_Kassan'Mou - Le pont commercial du Niger_";
+    var waUrl = "https://wa.me/" + telN + "?text=" + encodeURIComponent(msg);
+    kmMontrerBoutonWA(waUrl, nomVend, nomProd);
+  }
+}
+
+function kmMontrerBoutonWA(url, nomVend, nomProd){
+  var body = document.getElementById('dash-body');
+  if(!body) return;
+  var old = document.getElementById('km-wa-banner');
+  if(old) old.remove();
+  var banner = document.createElement('div');
+  banner.id = 'km-wa-banner';
+  banner.style.cssText = 'background:#E1F5EE;border:2px solid #25D366;border-radius:12px;padding:14px 16px;margin:0 0 16px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap';
+  banner.innerHTML =
+    "<div style='flex:1;min-width:0'>"
+   +"<div style='font-weight:700;font-size:14px;color:#085041'>Produit valide - Notifiez le vendeur</div>"
+   +"<div style='font-size:12px;color:#0F6E56;margin-top:2px'>"+kmEsc(nomVend)+" - "+kmEsc(nomProd)+"</div>"
+   +"</div>"
+   +"<a href='"+url+"' target='_blank' style='background:#25D366;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;white-space:nowrap'>Envoyer WhatsApp</a>"
+   +"<button onclick=\"document.getElementById('km-wa-banner').remove()\" style='background:none;border:none;color:#888;cursor:pointer;font-size:18px'>x</button>";
+  body.insertBefore(banner, body.firstChild);
 }
 
 async function kmDoLogout() {
