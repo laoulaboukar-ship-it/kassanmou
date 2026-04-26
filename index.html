@@ -4303,6 +4303,13 @@ async function dashOverview(){
         '<div class="adm-kcard-lbl">\ud83d\udce6 Commandes</div>'+
       '</div>'+
     '</div>';
+  /* Bouton diagnostic secret */
+  var diag_html =
+    '<div style="margin-bottom:12px;text-align:right">'+
+      '<button onclick="kmRunDiagnostic()" style="background:#1a1a2a;color:#7B8CDE;border:1px solid #3a3a5a;border-radius:8px;padding:6px 14px;font-size:11px;cursor:pointer;font-family:Outfit,sans-serif">'
+      +'Diagnostic systeme</button>'+
+    '</div>';
+
   var actions_html =
     '<div class="adm-box">'+
       '<div class="adm-box-title">Actions rapides</div>'+
@@ -5442,6 +5449,149 @@ function kmMontrerBoutonWA(url, nomVend, nomProd){
    +"<a href='"+url+"' target='_blank' style='background:#25D366;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;white-space:nowrap'>Envoyer WhatsApp</a>"
    +"<button onclick=\"document.getElementById('km-wa-banner').remove()\" style='background:none;border:none;color:#888;cursor:pointer;font-size:18px'>x</button>";
   body.insertBefore(banner, body.firstChild);
+}
+
+
+/* ═══ DIAGNOSTIC SYSTEME ═══ */
+async function kmRunDiagnostic(){
+  var box = document.getElementById('mbox');
+  var veil = document.getElementById('mveil');
+  if(!box||!veil) return;
+
+  box.className = 'mbox center-modal';
+  box.innerHTML =
+    "<button class='mcls' id='diag-cls'>X</button>"
+   +"<div class='mh'>Diagnostic systeme</div>"
+   +"<div class='msub'>Verification de tous les composants...</div>"
+   +"<div id='diag-results' style='font-family:monospace;font-size:12px;max-height:400px;overflow-y:auto'>"
+   +"<div style='color:#aaa;padding:10px'>Tests en cours...</div>"
+   +"</div>";
+  veil.classList.add('on');
+  document.getElementById('diag-cls').onclick = closeModal;
+
+  var res = document.getElementById('diag-results');
+  var lines = [];
+
+  function log(icon, label, detail, ok){
+    var color = ok === true ? '#4CAF50' : ok === false ? '#f44' : '#E8C060';
+    lines.push(
+      "<div style='padding:5px 8px;border-bottom:1px solid #222;display:flex;align-items:flex-start;gap:8px'>"
+     +"<span style='color:"+color+";flex-shrink:0'>"+icon+"</span>"
+     +"<div><div style='color:#fff;font-weight:700'>"+label+"</div>"
+     +(detail?"<div style='color:#888;font-size:11px;margin-top:2px'>"+detail+"</div>":"")
+     +"</div></div>"
+    );
+    res.innerHTML = "<div style='background:#0a0a0a;border-radius:8px;overflow:hidden'>"
+      + lines.join('') + "</div>";
+  }
+
+  res.innerHTML = "<div style='background:#0a0a0a;border-radius:8px;padding:10px;color:#aaa'>Demarrage...</div>";
+
+  /* TEST 1 : kmDB */
+  if(typeof kmDB !== 'undefined' && kmDB){
+    log('OK','Supabase SDK charge','kmDB initialise',true);
+  } else {
+    log('ERR','Supabase SDK MANQUANT','kmDB est null ou undefined',false);
+  }
+
+  /* TEST 2 : Auth session */
+  try{
+    var sess = await kmDB.auth.getSession();
+    if(sess.data && sess.data.session){
+      log('OK','Session admin active','Email: '+sess.data.session.user.email,true);
+    } else {
+      log('WARN','Aucune session active','Non connecte',null);
+    }
+  }catch(e){ log('ERR','Erreur auth: '+e.message,'',false); }
+
+  /* TEST 3 : Table produits */
+  try{
+    var r1 = await kmDB.from('produits').select('id,nom,statut',{count:'exact'}).limit(1);
+    if(r1.error) throw new Error(r1.error.message);
+    log('OK','Table produits accessible',''+r1.count+' produits au total',true);
+  }catch(e){ log('ERR','Table produits: '+e.message,'',false); }
+
+  /* TEST 4 : Table vendeurs */
+  try{
+    var r2 = await kmDB.from('vendeurs').select('id',{count:'exact'}).limit(1);
+    if(r2.error) throw new Error(r2.error.message);
+    log('OK','Table vendeurs accessible',''+r2.count+' vendeurs',true);
+  }catch(e){ log('ERR','Table vendeurs: '+e.message,'',false); }
+
+  /* TEST 5 : Table commissions */
+  try{
+    var r3 = await kmDB.from('commissions').select('id,statut',{count:'exact'}).limit(1);
+    if(r3.error) throw new Error(r3.error.message);
+    var dues = 0, payees = 0;
+    var rAll = await kmDB.from('commissions').select('statut,montant');
+    if(rAll.data){
+      dues = rAll.data.filter(function(x){return x.statut==='due';}).length;
+      payees = rAll.data.filter(function(x){return x.statut==='payee';}).length;
+    }
+    log('OK','Table commissions accessible',''+dues+' dues / '+payees+' payees',true);
+  }catch(e){ log('ERR','Table commissions: '+e.message,'Avez-vous execute le SQL v40 ?',false); }
+
+  /* TEST 6 : Table commandes */
+  try{
+    var r4 = await kmDB.from('commandes').select('id',{count:'exact'}).limit(1);
+    if(r4.error) throw new Error(r4.error.message);
+    log('OK','Table commandes accessible',''+r4.count+' commandes',true);
+  }catch(e){ log('ERR','Table commandes: '+e.message,'',false); }
+
+  /* TEST 7 : Storage bucket */
+  try{
+    var r5 = await kmDB.storage.from('produits-photos').list('',{limit:1});
+    if(r5.error) throw new Error(r5.error.message);
+    log('OK','Storage produits-photos accessible','Bucket public actif',true);
+  }catch(e){ log('WARN','Storage: '+e.message,'Verifiez le bucket Supabase',null); }
+
+  /* TEST 8 : EmailJS */
+  if(typeof emailjs !== 'undefined'){
+    log('OK','EmailJS SDK charge','Service: '+EJS.serviceId,true);
+  } else {
+    log('ERR','EmailJS SDK MANQUANT','Le CDN EmailJS ne charge pas',false);
+  }
+
+  /* TEST 9 : Fonctions critiques */
+  var funcs = [
+    'kmDoLogin','doValiderProduit','submitProduct',
+    'kmEnvoyerNotifValidation','dashVendeurs','dashCommissions',
+    'kmSelectPack','kmShowConfirmTarif','vendeurOverview'
+  ];
+  var missing = funcs.filter(function(f){ return typeof window[f] !== 'function'; });
+  if(missing.length === 0){
+    log('OK','Toutes les fonctions JS presentes',''+funcs.length+'/'+funcs.length+' OK',true);
+  } else {
+    log('ERR','Fonctions manquantes: '+missing.join(', '),'',false);
+  }
+
+  /* TEST 10 : Produits en attente */
+  try{
+    var rp = await kmDB.from('produits').select('id,nom').eq('statut','en_attente');
+    var nb = rp.data ? rp.data.length : 0;
+    if(nb > 0){
+      log('WARN',''+nb+' produit(s) en attente de validation',
+        rp.data.map(function(p){return p.nom;}).join(', '), null);
+    } else {
+      log('OK','Aucun produit en attente','File de validation vide',true);
+    }
+  }catch(e){}
+
+  /* RESUME */
+  var total = lines.length;
+  var ok_count = lines.filter(function(l){return l.includes("color:#4CAF50")}).length;
+  var err_count = lines.filter(function(l){return l.includes("color:#f44")}).length;
+  var warn_count = lines.filter(function(l){return l.includes("color:#E8C060")}).length;
+
+  lines.push(
+    "<div style='padding:10px 8px;background:#1a2a1a;margin-top:2px;display:flex;gap:16px'>"
+   +"<span style='color:#4CAF50;font-weight:700'>OK "+ok_count+"</span>"
+   +"<span style='color:#f44;font-weight:700'>ERREUR "+err_count+"</span>"
+   +"<span style='color:#E8C060;font-weight:700'>AVERTISSEMENT "+warn_count+"</span>"
+   +"</div>"
+  );
+  res.innerHTML = "<div style='background:#0a0a0a;border-radius:8px;overflow:hidden'>"
+    + lines.join('') + "</div>";
 }
 
 async function kmDoLogout() {
