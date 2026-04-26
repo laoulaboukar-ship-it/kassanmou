@@ -3866,10 +3866,10 @@ function openModal(type){
     });
   });
 
-  /* Câblage bouton soumettre - double sécurité */
+  /* Bouton soumettre -> confirmation tarifaire */
   var sb=g('mbtn-sell');
   if(sb){
-    sb.onclick = function(){ submitProduct(window._selectedModes||[]); };
+    sb.onclick = function(){ kmShowConfirmTarif(window._selectedModes||[]); };
   }
 
   // Wire export OUI/NON toggle
