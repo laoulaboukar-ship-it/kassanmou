@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kassan'Mou — Marketplace du Niger</title>
+<meta name="description" content="La marketplace nigérienne — produits locaux, export international">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2d6a4f">
+<style>
+:root {
+  --vert: #2d6a4f;
+  --vert-clair: #52b788;
+  --orange: #f4845f;
+  --jaune: #f4d03f;
+  --gris: #f5f5f5;
+  --blanc: #ffffff;
+  --texte: #1a1a2e;
+  --ombre: 0 2px 12px rgba(0,0,0,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: var(--gris); color: var(--texte); }
+
+#header {
+  background: var(--vert);
+  color: white;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--ombre);
+}
+#header .tagline { font-size: 0.7rem; opacity: 0.8; }
+#btn-admin-login {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+#nav-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: white;
+  display: flex;
+  border-top: 1px solid #ddd;
+  z-index: 200;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 2px 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.6rem;
+  color: #888;
+  gap: 3px;
+  transition: color 0.2s;
+}
+.nav-btn.active { color: var(--vert); }
+.nav-btn .ico { font-size: 1.3rem; }
+
+.section { display: none; padding: 16px; padding-bottom: 80px; }
+.section.active { display: block; }
+
+.produits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+.produit-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--ombre);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.produit-card:active { transform: scale(0.97); }
+.produit-card img { width: 100%; height: 120px; object-fit: cover; }
+.produit-card .card-body { padding: 10px; }
+.produit-card .card-nom { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+.produit-card .card-prix { color: var(--vert); font-weight: 700; font-size: 0.95rem; }
+.badge-ville {
+  display: inline-block;
+  background: #e8f5e9;
+  color: var(--vert);
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+.badge-vedette {
+  display: inline-block;
+  background: var(--jaune);
+  color: #7d5a00;
+  font-size: 0.6rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+
+.form-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--ombre);
+  margin-bottom: 16px;
+}
+.form-card h2 { color: var(--vert); margin-bottom: 16px; font-size: 1.1rem; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; color: #444; }
+.form-group label .req { color: var(--orange); }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #fafafa;
+  transition: border 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { outline: none; border-color: var(--vert); background: white; }
+.form-group input.erreur,
+.form-group select.erreur,
+.form-group textarea.erreur { border-color: var(--orange); background: #fff5f5; }
+.msg-erreur { color: var(--orange); font-size: 0.75rem; margin-top: 3px; display: none; }
+.msg-erreur.visible { display: block; }
+
+.tarifs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+.tarif-card {
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  position: relative;
+}
+.tarif-card.selected { border-color: var(--vert); background: #f0faf4; }
+.tarif-card .tarif-nom { font-weight: 700; font-size: 0.95rem; }
+.tarif-card .tarif-prix { color: var(--vert); font-size: 1.1rem; font-weight: 700; margin: 6px 0; }
+.tarif-card .tarif-avantages { font-size: 0.72rem; color: #555; line-height: 1.5; }
+.tarif-card .check-icon {
+  position: absolute; top: 10px; right: 10px;
+  width: 22px; height: 22px;
+  background: var(--vert); border-radius: 50%;
+  display: none; align-items: center; justify-content: center;
+  color: white; font-size: 0.75rem;
+}
+.tarif-card.selected .check-icon { display: flex; }
+
+.btn {
+  display: block; width: 100%; padding: 13px;
+  border: none; border-radius: 10px;
+  font-size: 1rem; font-weight: 600;
+  cursor: pointer; text-align: center; transition: opacity 0.2s;
+}
+.btn:active { opacity: 0.8; }
+.btn-vert { background: var(--vert); color: white; }
+.btn-orange { background: var(--orange); color: white; }
+.btn-gris { background: #ddd; color: #555; }
+.btn-sm {
+  padding: 8px 16px; font-size: 0.85rem;
+  width: auto; display: inline-block;
+  border-radius: 8px; border: none;
+  cursor: pointer; font-weight: 600;
+}
+
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 1000;
+  align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: white; border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 540px; padding: 24px;
+  max-height: 90vh; overflow-y: auto;
+}
+.modal-box h3 { color: var(--vert); margin-bottom: 14px; }
+
+.livr-opts { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+.livr-opt {
+  flex: 1; min-width: 90px;
+  border: 2px solid #ddd; border-radius: 10px;
+  padding: 10px 8px; text-align: center;
+  cursor: pointer; font-size: 0.8rem; font-weight: 600;
+  background: white; transition: all 0.2s;
+}
+.livr-opt.selected { border-color: var(--vert); background: #f0faf4; color: var(--vert); }
+.livr-info-box {
+  background: #f0faf4; border: 1px solid var(--vert-clair);
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 0.82rem; color: #2d4a3e;
+  margin-top: 8px; line-height: 1.6; display: none;
+}
+
+.admin-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.admin-tab {
+  padding: 7px 14px; border-radius: 20px;
+  border: 1.5px solid #ddd; background: white;
+  cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.2s;
+}
+.admin-tab.active { background: var(--vert); color: white; border-color: var(--vert); }
+.admin-panel { display: none; }
+.admin-panel.active { display: block; }
+
+.produit-admin-card {
+  background: white; border-radius: 12px;
+  padding: 14px; margin-bottom: 10px; box-shadow: var(--ombre);
+}
+.produit-admin-card .pa-nom { font-weight: 700; margin-bottom: 4px; }
+.produit-admin-card .pa-detail { font-size: 0.78rem; color: #666; margin-bottom: 8px; }
+.pa-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.vendeur-stat { background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: var(--ombre); }
+.vendeur-stat .stat-val { font-size: 1.8rem; font-weight: 700; color: var(--vert); }
+.vendeur-stat .stat-label { font-size: 0.75rem; color: #666; margin-top: 4px; }
+
+#toast {
+  position: fixed; top: 70px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--texte); color: white;
+  padding: 10px 20px; border-radius: 20px;
+  font-size: 0.85rem; z-index: 9999;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; max-width: 90vw; text-align: center;
+}
+#toast.show { opacity: 1; }
+#toast.succes { background: var(--vert); }
+#toast.erreur { background: #e63946; }
+
+.section-titre { font-size: 1.1rem; font-weight: 700; color: var(--vert); margin-bottom: 14px; }
+.badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+.badge-vert { background: #d4edda; color: #155724; }
+.badge-rouge { background: #f8d7da; color: #721c24; }
+.badge-orange { background: #fff3cd; color: #856404; }
+.spinner {
+  display: inline-block; width: 24px; height: 24px;
+  border: 3px solid #ddd; border-top-color: var(--vert);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-box {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 40px; color: #888; font-size: 0.9rem;
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- HEADER -->
+<div id="header">
+  <div>
+    <div style="font-size:1.4rem;font-weight:700;letter-spacing:1px;">🌿 Kassan'Mou</div>
+    <div class="tagline">Marketplace du Niger</div>
+  </div>
+  <button id="btn-admin-login" onclick="kmShowAdminLogin()">Admin</button>
+</div>
+
+<!-- SECTIONS -->
+<div id="sec-accueil" class="section active">
+  <div style="background:linear-gradient(135deg,var(--vert),var(--vert-clair));color:white;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;">
+    <div style="font-size:2.5rem;margin-bottom:8px;">🌿</div>
+    <h2 style="font-size:1.3rem;margin-bottom:8px;">Kassan'Mou</h2>
+    <p style="font-size:0.85rem;opacity:0.9;">La marketplace du Niger — produits locaux, export international</p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+    <div onclick="kmNav('marche')" style="background:white;border-radius:12px;padding:16px;text-align:center;box-shadow:var(--ombre);cursor:pointer;">
+      <div style="font-size:1.8rem;">🛒</div>
+      <div style="font-size:0.8rem;font-weight:600;color:var(--vert);margin-top:6px;">Marché</div>
+    </div>
+    <div onclick="kmNav('vendre')" style="background:white;border-radius:12px;padding:16px;text-align:center;box-shadow:var(--ombre);cursor:pointer;">
+      <div style="font-size:1.8rem;">📦</div>
+      <div style="font-size:0.8rem;font-weight:600;color:var(--vert);margin-top:6px;">Vendre</div>
+    </div>
+    <div onclick="kmNav('export')" style="background:white;border-radius:12px;padding:16px;text-align:center;box-shadow:var(--ombre);cursor:pointer;">
+      <div style="font-size:1.8rem;">🌍</div>
+      <div style="font-size:0.8rem;font-weight:600;color:var(--vert);margin-top:6px;">Export B2B</div>
+    </div>
+    <div onclick="kmNav('espace')" style="background:white;border-radius:12px;padding:16px;text-align:center;box-shadow:var(--ombre);cursor:pointer;">
+      <div style="font-size:1.8rem;">👤</div>
+      <div style="font-size:0.8rem;font-weight:600;color:var(--vert);margin-top:6px;">Mon espace</div>
+    </div>
+  </div>
+  <div style="background:var(--orange);color:white;border-radius:12px;padding:14px;text-align:center;">
+    <div style="font-size:0.85rem;font-weight:600;">📞 Besoin d'aide ?</div>
+    <div style="font-size:0.8rem;margin-top:4px;">WhatsApp : +227 99 85 15 32</div>
+  </div>
+</div>
+
+<div id="sec-marche" class="section">
+  <div class="section-titre">🛒 Marché</div>
+  <div id="marche-grid" class="loading-box"><div class="spinner"></div> Chargement…</div>
+</div>
+
+<div id="sec-vendre" class="section">
+  <div class="form-card">
+    <h2>📦 Soumettre un produit</h2>
+    <p style="font-size:0.8rem;color:#666;margin-bottom:16px;">Tous les champs <span style="color:var(--orange)">*</span> sont obligatoires.</p>
+
+    <div class="form-group">
+      <label>Votre nom complet <span class="req">*</span></label>
+      <input type="text" id="v-nom" placeholder="Ex: Mamadou Issoufou">
+      <div class="msg-erreur" id="err-nom">Nom requis</div>
+    </div>
+    <div class="form-group">
+      <label>Email <span class="req">*</span></label>
+      <input type="email" id="v-email" placeholder="votre@email.com">
+      <div class="msg-erreur" id="err-email">Email valide requis</div>
+    </div>
+    <div class="form-group">
+      <label>Téléphone <span class="req">*</span></label>
+      <input type="tel" id="v-tel" placeholder="+227 XX XX XX XX">
+      <div class="msg-erreur" id="err-tel">Téléphone requis</div>
+    </div>
+    <div class="form-group">
+      <label>Ville de disponibilité <span class="req">*</span></label>
+      <select id="v-ville">
+        <option value="">-- Choisir une ville --</option>
+        <option value="Niamey">Niamey</option>
+        <option value="Zinder">Zinder</option>
+        <option value="Maradi">Maradi</option>
+        <option value="Tahoua">Tahoua</option>
+        <option value="Agadez">Agadez</option>
+        <option value="Dosso">Dosso</option>
+        <option value="Diffa">Diffa</option>
+        <option value="Tillabéri">Tillabéri</option>
+      </select>
+      <div class="msg-erreur" id="err-ville">Ville requise</div>
+    </div>
+    <div class="form-group">
+      <label>Nom du produit <span class="req">*</span></label>
+      <input type="text" id="v-prod-nom" placeholder="Ex: Sésame blanc du Dosso">
+      <div class="msg-erreur" id="err-prod-nom">Nom du produit requis</div>
+    </div>
+    <div class="form-group">
+      <label>Catégorie <span class="req">*</span></label>
+      <select id="v-categorie">
+        <option value="">-- Choisir --</option>
+        <option value="cereales">Céréales et légumineuses</option>
+        <option value="epices">Épices et condiments</option>
+        <option value="transforme_alim">Produits transformés alimentaires</option>
+        <option value="fruits_legumes">Fruits et légumes</option>
+        <option value="elevage">Élevage et produits animaux</option>
+        <option value="artisanat">Artisanat</option>
+        <option value="export">Produits export B2B</option>
+      </select>
+      <div class="msg-erreur" id="err-categorie">Catégorie requise</div>
+    </div>
+    <div class="form-group">
+      <label>Description <span class="req">*</span> <span style="font-size:0.7rem;color:#888">(20 caractères min)</span></label>
+      <textarea id="v-desc" rows="3" placeholder="Décrivez votre produit en détail…"></textarea>
+      <div class="msg-erreur" id="err-desc">Description de 20 caractères minimum requise</div>
+    </div>
+    <div class="form-group">
+      <label>Prix (FCFA) <span class="req">*</span></label>
+      <input type="number" id="v-prix" placeholder="0" min="1">
+      <div class="msg-erreur" id="err-prix">Prix valide requis (supérieur à 0)</div>
+    </div>
+    <div class="form-group">
+      <label>Unité de mesure</label>
+      <input type="text" id="v-unite" placeholder="Ex: kg, litre, sac de 50kg">
+    </div>
+    <div class="form-group">
+      <label>Photo du produit <span class="req">*</span></label>
+      <input type="file" id="v-photos" accept="image/*" multiple>
+      <div class="msg-erreur" id="err-photo">Au moins une photo requise</div>
+    </div>
+
+    <div style="margin:16px 0 8px;font-weight:600;font-size:0.9rem;">Choisir votre offre <span class="req">*</span></div>
+    <div class="msg-erreur" id="err-pack" style="margin-bottom:8px;">Veuillez choisir une offre</div>
+    <div class="tarifs-grid">
+      <div class="tarif-card" id="tarif-standard" onclick="kmSelectTarif('standard')">
+        <div class="check-icon">✓</div>
+        <div class="tarif-nom">Standard</div>
+        <div class="tarif-prix">5 000 FCFA/an</div>
+        <div class="tarif-avantages">
+          ✅ Fiche produit complète<br>
+          ✅ Photos incluses<br>
+          ✅ Contact WhatsApp<br>
+          📊 Commission 2%
+        </div>
+      </div>
+      <div class="tarif-card" id="tarif-vedette" onclick="kmSelectTarif('vedette')">
+        <div class="check-icon">✓</div>
+        <div class="tarif-nom">⭐ Vedette</div>
+        <div class="tarif-prix">15 000 FCFA/an</div>
+        <div class="tarif-avantages">
+          ✅ Tout Standard<br>
+          ⭐ Badge Vedette<br>
+          🔝 Priorité affichage<br>
+          📣 Promotion réseaux<br>
+          📊 Commission 2%
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-vert" onclick="kmShowConfirmTarif()" style="margin-top:16px;">Voir la confirmation →</button>
+  </div>
+</div>
+
+<div id="sec-export" class="section">
+  <div class="form-card">
+    <h2>🌍 Export B2B International</h2>
+    <p style="font-size:0.82rem;color:#555;margin-bottom:16px;">Exportez vers l'Inde, le Vietnam, l'Europe. Remplissez ce formulaire et nous vous recontactons.</p>
+    <div class="form-group"><label>Votre nom / entreprise</label><input type="text" id="ex-nom" placeholder="Nom ou raison sociale"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="ex-email" placeholder="email@exemple.com"></div>
+    <div class="form-group"><label>Téléphone / WhatsApp</label><input type="tel" id="ex-tel" placeholder="+227 XX XX XX XX"></div>
+    <div class="form-group">
+      <label>Produit à exporter</label>
+      <select id="ex-produit">
+        <option value="">-- Choisir --</option>
+        <option value="sesame">Sésame</option>
+        <option value="paprika">Paprika</option>
+        <option value="cornes_boeufs">Cornes de boeufs</option>
+        <option value="gomme_arabique">Gomme arabique</option>
+        <option value="niebe">Niébé</option>
+        <option value="autre">Autre</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Quantité disponible</label><input type="text" id="ex-quantite" placeholder="Ex: 50 tonnes/mois"></div>
+    <div class="form-group"><label>Destination visée</label><input type="text" id="ex-destination" placeholder="Ex: Inde, Vietnam, France"></div>
+    <div class="form-group"><label>Message / Précisions</label><textarea id="ex-message" rows="3" placeholder="Certifications, conditions, délais…"></textarea></div>
+    <button class="btn btn-vert" onclick="kmSoumettreExport()">Envoyer ma demande</button>
+  </div>
+</div>
+
+<div id="sec-espace" class="section">
+  <div id="espace-login-box" class="form-card">
+    <h2>👤 Mon espace vendeur</h2>
+    <p style="font-size:0.82rem;color:#666;margin-bottom:16px;">Connectez-vous pour accéder à votre tableau de bord.</p>
+    <div class="form-group"><label>Email</label><input type="email" id="espace-email" placeholder="votre@email.com"></div>
+    <div class="form-group"><label>Mot de passe</label><input type="password" id="espace-password" placeholder="Mot de passe"></div>
+    <button class="btn btn-vert" onclick="kmLoginVendeur()">Se connecter</button>
+    <div id="espace-login-err" style="color:var(--orange);font-size:0.8rem;margin-top:8px;display:none;"></div>
+  </div>
+  <div id="espace-dashboard" style="display:none;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div class="vendeur-stat"><div class="stat-val" id="espace-nb-produits">0</div><div class="stat-label">Produits</div></div>
+      <div class="vendeur-stat"><div class="stat-val" id="espace-commission-due">0</div><div class="stat-label">Commission due (FCFA)</div></div>
+    </div>
+    <div class="form-card"><h2>Mes produits</h2><div id="espace-produits-list"></div></div>
+    <button class="btn btn-gris" onclick="kmLogoutVendeur()" style="margin-top:10px;">Se déconnecter</button>
+  </div>
+</div>
+
+<div id="sec-admin" class="section">
+  <div id="admin-login-box" class="form-card">
+    <h2>🔐 Administration</h2>
+    <div class="form-group"><label>Email admin</label><input type="email" id="admin-email-input" value="kassanmou@gmail.com"></div>
+    <div class="form-group"><label>Mot de passe</label><input type="password" id="admin-pw-input" placeholder="Mot de passe"></div>
+    <button class="btn btn-vert" onclick="kmLoginAdmin()">Connexion admin</button>
+    <div id="admin-login-err" style="color:var(--orange);font-size:0.8rem;margin-top:8px;display:none;"></div>
+  </div>
+  <div id="admin-dashboard" style="display:none;">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="kmAdminTab('produits',event)">📦 Produits</button>
+      <button class="admin-tab" onclick="kmAdminTab('vendeurs',event)">👥 Vendeurs</button>
+      <button class="admin-tab" onclick="kmAdminTab('commissions',event)">💰 Commissions</button>
+      <button class="admin-tab" onclick="kmAdminTab('commandes',event)">🛒 Commandes</button>
+    </div>
+    <div id="admin-panel-produits" class="admin-panel active">
+      <div id="admin-produits-list" class="loading-box"><div class="spinner"></div> Chargement…</div>
+    </div>
+    <div id="admin-panel-vendeurs" class="admin-panel">
+      <div id="admin-vendeurs-list" class="loading-box"><div class="spinner"></div> Chargement…</div>
+    </div>
+    <div id="admin-panel-commissions" class="admin-panel">
+      <div id="admin-commissions-list" class="loading-box"><div class="spinner"></div> Chargement…</div>
+    </div>
+    <div id="admin-panel-commandes" class="admin-panel">
+      <div id="admin-commandes-list" class="loading-box"><div class="spinner"></div> Chargement…</div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav-bar">
+  <button class="nav-btn active" id="nav-accueil" onclick="kmNav('accueil')"><span class="ico">🏠</span>Accueil</button>
+  <button class="nav-btn" id="nav-marche" onclick="kmNav('marche')"><span class="ico">🛒</span>Marché</button>
+  <button class="nav-btn" id="nav-vendre" onclick="kmNav('vendre')"><span class="ico">📦</span>Vendre</button>
+  <button class="nav-btn" id="nav-export" onclick="kmNav('export')"><span class="ico">🌍</span>Export</button>
+  <button class="nav-btn" id="nav-espace" onclick="kmNav('espace')"><span class="ico">👤</span>Mon espace</button>
+</nav>
+
+<!-- MODAL CONFIRMATION PRODUIT -->
+<div id="modal-confirm" class="modal-overlay">
+  <div class="modal-box">
+    <h3>📋 Confirmation de soumission</h3>
+    <div id="confirm-recap" style="font-size:0.85rem;color:#444;margin-bottom:16px;line-height:1.7;"></div>
+    <div style="background:#fff3cd;border-radius:8px;padding:10px;font-size:0.78rem;color:#856404;margin-bottom:16px;">
+      ⚠️ En soumettant, vous acceptez une commission de 2% sur chaque vente et les conditions générales de Kassan'Mou.
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-gris" style="flex:1" onclick="kmCloseModal('modal-confirm')">← Modifier</button>
+      <button class="btn btn-vert" style="flex:1" id="btn-confirmer-soumission" onclick="kmSoumettreProduiit()">Confirmer ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FICHE PRODUIT -->
+<div id="modal-produit" class="modal-overlay">
+  <div class="modal-box" id="modal-produit-content"></div>
+</div>
+
+<!-- MODAL ADMIN LOGIN -->
+<div id="modal-admin-login" class="modal-overlay">
+  <div class="modal-box">
+    <h3>🔐 Connexion Admin</h3>
+    <div class="form-group"><label>Email</label><input type="email" id="modal-admin-email" value="kassanmou@gmail.com"></div>
+    <div class="form-group"><label>Mot de passe</label><input type="password" id="modal-admin-pw" placeholder="Mot de passe"></div>
+    <button class="btn btn-vert" onclick="kmLoginAdminModal()">Connexion</button>
+    <div id="modal-admin-err" style="color:var(--orange);font-size:0.8rem;margin-top:8px;display:none;"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+// ══════════════════════════════════════════
+// CONFIG — TOUTES LES CLÉS INTÉGRÉES
+// ══════════════════════════════════════════
+var SB_URL = "https://nifnobbeictkbprsixxe.supabase.co";
+var SB_KEY = "sb_publishable_xTHizuii8kXP1RNam9qvzg_HejUYPcT";
+var EJS_SERVICE = "service_5sapdz7";
+var EJS_TPL_ADMIN = "template_6sdif0e";
+var EJS_TPL_VENDEUR = "template_9tuct6s";
+var EJS_PUBLIC_KEY = "qm379MRdiK-Ez0yPq";
+var ADMIN_WA = "22799851532";
+
+var sb = supabase.createClient(SB_URL, SB_KEY);
+emailjs.init(EJS_PUBLIC_KEY);
+
+// ══════════════════════════════════════════
+// ÉTAT GLOBAL
+// ══════════════════════════════════════════
+var kmPackChoisi = "";
+var kmSession = null;
+var kmProduitEnCours = null;
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function kmNav(section) {
+  document.querySelectorAll(".section").forEach(function(s) { s.classList.remove("active"); });
+  document.querySelectorAll(".nav-btn").forEach(function(b) { b.classList.remove("active"); });
+  document.getElementById("sec-" + section).classList.add("active");
+  var nb = document.getElementById("nav-" + section);
+  if (nb) nb.classList.add("active");
+  if (section === "marche") kmChargerMarche();
+  if (section === "admin" && kmSession) {
+    document.getElementById("admin-login-box").style.display = "none";
+    document.getElementById("admin-dashboard").style.display = "block";
+    kmChargerAdminProduits();
+  }
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function kmToast(msg, type) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "show " + (type || "");
+  setTimeout(function() { t.className = ""; }, 3500);
+}
+
+// ══════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════
+function kmCloseModal(id) {
+  document.getElementById(id).classList.remove("open");
+}
+function kmShowAdminLogin() {
+  if (kmSession) { kmNav("admin"); return; }
+  document.getElementById("modal-admin-login").classList.add("open");
+}
+
+// ══════════════════════════════════════════
+// MARCHÉ
+// ══════════════════════════════════════════
+async function kmChargerMarche() {
+  var grid = document.getElementById("marche-grid");
+  grid.className = "loading-box";
+  grid.innerHTML = "<div class=\"spinner\"></div> Chargement des produits\u2026";
+  try {
+    var res = await sb.from("produits").select("*").eq("statut", "valid\u00e9").order("est_vedette", { ascending: false });
+    if (res.error) throw res.error;
+    if (!res.data || res.data.length === 0) {
+      grid.innerHTML = "<p style=\"text-align:center;color:#888;padding:30px;\">Aucun produit disponible pour le moment.</p>";
+      return;
+    }
+    grid.className = "produits-grid";
+    grid.innerHTML = res.data.map(function(p) {
+      var imgHtml = (p.photos && p.photos.length > 0)
+        ? "<img src=\"" + p.photos[0] + "\" alt=\"" + p.nom + "\" loading=\"lazy\">"
+        : "<div style=\"width:100%;height:120px;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:2rem;\">🌿</div>";
+      return "<div class=\"produit-card\" onclick=\"kmOuvrirProduit('" + p.id + "')\">"
+        + imgHtml
+        + "<div class=\"card-body\">"
+        + "<div class=\"card-nom\">" + p.nom + "</div>"
+        + "<div class=\"card-prix\">" + Number(p.prix).toLocaleString("fr-FR") + " FCFA</div>"
+        + (p.ville ? "<div class=\"badge-ville\">📍 " + p.ville + "</div>" : "")
+        + (p.est_vedette ? "<span class=\"badge-vedette\">⭐ Vedette</span>" : "")
+        + "</div></div>";
+    }).join("");
+  } catch(e) {
+    grid.innerHTML = "<p style=\"color:var(--orange);text-align:center;padding:20px;\">Erreur : " + e.message + "</p>";
+  }
+}
+
+// ══════════════════════════════════════════
+// FICHE PRODUIT
+// ══════════════════════════════════════════
+async function kmOuvrirProduit(id) {
+  var modal = document.getElementById("modal-produit");
+  var content = document.getElementById("modal-produit-content");
+  content.innerHTML = "<div class=\"loading-box\"><div class=\"spinner\"></div></div>";
+  modal.classList.add("open");
+  try {
+    var res = await sb.from("produits").select("*").eq("id", id).single();
+    if (res.error) throw res.error;
+    kmProduitEnCours = res.data;
+    content.innerHTML = kmRenduFicheProduit(res.data);
+  } catch(e) {
+    content.innerHTML = "<p style=\"color:var(--orange);padding:20px;\">Erreur : " + e.message + "</p>";
+  }
+}
+
+function kmRenduFicheProduit(p) {
+  var imgHtml = (p.photos && p.photos.length > 0)
+    ? "<img src=\"" + p.photos[0] + "\" style=\"width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:12px;\">"
+    : "<div style=\"width:100%;height:180px;background:#e8f5e9;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:12px;\">🌿</div>";
+  return "<button onclick=\"kmCloseModal('modal-produit')\" style=\"background:none;border:none;font-size:1.4rem;cursor:pointer;float:right;\">✕</button>"
+    + "<h3 style=\"color:var(--vert);margin-bottom:10px;\">" + p.nom + "</h3>"
+    + imgHtml
+    + "<div style=\"font-size:1.2rem;font-weight:700;color:var(--vert);margin-bottom:8px;\">"
+      + Number(p.prix).toLocaleString("fr-FR") + " FCFA" + (p.unite ? " / " + p.unite : "") + "</div>"
+    + (p.ville ? "<div style=\"margin-bottom:8px;\"><span style=\"background:#e8f5e9;color:var(--vert);padding:3px 10px;border-radius:10px;font-size:0.8rem;\">📍 " + p.ville + "</span></div>" : "")
+    + "<p style=\"font-size:0.85rem;color:#444;line-height:1.6;margin-bottom:16px;\">" + p.description + "</p>"
+    + "<button class=\"btn btn-vert\" onclick=\"kmDemanderAchat()\">🛒 Je veux acheter</button>";
+}
+
+function kmDemanderAchat() {
+  var content = document.getElementById("modal-produit-content");
+  content.innerHTML = kmRenduStep1Achat(kmProduitEnCours);
+}
+
+function kmRenduStep1Achat(p) {
+  return "<button onclick=\"kmOuvrirProduit('" + p.id + "')\" style=\"background:none;border:none;cursor:pointer;color:var(--vert);margin-bottom:10px;\">← Retour</button>"
+    + "<h3 style=\"color:var(--vert);margin-bottom:14px;\">🛒 Votre commande</h3>"
+    + "<div class=\"form-group\"><label>Votre nom complet</label><input type=\"text\" id=\"ach-nom\" placeholder=\"Nom complet\"></div>"
+    + "<div class=\"form-group\"><label>Téléphone / WhatsApp</label><input type=\"tel\" id=\"ach-tel\" placeholder=\"+227 XX XX XX XX\"></div>"
+    + "<div class=\"form-group\"><label>Votre ville</label><input type=\"text\" id=\"ach-ville\" placeholder=\"Ex: Niamey\"></div>"
+    + "<div class=\"form-group\"><label>Quantité souhaitée</label><input type=\"number\" id=\"ach-qte\" placeholder=\"1\" min=\"1\" value=\"1\"></div>"
+    + "<div style=\"font-weight:600;font-size:0.9rem;margin:14px 0 8px;\">Mode de livraison</div>"
+    + "<div class=\"livr-opts\">"
+      + "<div class=\"livr-opt\" data-livr=\"livreur\" onclick=\"kmSelectLivr(this)\">🛵 Livreur</div>"
+      + "<div class=\"livr-opt\" data-livr=\"bus\" onclick=\"kmSelectLivr(this)\">🚌 Bus</div>"
+      + "<div class=\"livr-opt\" data-livr=\"retrait\" onclick=\"kmSelectLivr(this)\">🏪 Retrait</div>"
+    + "</div>"
+    + "<div id=\"livr-info-box\" class=\"livr-info-box\"></div>"
+    + "<div style=\"font-weight:600;font-size:0.9rem;margin:14px 0 8px;\">Mode de paiement</div>"
+    + "<select id=\"ach-paiement\" style=\"width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:0.9rem;\">"
+      + "<option value=\"\">-- Choisir --</option>"
+      + "<option value=\"amana\">Dépôt Amana</option>"
+      + "<option value=\"nita\">Dépôt Nita</option>"
+      + "<option value=\"cash\">Cash au livreur</option>"
+    + "</select>"
+    + "<button class=\"btn btn-vert\" style=\"margin-top:16px;\" onclick=\"kmConfirmerAchat()\">Confirmer la commande →</button>";
+}
+
+// ══════════════════════════════════════════
+// LIVRAISON — CÂBLAGE CORRIGÉ
+// ══════════════════════════════════════════
+function kmSelectLivr(el) {
+  document.querySelectorAll(".livr-opt").forEach(function(o) { o.classList.remove("selected"); });
+  el.classList.add("selected");
+  var choix = el.getAttribute("data-livr");
+  var box = document.getElementById("livr-info-box");
+  if (!box) return;
+  var infos = {
+    "livreur": "🛵 <strong>Livraison par livreur Kassan'Mou</strong><br>Délai : 1 à 3h dans la ville<br>Frais : selon distance<br>Contact : +227 99 85 15 32",
+    "bus": "🚌 <strong>Livraison par bus inter-villes</strong><br>Délai : 1 à 3 jours selon destination<br>Envoi depuis la ville du vendeur<br>Frais à la charge de l'acheteur",
+    "retrait": "🏪 <strong>Retrait sur place</strong><br>Sans frais de livraison<br>Coordonnées communiquées par WhatsApp<br>Délai : convenu directement avec le vendeur"
+  };
+  box.style.display = "block";
+  box.innerHTML = infos[choix] || "";
+}
+
+async function kmConfirmerAchat() {
+  var nom = document.getElementById("ach-nom").value.trim();
+  var tel = document.getElementById("ach-tel").value.trim();
+  var ville = document.getElementById("ach-ville").value.trim();
+  var qte = document.getElementById("ach-qte").value;
+  var paiement = document.getElementById("ach-paiement").value;
+  var livrOpt = document.querySelector(".livr-opt.selected");
+  var livraison = livrOpt ? livrOpt.getAttribute("data-livr") : "";
+  if (!nom || !tel || !qte) { kmToast("Veuillez remplir nom, téléphone et quantité", "erreur"); return; }
+  var p = kmProduitEnCours;
+  var montant = (Number(qte) * Number(p.prix)).toLocaleString("fr-FR");
+  var ref = "KM-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+  try {
+    await sb.from("commandes").insert({
+      produit_id: p.id,
+      acheteur_nom: nom,
+      acheteur_telephone: tel,
+      acheteur_ville: ville,
+      quantite: Number(qte),
+      prix_unitaire: Number(p.prix),
+      montant_total: Number(qte) * Number(p.prix),
+      mode_paiement: paiement,
+      mode_livraison: livraison,
+      reference: ref,
+      statut: "en_attente"
+    });
+  } catch(e) { console.warn("Erreur commande:", e.message); }
+  var msg = "Bonjour Kassan'Mou!\nCommande : " + ref + "\nProduit : " + p.nom + "\nQte : " + qte + " " + (p.unite || "") + "\nMontant : " + montant + " FCFA\nAcheteur : " + nom + "\nTel : " + tel + "\nVille : " + (ville || "?") + "\nLivraison : " + (livraison || "?") + "\nPaiement : " + (paiement || "?");
+  var waUrl = "https://wa.me/" + ADMIN_WA + "?text=" + encodeURIComponent(msg);
+  var content = document.getElementById("modal-produit-content");
+  content.innerHTML = "<div style=\"text-align:center;padding:20px;\">"
+    + "<div style=\"font-size:3rem;\">✅</div>"
+    + "<h3 style=\"color:var(--vert);margin:12px 0;\">Commande enregistrée !</h3>"
+    + "<p style=\"font-size:0.85rem;color:#555;margin-bottom:6px;\">Référence : <strong>" + ref + "</strong></p>"
+    + "<p style=\"font-size:0.82rem;color:#555;margin-bottom:20px;\">Cliquez ci-dessous pour finaliser via WhatsApp</p>"
+    + "<a href=\"" + waUrl + "\" target=\"_blank\" class=\"btn btn-vert\" style=\"text-decoration:none;display:block;\">📱 Finaliser sur WhatsApp</a>"
+    + "<button class=\"btn btn-gris\" style=\"margin-top:10px;\" onclick=\"kmCloseModal('modal-produit')\">Fermer</button>"
+    + "</div>";
+}
+
+// ══════════════════════════════════════════
+// FORMULAIRE VENDEUR — VALIDATION STRICTE
+// ══════════════════════════════════════════
+function kmSelectTarif(pack) {
+  kmPackChoisi = pack;
+  document.getElementById("tarif-standard").classList.toggle("selected", pack === "standard");
+  document.getElementById("tarif-vedette").classList.toggle("selected", pack === "vedette");
+  document.getElementById("err-pack").classList.remove("visible");
+}
+
+function kmChampErreur(id, errId, condition) {
+  var el = document.getElementById(id);
+  var err = document.getElementById(errId);
+  if (condition) { el.classList.add("erreur"); err.classList.add("visible"); return true; }
+  el.classList.remove("erreur"); err.classList.remove("visible"); return false;
+}
+
+function kmValiderFormulaire() {
+  var ok = true;
+  if (kmChampErreur("v-nom", "err-nom", !document.getElementById("v-nom").value.trim())) ok = false;
+  var email = document.getElementById("v-email").value.trim();
+  if (kmChampErreur("v-email", "err-email", !email || !email.includes("@"))) ok = false;
+  if (kmChampErreur("v-tel", "err-tel", !document.getElementById("v-tel").value.trim())) ok = false;
+  if (kmChampErreur("v-ville", "err-ville", !document.getElementById("v-ville").value)) ok = false;
+  if (kmChampErreur("v-prod-nom", "err-prod-nom", !document.getElementById("v-prod-nom").value.trim())) ok = false;
+  if (kmChampErreur("v-categorie", "err-categorie", !document.getElementById("v-categorie").value)) ok = false;
+  if (kmChampErreur("v-desc", "err-desc", document.getElementById("v-desc").value.trim().length < 20)) ok = false;
+  var prix = document.getElementById("v-prix").value;
+  if (kmChampErreur("v-prix", "err-prix", !prix || Number(prix) <= 0)) ok = false;
+  var photos = document.getElementById("v-photos").files;
+  if (kmChampErreur("v-photos", "err-photo", !photos || photos.length === 0)) ok = false;
+  if (!kmPackChoisi) { document.getElementById("err-pack").classList.add("visible"); ok = false; }
+  return ok;
+}
+
+function kmShowConfirmTarif() {
+  if (!kmValiderFormulaire()) { kmToast("Veuillez corriger les champs en rouge", "erreur"); return; }
+  var nom = document.getElementById("v-nom").value.trim();
+  var email = document.getElementById("v-email").value.trim();
+  var tel = document.getElementById("v-tel").value.trim();
+  var ville = document.getElementById("v-ville").value;
+  var prodNom = document.getElementById("v-prod-nom").value.trim();
+  var prix = document.getElementById("v-prix").value;
+  var pack = kmPackChoisi === "vedette" ? "Vedette — 15 000 FCFA/an" : "Standard — 5 000 FCFA/an";
+  document.getElementById("confirm-recap").innerHTML =
+    "<strong>Vendeur :</strong> " + nom + "<br>"
+    + "<strong>Email :</strong> " + email + "<br>"
+    + "<strong>Téléphone :</strong> " + tel + "<br>"
+    + "<strong>Ville :</strong> " + ville + "<br>"
+    + "<strong>Produit :</strong> " + prodNom + "<br>"
+    + "<strong>Prix :</strong> " + Number(prix).toLocaleString("fr-FR") + " FCFA<br>"
+    + "<strong>Offre :</strong> " + pack + "<br>"
+    + "<strong>Commission :</strong> 2% sur chaque vente";
+  document.getElementById("modal-confirm").classList.add("open");
+}
+
+async function kmSoumettreProduiit() {
+  var btn = document.getElementById("btn-confirmer-soumission");
+  btn.disabled = true;
+  btn.textContent = "Envoi en cours\u2026";
+  var nom = document.getElementById("v-nom").value.trim();
+  var email = document.getElementById("v-email").value.trim();
+  var tel = document.getElementById("v-tel").value.trim();
+  var ville = document.getElementById("v-ville").value;
+  var prodNom = document.getElementById("v-prod-nom").value.trim();
+  var categorie = document.getElementById("v-categorie").value;
+  var desc = document.getElementById("v-desc").value.trim();
+  var prix = parseFloat(document.getElementById("v-prix").value);
+  var unite = document.getElementById("v-unite").value.trim();
+  var photos = document.getElementById("v-photos").files;
+  try {
+    // 1. Créer ou retrouver le vendeur
+    var vendeurId = null;
+    var vendExist = await sb.from("vendeurs").select("id").eq("email", email).maybeSingle();
+    if (vendExist.data) {
+      vendeurId = vendExist.data.id;
+    } else {
+      var vendInsert = await sb.from("vendeurs").insert({
+        nom: nom, email: email, telephone: tel,
+        ville: ville, statut: "actif", abonnement: kmPackChoisi
+      }).select("id").single();
+      if (vendInsert.error) throw vendInsert.error;
+      vendeurId = vendInsert.data.id;
+    }
+    // 2. Upload photos
+    var photoUrls = [];
+    for (var i = 0; i < photos.length; i++) {
+      var file = photos[i];
+      var fname = "prod_" + Date.now() + "_" + i + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
+      var upRes = await sb.storage.from("produits-photos").upload(fname, file, { upsert: true });
+      if (!upRes.error) {
+        var pub = sb.storage.from("produits-photos").getPublicUrl(fname);
+        photoUrls.push(pub.data.publicUrl);
+      }
+    }
+    // 3. Insérer le produit — vendeur_id JAMAIS NULL
+    var codeVal = "KM-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    var prodInsert = await sb.from("produits").insert({
+      vendeur_id: vendeurId,
+      nom: prodNom,
+      description: desc,
+      categorie: categorie,
+      prix: prix,
+      unite: unite || "unit\u00e9",
+      ville: ville,
+      photos: photoUrls,
+      statut: "en_attente",
+      pack_publication: kmPackChoisi === "vedette" ? "annuel" : "30jours",
+      est_vedette: kmPackChoisi === "vedette",
+      code_validation: codeVal,
+      export_international: categorie === "export"
+    }).select("id").single();
+    if (prodInsert.error) throw prodInsert.error;
+    // 4. Email admin
+    try {
+      await emailjs.send(EJS_SERVICE, EJS_TPL_ADMIN, {
+        to_email: "kassanmou@gmail.com",
+        produit_nom: prodNom,
+        vendeur_nom: nom,
+        vendeur_email: email,
+        vendeur_tel: tel,
+        ville: ville,
+        prix: prix + " FCFA",
+        pack: kmPackChoisi,
+        code: codeVal
+      });
+    } catch(e2) { console.warn("Email admin:", e2); }
+    // 5. Email vendeur
+    try {
+      await emailjs.send(EJS_SERVICE, EJS_TPL_VENDEUR, {
+        to_email: email,
+        to_name: nom,
+        produit_nom: prodNom,
+        statut: "reçu et en cours de validation",
+        message: "Votre produit a bien été reçu. Notre équipe le validera dans les 24h.",
+        code: codeVal
+      });
+    } catch(e3) { console.warn("Email vendeur:", e3); }
+    kmCloseModal("modal-confirm");
+    kmToast("Produit soumis ! Référence : " + codeVal, "succes");
+    kmResetFormVendeur();
+  } catch(e) {
+    kmToast("Erreur : " + e.message, "erreur");
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Confirmer ✓";
+  }
+}
+
+function kmResetFormVendeur() {
+  ["v-nom","v-email","v-tel","v-prod-nom","v-desc","v-prix","v-unite"].forEach(function(id) {
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("v-ville").value = "";
+  document.getElementById("v-categorie").value = "";
+  document.getElementById("v-photos").value = "";
+  kmPackChoisi = "";
+  document.getElementById("tarif-standard").classList.remove("selected");
+  document.getElementById("tarif-vedette").classList.remove("selected");
+}
+
+// ══════════════════════════════════════════
+// EXPORT B2B
+// ══════════════════════════════════════════
+async function kmSoumettreExport() {
+  var nom = document.getElementById("ex-nom").value.trim();
+  var email = document.getElementById("ex-email").value.trim();
+  var produit = document.getElementById("ex-produit").value;
+  if (!nom || !email || !produit) { kmToast("Nom, email et produit requis", "erreur"); return; }
+  try {
+    await sb.from("export_demandes").insert({
+      nom_entreprise: nom, email: email,
+      telephone: document.getElementById("ex-tel").value,
+      produit: produit,
+      quantite: document.getElementById("ex-quantite").value,
+      destination: document.getElementById("ex-destination").value,
+      message: document.getElementById("ex-message").value,
+      statut: "en_attente"
+    });
+    kmToast("Demande d'export envoyée ! Nous vous recontactons sous 48h.", "succes");
+    ["ex-nom","ex-email","ex-tel","ex-quantite","ex-destination","ex-message"].forEach(function(id) {
+      document.getElementById(id).value = "";
+    });
+    document.getElementById("ex-produit").value = "";
+  } catch(e) { kmToast("Erreur : " + e.message, "erreur"); }
+}
+
+// ══════════════════════════════════════════
+// ESPACE VENDEUR
+// ══════════════════════════════════════════
+async function kmLoginVendeur() {
+  var email = document.getElementById("espace-email").value.trim();
+  var pw = document.getElementById("espace-password").value;
+  var errEl = document.getElementById("espace-login-err");
+  errEl.style.display = "none";
+  if (!email || !pw) { errEl.textContent = "Email et mot de passe requis."; errEl.style.display = "block"; return; }
+  try {
+    var res = await sb.auth.signInWithPassword({ email: email, password: pw });
+    if (res.error) throw res.error;
+    document.getElementById("espace-login-box").style.display = "none";
+    document.getElementById("espace-dashboard").style.display = "block";
+    kmChargerEspaceVendeur(res.data.user.id, email);
+  } catch(e) {
+    errEl.textContent = "Connexion impossible : " + e.message;
+    errEl.style.display = "block";
+  }
+}
+
+async function kmChargerEspaceVendeur(userId, email) {
+  try {
+    var vendRes = await sb.from("vendeurs").select("id").eq("email", email).maybeSingle();
+    var vendeurId = vendRes.data ? vendRes.data.id : null;
+    if (!vendeurId) { document.getElementById("espace-produits-list").innerHTML = "<p style=\"color:#888;font-size:0.85rem;\">Aucun produit trouvé.</p>"; return; }
+    var prodRes = await sb.from("produits").select("*").eq("vendeur_id", vendeurId);
+    var produits = prodRes.data || [];
+    document.getElementById("espace-nb-produits").textContent = produits.length;
+    var list = document.getElementById("espace-produits-list");
+    if (produits.length === 0) { list.innerHTML = "<p style=\"color:#888;font-size:0.85rem;\">Aucun produit soumis.</p>"; return; }
+    list.innerHTML = produits.map(function(p) {
+      var badgeCls = p.statut === "valid\u00e9" ? "badge-vert" : p.statut === "refus\u00e9" ? "badge-rouge" : "badge-orange";
+      return "<div style=\"border-bottom:1px solid #eee;padding:10px 0;\">"
+        + "<strong>" + p.nom + "</strong> <span class=\"badge " + badgeCls + "\">" + p.statut + "</span>"
+        + "<div style=\"font-size:0.78rem;color:#666;margin-top:3px;\">" + Number(p.prix).toLocaleString("fr-FR") + " FCFA — " + (p.ville || "") + "</div>"
+        + "</div>";
+    }).join("");
+  } catch(e) { console.error("Espace vendeur:", e); }
+}
+
+async function kmLogoutVendeur() {
+  await sb.auth.signOut();
+  document.getElementById("espace-login-box").style.display = "block";
+  document.getElementById("espace-dashboard").style.display = "none";
+  document.getElementById("espace-email").value = "";
+  document.getElementById("espace-password").value = "";
+}
+
+// ══════════════════════════════════════════
+// ADMIN — LOGIN
+// ══════════════════════════════════════════
+async function kmLoginAdminModal() {
+  var email = document.getElementById("modal-admin-email").value.trim();
+  var pw = document.getElementById("modal-admin-pw").value;
+  var errEl = document.getElementById("modal-admin-err");
+  errEl.style.display = "none";
+  try {
+    var res = await sb.auth.signInWithPassword({ email: email, password: pw });
+    if (res.error) throw res.error;
+    var prof = await sb.from("profiles").select("role").eq("id", res.data.user.id).single();
+    if (!prof.data || prof.data.role !== "admin") throw new Error("Accès refusé");
+    kmSession = res.data.session;
+    kmCloseModal("modal-admin-login");
+    document.getElementById("btn-admin-login").textContent = "Admin ✓";
+    kmNav("admin");
+  } catch(e) { errEl.textContent = e.message; errEl.style.display = "block"; }
+}
+
+async function kmLoginAdmin() {
+  var email = document.getElementById("admin-email-input").value.trim();
+  var pw = document.getElementById("admin-pw-input").value;
+  var errEl = document.getElementById("admin-login-err");
+  errEl.style.display = "none";
+  try {
+    var res = await sb.auth.signInWithPassword({ email: email, password: pw });
+    if (res.error) throw res.error;
+    kmSession = res.data.session;
+    document.getElementById("admin-login-box").style.display = "none";
+    document.getElementById("admin-dashboard").style.display = "block";
+    document.getElementById("btn-admin-login").textContent = "Admin ✓";
+    kmChargerAdminProduits();
+  } catch(e) { errEl.textContent = e.message; errEl.style.display = "block"; }
+}
+
+// ══════════════════════════════════════════
+// ADMIN — ONGLETS
+// ══════════════════════════════════════════
+function kmAdminTab(tab, event) {
+  document.querySelectorAll(".admin-tab").forEach(function(t) { t.classList.remove("active"); });
+  document.querySelectorAll(".admin-panel").forEach(function(p) { p.classList.remove("active"); });
+  if (event && event.target) event.target.classList.add("active");
+  document.getElementById("admin-panel-" + tab).classList.add("active");
+  if (tab === "produits") kmChargerAdminProduits();
+  if (tab === "vendeurs") kmChargerAdminVendeurs();
+  if (tab === "commissions") kmChargerAdminCommissions();
+  if (tab === "commandes") kmChargerAdminCommandes();
+}
+
+// ══════════════════════════════════════════
+// ADMIN — PRODUITS
+// ══════════════════════════════════════════
+async function kmChargerAdminProduits() {
+  var list = document.getElementById("admin-produits-list");
+  list.innerHTML = "<div class=\"loading-box\"><div class=\"spinner\"></div></div>";
+  try {
+    var res = await sb.from("produits").select("*, vendeurs(nom, email, telephone)").order("date_soumission", { ascending: false });
+    if (res.error) throw res.error;
+    if (!res.data || res.data.length === 0) {
+      list.innerHTML = "<p style=\"color:#888;padding:20px;text-align:center;\">Aucun produit.</p>"; return;
+    }
+    list.innerHTML = res.data.map(function(p) {
+      var v = p.vendeurs || {};
+      var badgeCls = p.statut === "valid\u00e9" ? "badge-vert" : p.statut === "refus\u00e9" ? "badge-rouge" : "badge-orange";
+      return "<div class=\"produit-admin-card\">"
+        + "<div class=\"pa-nom\">" + p.nom + " <span class=\"badge " + badgeCls + "\">" + p.statut + "</span></div>"
+        + "<div class=\"pa-detail\">💰 " + Number(p.prix).toLocaleString("fr-FR") + " FCFA | 📍 " + (p.ville || "?") + "<br>"
+          + "👤 " + (v.nom || "Sans vendeur") + " — " + (v.email || "") + "</div>"
+        + "<div class=\"pa-actions\">"
+          + (p.statut === "en_attente" ? "<button class=\"btn-sm btn-vert\" onclick=\"kmValiderProduit('" + p.id + "')\">✓ Valider</button>" : "")
+          + (p.statut === "en_attente" ? "<button class=\"btn-sm btn-orange\" onclick=\"kmRefuserProduit('" + p.id + "')\">✗ Refuser</button>" : "")
+          + (v.telephone ? "<a href=\"https://wa.me/" + v.telephone.replace(/[^0-9]/g,"") + "?text=" + encodeURIComponent("Bonjour " + (v.nom||"") + ", concernant votre produit \"" + p.nom + "\" sur Kassan'Mou.") + "\" target=\"_blank\" class=\"btn-sm\" style=\"background:#25d366;color:white;\">📱 WA</a>" : "")
+        + "</div></div>";
+    }).join("");
+  } catch(e) { list.innerHTML = "<p style=\"color:var(--orange);padding:20px;\">Erreur : " + e.message + "</p>"; }
+}
+
+async function kmValiderProduit(id) {
+  try {
+    var res = await sb.from("produits")
+      .update({ statut: "valid\u00e9", date_validation: new Date().toISOString() })
+      .eq("id", id).select("*, vendeurs(nom, email)").single();
+    if (res.error) throw res.error;
+    var v = res.data.vendeurs || {};
+    if (v.email) {
+      try {
+        await emailjs.send(EJS_SERVICE, EJS_TPL_VENDEUR, {
+          to_email: v.email, to_name: v.nom || "Vendeur",
+          produit_nom: res.data.nom, statut: "valid\u00e9",
+          message: "Votre produit est maintenant visible sur le march\u00e9 Kassan'Mou !",
+          code: res.data.code_validation || ""
+        });
+      } catch(e) { console.warn("Email vendeur:", e); }
+    }
+    kmToast("Produit valid\u00e9 \u2713", "succes");
+    kmChargerAdminProduits();
+  } catch(e) { kmToast("Erreur : " + e.message, "erreur"); }
+}
+
+async function kmRefuserProduit(id) {
+  try {
+    await sb.from("produits").update({ statut: "refus\u00e9" }).eq("id", id);
+    kmToast("Produit refus\u00e9", "erreur");
+    kmChargerAdminProduits();
+  } catch(e) { kmToast("Erreur : " + e.message, "erreur"); }
+}
+
+// ══════════════════════════════════════════
+// ADMIN — VENDEURS
+// ══════════════════════════════════════════
+async function kmChargerAdminVendeurs() {
+  var list = document.getElementById("admin-vendeurs-list");
+  list.innerHTML = "<div class=\"loading-box\"><div class=\"spinner\"></div></div>";
+  try {
+    var res = await sb.from("vendeurs").select("*");
+    if (res.error) throw res.error;
+    if (!res.data || res.data.length === 0) { list.innerHTML = "<p style=\"color:#888;padding:20px;text-align:center;\">Aucun vendeur.</p>"; return; }
+    list.innerHTML = res.data.map(function(v) {
+      return "<div class=\"produit-admin-card\">"
+        + "<div class=\"pa-nom\">" + (v.nom || "Sans nom") + "</div>"
+        + "<div class=\"pa-detail\">📧 " + (v.email || "") + " | 📞 " + (v.telephone || "") + " | 📍 " + (v.ville || "") + "</div>"
+        + "<div class=\"pa-actions\">"
+          + (v.telephone ? "<a href=\"https://wa.me/" + v.telephone.replace(/[^0-9]/g,"") + "\" target=\"_blank\" class=\"btn-sm\" style=\"background:#25d366;color:white;\">📱 WhatsApp</a>" : "")
+        + "</div></div>";
+    }).join("");
+  } catch(e) { list.innerHTML = "<p style=\"color:var(--orange);padding:20px;\">Erreur : " + e.message + "</p>"; }
+}
+
+// ══════════════════════════════════════════
+// ADMIN — COMMISSIONS
+// ══════════════════════════════════════════
+async function kmChargerAdminCommissions() {
+  var list = document.getElementById("admin-commissions-list");
+  list.innerHTML = "<div class=\"loading-box\"><div class=\"spinner\"></div></div>";
+  try {
+    var res = await sb.from("commissions").select("*, vendeurs(nom), produits(nom)");
+    if (res.error) throw res.error;
+    if (!res.data || res.data.length === 0) { list.innerHTML = "<p style=\"color:#888;padding:20px;text-align:center;\">Aucune commission.</p>"; return; }
+    var total = res.data.reduce(function(s, c) { return s + (Number(c.montant_commission) || 0); }, 0);
+    list.innerHTML = "<div style=\"background:var(--vert);color:white;border-radius:10px;padding:12px;margin-bottom:12px;text-align:center;\">"
+      + "<strong>Total : " + total.toLocaleString("fr-FR") + " FCFA</strong></div>"
+      + res.data.map(function(c) {
+          var v = c.vendeurs || {};
+          var p = c.produits || {};
+          var badgeCls = c.statut === "payee" ? "badge-vert" : "badge-orange";
+          return "<div class=\"produit-admin-card\">"
+            + "<div class=\"pa-nom\">" + (p.nom || "Produit") + " <span class=\"badge " + badgeCls + "\">" + (c.statut || "due") + "</span></div>"
+            + "<div class=\"pa-detail\">👤 " + (v.nom || "") + " | 💰 " + Number(c.montant_commission||0).toLocaleString("fr-FR") + " FCFA</div>"
+            + (c.statut !== "payee" ? "<div class=\"pa-actions\"><button class=\"btn-sm btn-vert\" onclick=\"kmMarquerPayee('" + c.id + "')\">✓ Marquer payée</button></div>" : "")
+            + "</div>";
+        }).join("");
+  } catch(e) { list.innerHTML = "<p style=\"color:var(--orange);padding:20px;\">Erreur : " + e.message + "</p>"; }
+}
+
+async function kmMarquerPayee(id) {
+  try {
+    await sb.from("commissions").update({ statut: "payee", date_paiement: new Date().toISOString() }).eq("id", id);
+    kmToast("Commission marquée payée ✓", "succes");
+    kmChargerAdminCommissions();
+  } catch(e) { kmToast("Erreur : " + e.message, "erreur"); }
+}
+
+// ══════════════════════════════════════════
+// ADMIN — COMMANDES
+// ══════════════════════════════════════════
+async function kmChargerAdminCommandes() {
+  var list = document.getElementById("admin-commandes-list");
+  list.innerHTML = "<div class=\"loading-box\"><div class=\"spinner\"></div></div>";
+  try {
+    var res = await sb.from("commandes").select("*, produits(nom)").order("date_commande", { ascending: false });
+    if (res.error) throw res.error;
+    if (!res.data || res.data.length === 0) { list.innerHTML = "<p style=\"color:#888;padding:20px;text-align:center;\">Aucune commande.</p>"; return; }
+    list.innerHTML = res.data.map(function(c) {
+      var p = c.produits || {};
+      var badgeCls = c.statut === "livree" ? "badge-vert" : c.statut === "annulee" ? "badge-rouge" : "badge-orange";
+      return "<div class=\"produit-admin-card\">"
+        + "<div class=\"pa-nom\">" + (c.reference || "?") + " <span class=\"badge " + badgeCls + "\">" + (c.statut || "en_attente") + "</span></div>"
+        + "<div class=\"pa-detail\">📦 " + (p.nom || "?") + " | Qté: " + (c.quantite || 1) + "<br>"
+          + "👤 " + (c.acheteur_nom || "") + " — " + (c.acheteur_telephone || "") + "<br>"
+          + "💰 " + Number(c.montant_total||0).toLocaleString("fr-FR") + " FCFA | " + (c.mode_livraison || "") + "</div>"
+        + "</div>";
+    }).join("");
+  } catch(e) { list.innerHTML = "<p style=\"color:var(--orange);padding:20px;\">Erreur : " + e.message + "</p>"; }
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", async function() {
+  var sess = await sb.auth.getSession();
+  if (sess.data && sess.data.session) {
+    kmSession = sess.data.session;
+    document.getElementById("btn-admin-login").textContent = "Admin \u2713";
+  }
+  kmChargerMarche();
+});
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").catch(function() {});
+}
+</script>
+</body>
+</html>
