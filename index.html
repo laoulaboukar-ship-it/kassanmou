@@ -3915,11 +3915,14 @@ function openModal(type){
   window._selectedModes = selectedModes;
   document.querySelectorAll('.sms-card').forEach(function(c){
     c.addEventListener('click',function(){
-      c.classList.toggle('sel-'+c.dataset.mode);
-      if(selectedModes.includes(c.dataset.mode)){
-        selectedModes=selectedModes.filter(function(m){return m!==c.dataset.mode;});
+      var mode = c.dataset.mode;
+      var cssClass = mode === 'gros' ? 'sel-g' : 'sel-d'; /* v44 fix: correspondance CSS */
+      if(selectedModes.includes(mode)){
+        selectedModes = selectedModes.filter(function(m){return m !== mode;});
+        c.classList.remove(cssClass);
       } else {
-        selectedModes.push(c.dataset.mode);
+        selectedModes.push(mode);
+        c.classList.add(cssClass);
       }
       window._selectedModes = selectedModes;
     });
@@ -4147,7 +4150,9 @@ function submitProduct(modes){
   var prodCode=generateCode();
   var isExport=g('exp-yes')&&g('exp-yes').classList.contains('sel-yes');
   var packVal=(g('prod-pack')||{}).value||'5000';
-  var packDuree={'2000':'7 jours','5000':'30 jours','15000':'90 jours','50000':'1 an'}[packVal]||'30 jours';
+  /* v44 FIX BUG 4 : durée annuelle correcte */
+  var packDuree = packVal === '15000' ? '1 an (Vedette)' : '1 an';
+  var packNom   = packVal === '15000' ? '15 000 FCFA — Vedette' : '5 000 FCFA — Standard';
   var prodData={
     id:'PROD-'+Date.now(),code:prodCode,
     nom:nm.value.trim(),
@@ -4161,6 +4166,7 @@ function submitProduct(modes){
     origine:(g('prod-orig')||{}).value||'',
     description:(g('prod-desc')||{}).value||'',
     pack:packVal,
+    packNom:packNom,
     duree:packDuree,
     photos:uploadedPhotos.length,
     email:emailVal,phone:phoneVal,
@@ -4187,7 +4193,7 @@ function submitProduct(modes){
     ville: prodData.origine,
     description: prodData.description,
     photosData: uploadedPhotos,
-    pack: ({'2000':'7jours','5000':'30jours','15000':'90jours','50000':'annuel'}[prodData.pack]||'30jours'),
+    pack: 'annuel', /* v44: toujours annuel */
     code: prodCode,
     typeVendeur: prodData.sellerType,
     vendeurNom: prodData.email || prodData.phone || 'Vendeur',
@@ -4234,7 +4240,7 @@ function submitProduct(modes){
         '3️⃣ Nous vous contactons pour le <strong>paiement</strong> ('+prodData.pack+' FCFA)<br>'+
         '4️⃣ Après paiement → votre produit est <strong>visible '+prodData.duree+'</strong> ✓'+
         '<div style="margin-top:10px;padding:8px 12px;background:rgba(45,90,27,.08);border-radius:var(--rs);border-left:3px solid var(--O);font-size:12px">'+
-        '⏱ <strong>Durée de publication :</strong> '+prodData.duree+' · Renouvelable à expiration'+
+        '📅 <strong>Durée :</strong> 1 an jusqu\'à épuisement du produit · Renouvelable à expiration'+
         '</div>'+
       '</div>'+
 
@@ -4253,7 +4259,7 @@ function submitProduct(modes){
 
       '<div style="display:flex;flex-direction:column;gap:10px">'+
         '<button id="btn-wa-submit" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;border-radius:var(--rm);background:#25D366;color:#fff;border:none;cursor:pointer;font-size:14px;font-weight:700;font-family:\'Outfit\',sans-serif;box-shadow:0 4px 16px rgba(37,211,102,.3)">'+
-          '📲 Renvoyer via WhatsApp'+
+          '📲 Envoyer via WhatsApp à l\'équipe'+
         '</button>'+
         '<button id="btn-email-submit" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px;border-radius:var(--rm);background:var(--Ol);color:var(--Od);border:2px solid var(--O);font-size:14px;font-weight:700;font-family:\'Outfit\',sans-serif;cursor:pointer">'+
           '✉️ Renvoyer par Email'+
