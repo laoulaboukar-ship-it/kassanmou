@@ -4,7 +4,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v43-kassanmou-2026">
+<meta name="km-version" content="v44-kassanmou-2026">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -2827,6 +2827,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   <button class="adm-tab" data-atab="allprod">🌾 Produits</button>
   <button class="adm-tab" data-atab="vendeurs_admin">👥 Vendeurs</button>
   <button class="adm-tab" data-atab="commissions_admin">💰 Commissions</button>
+  <button class="adm-tab" data-atab="abonnements">🗓️ Abonnements</button>
   <button class="adm-tab" data-atab="livreurs">🛵 Livreurs</button>
   <button class="adm-tab" data-atab="commandes_admin">📦 Commandes</button>
 </div>
@@ -4339,6 +4340,7 @@ function renderDash(tab){
   else if(tab==='allprod')   dashTousProduits();
   else if(tab==='vendeurs_admin')   dashVendeurs();
   else if(tab==='commissions_admin')dashCommissions();
+  else if(tab==='abonnements')      dashAbonnements();
   else if(tab==='livreurs')         dashLivreurs();
   else if(tab==='commandes_admin')  dashCommandes();
 }
@@ -4492,6 +4494,129 @@ async function dashTousProduits(){
 }
 
 /* ─── LIVREURS ─────────────────────────────── */
+/* ═══════════════════════════════════════════════════
+   v44 — ONGLET ABONNEMENTS
+   Affiche tous les vendeurs avec statut abonnement,
+   date d'expiration, et alerte les expirations proches
+═══════════════════════════════════════════════════ */
+async function dashAbonnements(){
+  var body=g('dash-body');
+  body.innerHTML='<div class="adm-loading">Chargement des abonnements...</div>';
+  if(!kmDB){body.innerHTML='<div class="adm-empty">Supabase non connecté.</div>';return;}
+
+  /* Charger les produits validés avec leurs vendeurs */
+  var rp=await kmDB.from('produits')
+    .select('id,nom,statut,pack_publication,est_vedette,date_validation,date_expiration,vendeur_id,vendeurs(id,nom,email,telephone,abonnement)')
+    .eq('statut','validé')
+    .order('date_expiration',{ascending:true});
+
+  if(rp.error){body.innerHTML='<div class="adm-empty">Erreur: '+rp.error.message+'</div>';return;}
+  var prods=rp.data||[];
+
+  /* Statistiques */
+  var now=new Date();
+  var expiresSoon=prods.filter(function(p){
+    if(!p.date_expiration)return false;
+    var diff=(new Date(p.date_expiration)-now)/(1000*60*60*24);
+    return diff>=0&&diff<=30;
+  });
+  var expires7=prods.filter(function(p){
+    if(!p.date_expiration)return false;
+    var diff=(new Date(p.date_expiration)-now)/(1000*60*60*24);
+    return diff>=0&&diff<=7;
+  });
+  var expired=prods.filter(function(p){
+    if(!p.date_expiration)return false;
+    return new Date(p.date_expiration)<now;
+  });
+
+  var html='';
+
+  /* Bannière stats */
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px">'
+    +'<div class="adm-box" style="text-align:center;padding:14px">'
+      +'<div style="font-size:1.8rem;font-weight:700;color:var(--G)">'+prods.length+'</div>'
+      +'<div style="font-size:11px;color:var(--Mu)">Produits actifs</div>'
+    +'</div>'
+    +'<div class="adm-box" style="text-align:center;padding:14px">'
+      +'<div style="font-size:1.8rem;font-weight:700;color:#E8C060">'+expiresSoon.length+'</div>'
+      +'<div style="font-size:11px;color:var(--Mu)">Expirent dans 30j</div>'
+    +'</div>'
+    +'<div class="adm-box" style="text-align:center;padding:14px">'
+      +'<div style="font-size:1.8rem;font-weight:700;color:var(--T)">'+expires7.length+'</div>'
+      +'<div style="font-size:11px;color:var(--Mu)">Expirent dans 7j</div>'
+    +'</div>'
+    +'<div class="adm-box" style="text-align:center;padding:14px">'
+      +'<div style="font-size:1.8rem;font-weight:700;color:#f44">'+expired.length+'</div>'
+      +'<div style="font-size:11px;color:var(--Mu)">Expirés</div>'
+    +'</div>'
+  +'</div>';
+
+  if(prods.length===0){
+    html+='<div class="adm-empty">Aucun produit validé pour le moment.</div>';
+    body.innerHTML=html; return;
+  }
+
+  html+='<div class="adm-box" style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">'
+    +'<thead><tr style="border-bottom:1px solid rgba(255,255,255,.1)">'
+      +'<th style="text-align:left;padding:10px 8px;color:var(--Mu);font-weight:600">Produit</th>'
+      +'<th style="text-align:left;padding:10px 8px;color:var(--Mu);font-weight:600">Vendeur</th>'
+      +'<th style="text-align:left;padding:10px 8px;color:var(--Mu);font-weight:600">Offre</th>'
+      +'<th style="text-align:left;padding:10px 8px;color:var(--Mu);font-weight:600">Expiration</th>'
+      +'<th style="text-align:left;padding:10px 8px;color:var(--Mu);font-weight:600">Statut</th>'
+      +'<th style="text-align:left;padding:10px 8px;color:var(--Mu);font-weight:600">Action</th>'
+    +'</tr></thead><tbody>';
+
+  prods.forEach(function(p){
+    var v=p.vendeurs||{};
+    var isVed=p.est_vedette;
+    var offre=isVed?'⭐ Vedette':'Standard';
+    var prix=isVed?'15 000 FCFA':'5 000 FCFA';
+    var expDate=p.date_expiration?new Date(p.date_expiration):null;
+    var diffDays=expDate?Math.ceil((expDate-now)/(1000*60*60*24)):null;
+    var expStr=expDate?expDate.toLocaleDateString('fr-FR'):'Non définie';
+
+    var statusBadge,rowBg;
+    if(!expDate){
+      statusBadge='<span style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:3px 8px;border-radius:6px;font-size:11px">Indéfini</span>';
+      rowBg='';
+    } else if(diffDays<0){
+      statusBadge='<span style="background:rgba(244,68,68,.15);color:#f44;padding:3px 8px;border-radius:6px;font-size:11px">❌ Expiré</span>';
+      rowBg='background:rgba(244,68,68,.04)';
+    } else if(diffDays<=7){
+      statusBadge='<span style="background:rgba(200,75,47,.2);color:var(--T);padding:3px 8px;border-radius:6px;font-size:11px">⚠️ '+diffDays+'j restants</span>';
+      rowBg='background:rgba(200,75,47,.05)';
+    } else if(diffDays<=30){
+      statusBadge='<span style="background:rgba(232,192,96,.15);color:#E8C060;padding:3px 8px;border-radius:6px;font-size:11px">⏳ '+diffDays+'j restants</span>';
+      rowBg='background:rgba(232,192,96,.03)';
+    } else {
+      statusBadge='<span style="background:rgba(45,90,27,.2);color:var(--Ok);padding:3px 8px;border-radius:6px;font-size:11px">✅ Actif</span>';
+      rowBg='';
+    }
+
+    var tel=(v.telephone||'').replace(/[^0-9]/g,'');
+    if(tel&&tel.length<=8)tel='227'+tel;
+    var waMsg='Bonjour *'+(v.nom||'Vendeur')+'* !\n\nVotre abonnement pour le produit *"'+p.nom+'"* arrive à expiration le *'+expStr+'*.\n\nPour renouveler votre abonnement (5 000 FCFA/an), contactez-nous.\n\n_Kassan\'Mou — Le pont commercial du Niger_ 🌿';
+    var waUrl=tel?'https://wa.me/'+tel+'?text='+encodeURIComponent(waMsg):'';
+
+    html+='<tr style="border-bottom:1px solid rgba(255,255,255,.05);'+rowBg+'">'
+      +'<td style="padding:10px 8px"><div style="font-weight:600;color:#fff">'+kmEsc(p.nom)+'</div>'
+        +'<div style="font-size:11px;color:var(--Mu)">'+prix+'/an</div></td>'
+      +'<td style="padding:10px 8px"><div style="color:rgba(255,255,255,.8)">'+kmEsc(v.nom||'—')+'</div>'
+        +'<div style="font-size:11px;color:var(--Mu)">'+kmEsc(v.email||'')+'</div></td>'
+      +'<td style="padding:10px 8px">'+offre+'</td>'
+      +'<td style="padding:10px 8px;font-family:JetBrains Mono,monospace;font-size:12px;color:rgba(255,255,255,.6)">'+expStr+'</td>'
+      +'<td style="padding:10px 8px">'+statusBadge+'</td>'
+      +'<td style="padding:10px 8px">'
+        +(waUrl?'<a href="'+waUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:rgba(37,211,102,.12);color:#25D366;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;border:1px solid rgba(37,211,102,.2)">📱 Relancer</a>':'—')
+      +'</td>'
+    +'</tr>';
+  });
+
+  html+='</tbody></table></div>';
+  body.innerHTML=html;
+}
+
 async function dashLivreurs(){
   var body=g('dash-body'), livs=[];
   if(kmDB){
@@ -4707,27 +4832,267 @@ async function formModifierLivreur(id){
 }
 
 /* ─── ACTIONS SUPABASE ─────────────────────── */
+
+/* ══════════════════════════════════════════════════════════
+   v44 — doValiderProduit
+   1. Valide le produit dans Supabase
+   2. Calcule la commission 2% sur 5 000 FCFA (tarif unique annuel)
+   3. Crée automatiquement un compte Supabase Auth pour le vendeur
+   4. Envoie un email au vendeur avec lien création mot de passe
+   5. Notifie le vendeur (email + bouton WhatsApp admin)
+   Prix : 5 000 FCFA ANNUEL jusqu'à épuisement du produit
+══════════════════════════════════════════════════════════ */
 async function doValiderProduit(id,code){
   if(!kmDB){toast("Non connecté",true);return;}
-  var r=await kmDB.from('produits').update({statut:"validé",date_validation:new Date().toISOString()}).eq('id',id);
-  if(r.error){toast("Erreur: "+r.error.message,true);return;}
-  var prodData=null,vendData=null;
+
+  /* Étape 1 : Valider le produit */
+  var r=await kmDB.from('produits')
+    .update({statut:"validé", date_validation:new Date().toISOString()})
+    .eq('id',id);
+  if(r.error){toast("Erreur validation: "+r.error.message,true);return;}
+
+  var prodData=null, vendData=null;
   try{
+    /* Étape 2 : Charger le produit et le vendeur */
     var pR=await kmDB.from('produits').select('*').eq('id',id).single();
     if(pR.data){
       prodData=pR.data;
-      var px=({'7jours':2000,'30jours':5000,'90jours':15000,'annuel':50000}[prodData.pack_publication])||5000;
-      await kmDB.from('commissions').insert({vendeur_id:prodData.vendeur_id,produit_id:id,produit_nom:prodData.nom||"Produit",montant:Math.round(px*0.02),taux:2,base_calcul:px,statut:"due",type:"publication"});
+
+      /* Prix unique v44 : 5 000 FCFA annuel jusqu'à épuisement
+         Commission 2% = 100 FCFA sur 5 000 FCFA de publication */
+      var PRIX_PUBLICATION = 5000;
+      var COMMISSION_RATE  = 0.02;
+      var montantCommission = Math.round(PRIX_PUBLICATION * COMMISSION_RATE); /* 100 FCFA */
+
+      /* Créer la commission si elle n'existe pas déjà */
+      var commExist = await kmDB.from('commissions')
+        .select('id').eq('produit_id',id).maybeSingle();
+      if(!commExist.data){
+        await kmDB.from('commissions').insert({
+          vendeur_id:     prodData.vendeur_id,
+          produit_id:     id,
+          produit_nom:    prodData.nom||"Produit",
+          montant:        montantCommission,
+          montant_commission: montantCommission,
+          montant_vente:  PRIX_PUBLICATION,
+          taux:           2,
+          taux_commission:2.00,
+          base_calcul:    PRIX_PUBLICATION,
+          statut:         "due",
+          type:           "publication",
+          date_commission: new Date().toISOString()
+        });
+      }
+
+      /* Charger le vendeur */
       if(prodData.vendeur_id){
         var vR=await kmDB.from('vendeurs').select('*').eq('id',prodData.vendeur_id).single();
         if(vR.data) vendData=vR.data;
       }
     }
-  }catch(e2){console.warn('[KM-COMM]',e2);}
-  toast("✅ Produit validé ! Envoi notifications...");
+  }catch(e2){console.warn('[KM-COMM-v44]',e2);}
+
+  /* Étape 3 : Création automatique compte Auth vendeur */
+  if(vendData && vendData.email && vendData.email.includes('@')){
+    await kmCreerCompteVendeur(vendData, prodData);
+  }
+
+  toast("✅ Produit validé ! Compte vendeur créé. Envoi notifications...");
+
+  /* Étape 4 : Notifier le vendeur */
   if(prodData) await kmEnvoyerNotifValidation(prodData,vendData);
+
   kmLoadProduits();
   dashEnAttente();
+}
+
+/* ══════════════════════════════════════════════════════════
+   v44 — kmCreerCompteVendeur
+   Crée automatiquement un compte Supabase Auth pour le vendeur
+   et lui envoie un email pour définir son mot de passe
+   Utilise l'API Admin Supabase via une edge function ou
+   la méthode signUp avec un mot de passe temporaire
+══════════════════════════════════════════════════════════ */
+async function kmCreerCompteVendeur(vendeur, produit){
+  if(!kmDB || !vendeur || !vendeur.email) return;
+  var email = vendeur.email.trim().toLowerCase();
+
+  try{
+    /* Vérifier si le vendeur a déjà un compte Auth */
+    var authCheck = await kmDB.from('vendeurs')
+      .select('auth_user_id').eq('id',vendeur.id).single();
+
+    if(authCheck.data && authCheck.data.auth_user_id){
+      console.log('[KM-AUTH-v44] Vendeur a déjà un compte Auth:', email);
+      return;
+    }
+
+    /* Générer un mot de passe temporaire sécurisé */
+    var tmpPwd = 'KM-' + Math.random().toString(36).substr(2,8).toUpperCase()
+               + Math.random().toString(36).substr(2,4);
+
+    /* Créer le compte via signUp */
+    var signRes = await kmDB.auth.signUp({
+      email: email,
+      password: tmpPwd,
+      options:{
+        data:{
+          nom:        vendeur.nom || '',
+          telephone:  vendeur.telephone || '',
+          role:       'vendeur',
+          vendeur_id: vendeur.id
+        },
+        emailRedirectTo: 'https://laoulaboukar-ship-it.github.io/kassanmou/?page=vendeur'
+      }
+    });
+
+    if(signRes.error){
+      /* Si l'email existe déjà dans Auth, on récupère l'user_id */
+      if(signRes.error.message && signRes.error.message.toLowerCase().includes('already')){
+        console.log('[KM-AUTH-v44] Email déjà dans Auth — liaison en cours:', email);
+        /* Tenter de lier via lookup */
+        await kmLierVendeurExistant(vendeur, email);
+      } else {
+        console.warn('[KM-AUTH-v44] Erreur signUp:', signRes.error.message);
+      }
+      return;
+    }
+
+    var newUserId = signRes.data && signRes.data.user ? signRes.data.user.id : null;
+
+    if(newUserId){
+      /* Lier l'auth_user_id dans la table vendeurs */
+      await kmDB.from('vendeurs')
+        .update({auth_user_id: newUserId})
+        .eq('id', vendeur.id);
+
+      /* Créer le profil dans profiles */
+      await kmDB.from('profiles').upsert({
+        id:    newUserId,
+        email: email,
+        role:  'vendeur'
+      }, {onConflict:'id'});
+
+      console.log('[KM-AUTH-v44] ✅ Compte vendeur créé:', email, '| UserID:', newUserId);
+
+      /* Envoyer l'email de bienvenue avec instructions */
+      await kmEnvoyerEmailCompteVendeur(vendeur, produit, tmpPwd, email);
+
+      /* Bouton WhatsApp admin pour informer le vendeur */
+      kmAfficherBanniereCompteVendeur(vendeur, produit, tmpPwd);
+    }
+
+  }catch(e){
+    console.warn('[KM-AUTH-v44] Exception:', e);
+  }
+}
+
+/* Lier un vendeur dont l'email existe déjà dans Auth */
+async function kmLierVendeurExistant(vendeur, email){
+  try{
+    /* Chercher dans profiles par email */
+    var pR = await kmDB.from('profiles').select('id').eq('email',email).maybeSingle();
+    if(pR.data && pR.data.id){
+      await kmDB.from('vendeurs').update({auth_user_id:pR.data.id}).eq('id',vendeur.id);
+      console.log('[KM-AUTH-v44] Vendeur lié au compte existant:', pR.data.id);
+    }
+  }catch(e){ console.warn('[KM-AUTH-v44] Liaison existant:', e); }
+}
+
+/* Email de bienvenue avec mot de passe temporaire */
+async function kmEnvoyerEmailCompteVendeur(vendeur, produit, tmpPwd, email){
+  if(typeof emailjs === 'undefined') return;
+  try{
+    var nomVend = vendeur.nom || 'Vendeur';
+    var nomProd = produit ? (produit.nom||'votre produit') : 'votre produit';
+    var corps = [
+      "Bonjour "+nomVend+",",
+      "",
+      "Votre produit \""+nomProd+"\" a été validé et est maintenant EN LIGNE sur Kassan'Mou !",
+      "",
+      "=== VOTRE ESPACE VENDEUR ===",
+      "Un compte a été créé automatiquement pour vous.",
+      "Accédez à votre espace sur : https://laoulaboukar-ship-it.github.io/kassanmou",
+      "",
+      "Email     : "+email,
+      "Mot de passe temporaire : "+tmpPwd,
+      "",
+      "⚠️ Connectez-vous et changez votre mot de passe dès que possible.",
+      "",
+      "=== TARIF & COMMISSION ===",
+      "Publication : 5 000 FCFA / an (jusqu'à épuisement du produit)",
+      "Commission Kassan'Mou : 2% sur chaque vente réalisée via la plateforme",
+      "Ex: 100 000 FCFA vendus = 2 000 FCFA de commission",
+      "",
+      "Depuis votre espace vendeur vous pouvez suivre :",
+      "- Vos produits en ligne",
+      "- Vos ventes et commandes",
+      "- Vos commissions dues et payées",
+      "",
+      "Contact : WhatsApp +227 99 85 15 32",
+      "Email   : kassanmou@gmail.com",
+      "",
+      "Bienvenue sur Kassan'Mou — Le pont commercial du Niger !"
+    ].join("\n");
+
+    await emailjs.send(EJS.serviceId, EJS.templateVendeur, {
+      to_email:    email,
+      to_name:     nomVend,
+      subject:     "✅ Votre produit est en ligne — Accès espace vendeur",
+      message:     corps,
+      produit_nom: nomProd,
+      pack_nom:    "Standard",
+      pack_prix:   "5 000 FCFA/an",
+      date_exp:    "Jusqu'à épuisement du produit"
+    });
+    console.log('[KM-AUTH-v44] Email compte vendeur envoyé à:', email);
+  }catch(e){ console.warn('[KM-AUTH-v44] Email bienvenue:', e); }
+}
+
+/* Bannière admin avec bouton WhatsApp pour informer le vendeur du mot de passe */
+function kmAfficherBanniereCompteVendeur(vendeur, produit, tmpPwd){
+  var body = document.getElementById('dash-body');
+  if(!body) return;
+  var old = document.getElementById('km-compte-banner');
+  if(old) old.remove();
+
+  var tel = (vendeur.telephone||'').replace(/[^0-9]/g,'');
+  if(tel.length <= 8) tel = '227'+tel;
+
+  var nomProd = produit ? (produit.nom||'le produit') : 'le produit';
+  var nomVend = vendeur.nom || 'le vendeur';
+
+  var waMsg = '🎉 Bonjour *'+nomVend+'* !\n\n'
+    +'Votre produit *"'+nomProd+'"* est maintenant EN LIGNE sur Kassan\'Mou !\n\n'
+    +'=== VOTRE ESPACE VENDEUR ===\n'
+    +'🌐 Site : https://laoulaboukar-ship-it.github.io/kassanmou\n'
+    +'📧 Email : '+vendeur.email+'\n'
+    +'🔑 Mot de passe temporaire : *'+tmpPwd+'*\n\n'
+    +'⚠️ Changez votre mot de passe à la première connexion.\n\n'
+    +'=== TARIF ===\n'
+    +'📅 Publication : 5 000 FCFA/an jusqu\'à épuisement du produit\n'
+    +'💰 Commission : 2% sur chaque vente\n\n'
+    +'_Kassan\'Mou — Le pont commercial du Niger_ 🌿';
+
+  var waUrl = 'https://wa.me/'+tel+'?text='+encodeURIComponent(waMsg);
+
+  var banner = document.createElement('div');
+  banner.id = 'km-compte-banner';
+  banner.style.cssText = 'background:linear-gradient(135deg,rgba(45,90,27,.2),rgba(45,90,27,.08));border:2px solid rgba(45,90,27,.4);border-radius:14px;padding:16px;margin:0 0 16px 0';
+  banner.innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
+   +'<div style="width:32px;height:32px;border-radius:50%;background:var(--Ok);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🔑</div>'
+   +'<div style="font-weight:700;font-size:14px;color:#fff">Compte vendeur créé — '+kmEsc(nomVend)+'</div>'
+   +'</div>'
+   +'<div style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:4px">📧 '+kmEsc(vendeur.email)+'</div>'
+   +'<div style="font-family:JetBrains Mono,monospace;font-size:13px;color:var(--G);background:rgba(0,0,0,.3);padding:8px 12px;border-radius:8px;margin-bottom:12px">'
+   +'Mot de passe temporaire : <strong>'+kmEsc(tmpPwd)+'</strong>'
+   +'</div>'
+   +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+   +(tel?'<a href="'+waUrl+'" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:10px 16px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:13px">📱 Envoyer les accès par WhatsApp</a>':'')
+   +'<button onclick="document.getElementById(\'km-compte-banner\').remove()" style="padding:10px 14px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);border-radius:10px;cursor:pointer;font-family:Outfit,sans-serif;font-size:13px">Fermer</button>'
+   +'</div>';
+  body.insertBefore(banner, body.firstChild);
 }
 async function doRefuserProduit(id){
   if(!kmDB)return;
@@ -5449,16 +5814,14 @@ function kmShowConfirmTarif(modes){
 /* === v41-B NOTIFICATIONS VENDEUR === */
 
 async function kmEnvoyerNotifValidation(prod,vendeur){
+  /* v44 — Tarif unique : 5 000 FCFA ANNUEL jusqu'à épuisement du produit */
   var nomProd  = prod.nom || "Produit";
-  var packVal  = prod.pack_publication || "30jours";
-  var packPrix = ({'7jours':2000,'30jours':5000,'90jours':15000,'annuel':50000}[packVal]) || 5000;
-  var isVed    = (packPrix >= 15000);
+  var isVed    = prod.est_vedette || (prod.pack_publication === 'annuel');
   var packNom  = isVed ? "Vedette" : "Standard";
-  var prixStr  = packPrix.toLocaleString() + " FCFA/an";
+  var prixStr  = isVed ? "15 000 FCFA/an" : "5 000 FCFA/an";
   var email    = (vendeur&&vendeur.email)     || prod.email     || "";
   var tel      = (vendeur&&vendeur.telephone) || prod.telephone || "";
   var nomVend  = (vendeur&&vendeur.nom)       || "Cher vendeur";
-  var dateExp  = prod.date_expiration ? new Date(prod.date_expiration).toLocaleDateString('fr-FR') : "dans un an";
 
   /* Email via EmailJS */
   if(email && typeof emailjs !== 'undefined'){
@@ -5466,50 +5829,66 @@ async function kmEnvoyerNotifValidation(prod,vendeur){
       var corps = [
         "Bonjour "+nomVend+",",
         "",
-        "Votre produit \"" + nomProd + "\" est maintenant EN LIGNE sur Kassan'Mou.",
+        "Votre produit \""+nomProd+"\" est maintenant EN LIGNE sur Kassan'Mou !",
         "",
-        "=== Votre abonnement ===",
-        "Offre       : " + packNom,
-        "Abonnement  : " + prixStr,
-        "Valable jusqu'au : " + dateExp,
+        "=== VOTRE ABONNEMENT ===",
+        "Offre         : "+packNom,
+        "Prix          : "+prixStr,
+        "Durée         : 1 an — jusqu'à épuisement du produit",
+        "Renouvellement: Contactez-nous à l'expiration",
         "",
-        "=== Commission Kassan'Mou ===",
-        "2% sur chaque vente via la plateforme.",
-        "Exemple : 100 000 FCFA vendu = 2 000 FCFA de commission.",
+        "=== COMMISSION KASSAN'MOU ===",
+        "2% sur chaque vente réalisée via la plateforme.",
+        "Exemple : 100 000 FCFA de ventes = 2 000 FCFA de commission.",
         "",
-        "Suivez vos ventes dans votre espace vendeur.",
+        "Cette commission finance votre visibilité mondiale :",
+        "- Vos produits sont visibles par nos partenaires en Inde, Vietnam, Europe",
+        "- Communication soutenue pour faire connaître vos produits",
+        "- Mise en relation directe avec des acheteurs internationaux",
+        "",
+        "=== VOTRE ESPACE VENDEUR ===",
+        "Connectez-vous sur : https://laoulaboukar-ship-it.github.io/kassanmou",
+        "Onglet 'Mon espace' pour suivre vos ventes et commissions.",
+        "",
         "Contact : WhatsApp +227 99 85 15 32",
+        "Email   : kassanmou@gmail.com",
         "",
-        "Merci de faire confiance a Kassan'Mou !"
+        "Bienvenue sur Kassan'Mou — Le pont commercial du Niger !"
       ].join("\n");
       await emailjs.send(EJS.serviceId, EJS.templateVendeur, {
         to_email:    email,
         to_name:     nomVend,
-        subject:     "Votre produit est en ligne sur Kassan'Mou !",
+        subject:     "✅ Votre produit \""+nomProd+"\" est EN LIGNE !",
         message:     corps,
         produit_nom: nomProd,
         pack_nom:    packNom,
         pack_prix:   prixStr,
-        date_exp:    dateExp
+        date_exp:    "1 an — jusqu'à épuisement du produit"
       });
-      toast("Email envoye a "+email);
-    }catch(e){ console.warn('[KM-NOTIF] email err:',e); toast("Email non envoye",true); }
+      toast("✅ Email de validation envoyé à "+email);
+    }catch(e){ console.warn('[KM-NOTIF-v44] email err:',e); }
   }
 
-  /* WhatsApp pre-rempli */
+  /* WhatsApp pré-rempli admin → vendeur */
   if(tel){
     var telN = tel.replace(/[^0-9]/g,'');
     if(telN.length <= 8) telN = '227' + telN;
-    var msg = "Bonjour " + nomVend + " !\n"
-            + "Votre produit *" + nomProd + "* est EN LIGNE sur Kassan'Mou !\n\n"
-            + "*Abonnement :* " + packNom + " - " + prixStr + "\n"
-            + "*Valable jusqu'au :* " + dateExp + "\n\n"
-            + "*Commission Kassan'Mou :*\n"
-            + "2% sur chaque vente via la plateforme.\n"
-            + "Ex: 100 000 FCFA vendu = 2 000 FCFA de commission.\n\n"
-            + "Suivez vos ventes sur l'appli > Mon espace\n"
-            + "_Kassan'Mou - Le pont commercial du Niger_";
-    var waUrl = "https://wa.me/" + telN + "?text=" + encodeURIComponent(msg);
+    var msg = "🎉 Bonjour *"+nomVend+"* !\n\n"
+            + "Votre produit *\""+nomProd+"\"* est maintenant *EN LIGNE* sur Kassan'Mou ! 🌿\n\n"
+            + "📋 *Votre abonnement :*\n"
+            + "• Offre : "+packNom+"\n"
+            + "• Prix : *"+prixStr+"*\n"
+            + "• Durée : 1 an jusqu'à épuisement du produit\n\n"
+            + "💰 *Commission Kassan'Mou :*\n"
+            + "• 2% sur chaque vente via la plateforme\n"
+            + "• Ex: 100 000 FCFA vendus = 2 000 FCFA de commission\n\n"
+            + "🌍 *Votre visibilité :*\n"
+            + "Votre produit est visible partout dans le monde !\n\n"
+            + "👤 *Votre espace vendeur :*\n"
+            + "https://laoulaboukar-ship-it.github.io/kassanmou\n"
+            + "Onglet 'Mon espace' → Suivez vos ventes\n\n"
+            + "_Kassan'Mou — Le pont commercial du Niger_ 🌿";
+    var waUrl = "https://wa.me/"+telN+"?text="+encodeURIComponent(msg);
     kmMontrerBoutonWA(waUrl, nomVend, nomProd);
   }
 }
