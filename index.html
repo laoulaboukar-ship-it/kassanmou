@@ -4207,17 +4207,25 @@ function submitProduct(modes){
     uploadedPhotos = [];
     if(saved){
       console.log('[KM-DB v44f] ✅ Produit en base | Code:', saved.code_validation, '| vendeur_id:', saved.vendeur_id);
-      if(saved.photos && saved.photos.length > 0) prodData.photosUrls = saved.photos;
+      /* Récupérer les vraies URLs photos AVANT d'envoyer l'email */
+      if(saved.photos && saved.photos.length > 0){
+        prodData.photosUrls = saved.photos;
+        console.log('[KM-DB v44f] Photos:', saved.photos.length, 'URLs récupérées');
+      }
     } else {
       console.warn('[KM-DB v44f] ⚠️ Produit NON sauvegardé en base');
     }
+    /* Envoyer l'email UNE SEULE FOIS ici, APRÈS l'upload photos */
+    sendEmailAuto(prodData, 'produit');
+    console.log('[KM-EMAIL v44f] Email admin envoyé avec', (prodData.photosUrls||[]).length, 'photo(s)');
   }).catch(function(e){
     window._kmSaveInProgress = false;
     uploadedPhotos = [];
     console.error('[KM-DB v44f] Exception:', e);
+    /* Envoyer quand même l'email même sans photos */
+    sendEmailAuto(prodData, 'produit');
   });
 
-  /* v44f: email envoyé UNE SEULE FOIS après confirmation, pas ici */
   var waMsg=buildWhatsAppMsg(prodData);
   var mailtoLink=buildMailtoLink(prodData);
   var typeLbl={'vendeur':'🏪 Vendeur','producteur':'🌾 Producteur','transformateur':'🏭 Transformateur','maraicher':'🥬 Maraîcher'}[prodData.sellerType]||'🏪 Vendeur';
@@ -5230,6 +5238,13 @@ function kmInitAuth() {
       kmIsAdmin = false;
       kmSession = null;
       kmUser = null;
+    }
+    /* v44f: auto-refresh si token invalide */
+    if (event === 'TOKEN_REFRESHED') {
+      kmSession = session;
+      kmUser = session ? session.user : null;
+      kmIsAdmin = kmUser ? kmCheckAdmin(kmUser.email) : false;
+      console.log('[KM-AUTH] Token rafraîchi ✅ | Admin:', kmIsAdmin);
     }
   });
 
@@ -7315,12 +7330,24 @@ document.addEventListener('DOMContentLoaded', function(){
                   if(res2.error){ toast('Erreur validation : ' + res2.error.message, true); }
                   else {
                     toast('✅ Produit ' + codeVal + ' validé et mis en ligne !');
-                    setTimeout(function(){ kmLoadProduits(); goTo('marketplace'); }, 1000);
+                    setTimeout(function(){
+                      kmLoadProduits().then(function(){
+                        renderFeaturedStrip();
+                        renderProdsPremium();
+                      });
+                      /* Si admin connecté, rafraîchir le dashboard */
+                      if(kmIsAdmin){ renderDash('allprod'); goTo('dashboard'); }
+                      else { goTo('marketplace'); }
+                    }, 800);
                   }
                 });
             } else {
               toast('✅ Produit ' + codeVal + ' validé et mis en ligne !');
-              setTimeout(function(){ kmLoadProduits(); goTo('marketplace'); }, 1000);
+              setTimeout(function(){
+                kmLoadProduits().then(function(){ renderFeaturedStrip(); renderProdsPremium(); });
+                if(kmIsAdmin){ renderDash('allprod'); goTo('dashboard'); }
+                else { goTo('marketplace'); }
+              }, 800);
             }
           });
       } else if(codeAction === 'refuser'){
