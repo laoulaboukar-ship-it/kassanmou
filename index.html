@@ -3569,7 +3569,7 @@ function openModal(type){
           '<option value="construction">🏗️ Construction & matériaux</option>'+
           '<option value="services">🤝 Services (transport, logistique, conseil...)</option>'+
           '<option value="autres">📦 Autres (précisez dans la description)</option>'+
-          '</optgroupnique, outils...)</option>'+
+          '</optgroup>'+
         '</select>'+
       '</div>'+
 
@@ -4183,6 +4183,8 @@ function submitProduct(modes){
   try{var sv=JSON.parse(localStorage.getItem('km_pending')||'[]');sv.push(prodData);localStorage.setItem('km_pending',JSON.stringify(sv));}catch(e){}
 
   /* ── SAUVEGARDE SUPABASE ── */
+  window._kmSaveInProgress = true;
+  var _photosForSave = uploadedPhotos ? uploadedPhotos.slice() : [];
   kmSaveProduit({
     nom: prodData.nom,
     categorie: prodData.categorie,
@@ -4192,26 +4194,30 @@ function submitProduct(modes){
     region: prodData.origine,
     ville: prodData.origine,
     description: prodData.description,
-    photosData: uploadedPhotos,
-    pack: 'annuel', /* v44: toujours annuel */
+    photosData: _photosForSave,
+    pack: 'annuel',
     code: prodCode,
     typeVendeur: prodData.sellerType,
-    vendeurNom: prodData.email || prodData.phone || 'Vendeur',
-    tel: prodData.phone,
+    vendeurNom: prodData.nom || prodData.email || prodData.phone || 'Vendeur',
+    email: prodData.email || emailVal || '',
+    tel: prodData.phone || phoneVal || '',
     exportInternational: prodData.exportable
   }).then(function(saved){
+    window._kmSaveInProgress = false;
+    uploadedPhotos = [];
     if(saved){
-      console.log('[KM-DB] Produit en base. Code:', saved.code_validation);
-      /* Mettre à jour l'email avec les vraies URLs photos */
-      if(saved.photos && saved.photos.length > 0){
-        prodData.photosUrls = saved.photos;
-      }
+      console.log('[KM-DB v44f] ✅ Produit en base | Code:', saved.code_validation, '| vendeur_id:', saved.vendeur_id);
+      if(saved.photos && saved.photos.length > 0) prodData.photosUrls = saved.photos;
+    } else {
+      console.warn('[KM-DB v44f] ⚠️ Produit NON sauvegardé en base');
     }
+  }).catch(function(e){
+    window._kmSaveInProgress = false;
+    uploadedPhotos = [];
+    console.error('[KM-DB v44f] Exception:', e);
   });
 
-  /* ENVOI EMAIL AUTOMATIQUE à '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' */
-  sendEmailAuto(prodData, 'produit');
-
+  /* v44f: email envoyé UNE SEULE FOIS après confirmation, pas ici */
   var waMsg=buildWhatsAppMsg(prodData);
   var mailtoLink=buildMailtoLink(prodData);
   var typeLbl={'vendeur':'🏪 Vendeur','producteur':'🌾 Producteur','transformateur':'🏭 Transformateur','maraicher':'🥬 Maraîcher'}[prodData.sellerType]||'🏪 Vendeur';
@@ -4301,7 +4307,12 @@ function submitProduct(modes){
   }, 100);
 }
 
-function closeModal(){g('mveil').classList.remove('on');uploadedPhotos=[];}
+function closeModal(){
+  g('mveil').classList.remove('on');
+  /* v44f: on vide les photos SEULEMENT après confirmation d'upload Supabase
+     pour ne pas interrompre un kmSaveProduit en cours */
+  if(!window._kmSaveInProgress) uploadedPhotos=[];
+}
 
 /* ══════════════════════════════
    TRACKING
@@ -7078,6 +7089,7 @@ async function kmSaveProduit(d) {
     /* ── v43 FIX CRITIQUE : vendeur_id JAMAIS NULL ── */
     var vendeurId=null;
     if(d.email){var vEx=await kmDB.from('vendeurs').select('id').eq('email',d.email).maybeSingle();if(vEx&&vEx.data)vendeurId=vEx.data.id;}
+    console.log('[KM-DB] Recherche vendeur | email:',JSON.stringify(d.email),'| tel:',JSON.stringify(d.tel));
     if(!vendeurId&&d.tel){var vEx2=await kmDB.from('vendeurs').select('id').eq('telephone',d.tel).maybeSingle();if(vEx2&&vEx2.data)vendeurId=vEx2.data.id;}
     if(!vendeurId){
       var vIns=await kmDB.from('vendeurs').insert({
@@ -7085,7 +7097,11 @@ async function kmSaveProduit(d) {
         email:d.email||'',
         telephone:d.tel||'',
         whatsapp:d.tel||'',
-        type_vendeur:d.typeVendeur||'vendeur',
+        type_vendeur:(function(t){
+          var map={'vendeur':'Vendeur','producteur':'Producteur','transformateur':'Transformateur',
+                   'maraicher':'Maraîcher','focal':'Point Focal'};
+          return map[t]||map[(t||'').toLowerCase()]||'Vendeur';
+        })(d.typeVendeur),
         region:d.region||'',
         ville:d.ville||'',
         abonnement:d.pack==='15000'||d.pack==='annuel'?'vedette':'standard',
@@ -7093,12 +7109,14 @@ async function kmSaveProduit(d) {
         date_inscription:new Date().toISOString()
       }).select('id').single();
       if(vIns&&vIns.data) vendeurId=vIns.data.id;
-      else { console.error('[KM-DB] ERREUR création vendeur:',vIns&&vIns.error?vIns.error.message:'inconnu'); }
+      else { console.error('[KM-DB] ERREUR création vendeur:',vIns&&vIns.error?vIns.error.message:'inconnu', '| Code:',vIns&&vIns.error?vIns.error.code:'', '| Email:',d.email, '| Tel:',d.tel); }
     }
     /* Blocage si toujours null */
     if(!vendeurId){ console.error('[KM-DB] BLOQUÉ : vendeur_id toujours null — email='+d.email+' tel='+d.tel); return null; }
+    /* v44e: durée annuelle par défaut */
     var durees={'7jours':7,'30jours':30,'90jours':90,'annuel':365};
-    var exp=new Date(); exp.setDate(exp.getDate()+(durees[d.pack]||30));
+    var exp=new Date(); exp.setDate(exp.getDate()+(durees[d.pack]||365));
+    console.log('[KM-DB] Insert produit | vendeurId:',vendeurId,'| nom:',d.nom,'| pack:',d.pack);
     var pRes = await kmDB.from('produits').insert({
       vendeur_id:vendeurId,
       nom:d.nom||'', description:d.description||'', categorie:d.categorie||'Autres',
@@ -7107,7 +7125,7 @@ async function kmSaveProduit(d) {
       region:d.region||'', ville:d.ville||'', photos:d.photos||[],
       statut:'en_attente',
       code_validation:d.code||('KM-'+Math.random().toString(36).substr(2,6).toUpperCase()),
-      pack_publication:d.pack||'30jours', date_expiration:exp.toISOString(),
+      pack_publication:(d.pack==='5000'?'30jours':d.pack==='15000'?'annuel':d.pack||'annuel'), date_expiration:exp.toISOString(),
       export_international:d.exportInternational||false
     }).select().single();
     if (pRes.error) { console.warn('[KM-DB]',pRes.error.message); return null; }
@@ -7124,21 +7142,24 @@ async function kmSaveCommande(d) {
   }
   try {
     console.log('[KM-CMD] Tentative sauvegarde commande:', d.reference);
+    /* v44f: colonnes minimales garanties + fallbacks robustes */
     var payload = {
-      reference:       d.reference || ('KM-CMD-'+Date.now()),
-      produit_nom:     d.produitNom || d.produit || '',
-      vendeur_nom:     d.vendeurNom || d.vendeur || '',
-      acheteur_nom:    d.nom || '',
-      acheteur_telephone: d.telephone || '',
-      acheteur_whatsapp:  d.whatsapp || d.telephone || '',
-      acheteur_ville:  d.ville || 'Niamey',
-      prix_unitaire:   parseFloat(d.prixUnitaire) || 0,
-      frais_livraison: parseFloat(d.fraisLivraison) || 1000,
-      montant_total:   parseFloat(d.montantTotal) || parseFloat(d.prixUnitaire) || 0,
-      mode_paiement:   d.modePaiement || 'cash',
-      statut:          'en_attente',
-      notes:           d.notes || ''
+      reference:          d.reference || ('KM-CMD-'+Date.now()),
+      acheteur_nom:       d.nom || d.acheteurNom || '',
+      acheteur_telephone: d.telephone || d.acheteurTel || '',
+      acheteur_ville:     d.ville || d.acheteurVille || 'Niamey',
+      montant_total:      parseFloat(d.montantTotal) || parseFloat(d.prixUnitaire) || 0,
+      mode_paiement:      d.modePaiement || 'cash',
+      statut:             'en_attente',
+      notes:              d.notes || (d.produit ? 'Produit: '+d.produit : '')
     };
+    /* Colonnes optionnelles — ajoutées seulement si elles existent */
+    if(d.produitNom||d.produit) payload.produit_nom = d.produitNom||d.produit;
+    if(d.vendeurNom||d.vendeur) payload.vendeur_nom = d.vendeurNom||d.vendeur;
+    if(d.whatsapp||d.telephone) payload.acheteur_whatsapp = d.whatsapp||d.telephone;
+    if(d.prixUnitaire) payload.prix_unitaire = parseFloat(d.prixUnitaire)||0;
+    if(d.fraisLivraison) payload.frais_livraison = parseFloat(d.fraisLivraison)||0;
+    if(d.produitId) payload.produit_id = d.produitId;
     console.log('[KM-CMD] Payload:', JSON.stringify(payload));
     var res = await kmDB.from('commandes').insert(payload).select().single();
     if (res.error) {
