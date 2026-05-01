@@ -4,13 +4,13 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v44-kassanmou-2026">
+<meta name="km-version" content="v44c-kassanmou-2026">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <meta name="theme-color" content="#0F1F0A">
-<title>Kassan'Mou v43 — Marketplace Niger · Export B2B International</title>
+<title>Kassan'Mou — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
 <link rel="manifest" href="/kassanmou/manifest.json">
@@ -4133,38 +4133,38 @@ function wirePhotoUpload(){
 }
 
 function submitProduct(modes){
-  if(!currentSellerType){toast('Veuillez sélectionner votre profil (Vendeur, Producteur, Transformateur ou Maraîcher).',true);return;}
-  var nm=g('prod-name');if(!nm||!nm.value.trim()){toast('Veuillez nommer votre produit.',true);return;}
-  var catEl=g('prod-cat');if(!catEl||!catEl.value){toast('Veuillez choisir une catégorie.',true);return;}
-  if(uploadedPhotos.length===0){
-    toast('Conseil : ajoutez une photo pour mieux vendre.', false);
-    /* On continue quand même */
-  }
-  if(!modes||modes.length===0){
-    modes = ['detail']; /* Mode détail par défaut */
-  }
-  var emailVal=(g('prod-email')||{}).value||'';
-  var phoneVal=(g('prod-phone')||{}).value||'';
-  if(!emailVal.trim()&&!phoneVal.trim()){toast('Ajoutez votre email ou téléphone pour recevoir votre code.',true);return;}
+  /* v44c FIX RACINE : lire depuis window._kmFormSave
+     car le modal a été remplacé par l'écran de confirmation
+     et les éléments DOM du formulaire n'existent plus */
+  var F = window._kmFormSave || {};
+  var sellerType = F.sellerType || currentSellerType;
+  var emailVal   = F.email || '';
+  var phoneVal   = F.phone || '';
+  var packVal    = F.pack  || '5000';
+  var uploadedPhotos = F.photos || [];
 
-  var prodCode=generateCode();
-  var isExport=g('exp-yes')&&g('exp-yes').classList.contains('sel-yes');
-  var packVal=(g('prod-pack')||{}).value||'5000';
+  if(!sellerType){toast('Veuillez sélectionner votre profil (Vendeur, Producteur, Transformateur ou Maraîcher).',true);return;}
+  if(!F.nom){toast('Veuillez nommer votre produit.',true);return;}
+  if(!F.cat){toast('Veuillez choisir une catégorie.',true);return;}
+  if(!emailVal.trim()&&!phoneVal.trim()){toast('Ajoutez votre email ou téléphone pour recevoir votre code.',true);return;}
+  if(!modes||modes.length===0) modes = F.modes || ['detail'];
+
+  var prodCode = generateCode();
   /* v44 FIX BUG 4 : durée annuelle correcte */
   var packDuree = packVal === '15000' ? '1 an (Vedette)' : '1 an';
   var packNom   = packVal === '15000' ? '15 000 FCFA — Vedette' : '5 000 FCFA — Standard';
   var prodData={
     id:'PROD-'+Date.now(),code:prodCode,
-    nom:nm.value.trim(),
-    categorie:catEl.value,
-    sellerType:currentSellerType,
+    nom:F.nom,
+    categorie:F.cat,
+    sellerType:sellerType,
     modes:modes,
-    prix:(g('prod-price')||{}).value||'',
-    unite:(g('prod-unit')||{}).value||'FCFA',
-    prixGros:(g('prod-bulk')||{}).value||'',
-    quantite:(g('prod-qty')||{}).value||'',
-    origine:(g('prod-orig')||{}).value||'',
-    description:(g('prod-desc')||{}).value||'',
+    prix:F.prix||'',
+    unite:F.unite||'FCFA',
+    prixGros:F.bulk||'',
+    quantite:F.qty||'',
+    origine:F.orig||'',
+    description:F.desc||'',
     pack:packVal,
     packNom:packNom,
     duree:packDuree,
@@ -4172,10 +4172,10 @@ function submitProduct(modes){
     email:emailVal,phone:phoneVal,
     soumisLe:new Date().toLocaleString('fr-FR'),
     statut:'EN_ATTENTE',
-    exportable:isExport,
-    normes:(g('prod-normes')||{}).value||'',
-    capaciteProduction:(g('prod-capacite')||{}).value||'',
-    volumeExport:(g('prod-volume-export')||{}).value||''
+    exportable:F.isExport||false,
+    normes:F.normes||'',
+    capaciteProduction:F.capacite||'',
+    volumeExport:F.volExp||''
   };
 
   PENDING_PRODUCTS.push(prodData);
@@ -5777,6 +5777,30 @@ function kmShowConfirmTarif(modes){
   if(!nomProd){toast('Veuillez entrer le nom du produit.',true);return;}
   if(!tel.trim()&&!email.trim()){toast('Veuillez entrer votre email ou téléphone.',true);return;}
 
+  /* v44c FIX CRITIQUE : sauvegarder TOUTES les données avant de remplacer le modal
+     car après box.innerHTML=... tous les éléments du formulaire disparaissent du DOM */
+  window._kmFormSave = {
+    sellerType: currentSellerType,
+    nom:      nomProd,
+    cat:      (document.getElementById('prod-cat')  ||{value:''}).value,
+    prix:     prix,
+    unite:    unite,
+    qty:      (document.getElementById('prod-qty')  ||{value:''}).value,
+    orig:     (document.getElementById('prod-orig') ||{value:''}).value,
+    desc:     (document.getElementById('prod-desc') ||{value:''}).value,
+    bulk:     (document.getElementById('prod-bulk') ||{value:''}).value,
+    email:    email,
+    phone:    tel,
+    pack:     packVal,
+    normes:   (document.getElementById('prod-normes')||{value:''}).value,
+    capacite: (document.getElementById('prod-capacite')||{value:''}).value,
+    volExp:   (document.getElementById('prod-volume-export')||{value:''}).value,
+    isExport: !!(document.getElementById('exp-yes') && document.getElementById('exp-yes').classList.contains('sel-yes')),
+    photos:   uploadedPhotos ? uploadedPhotos.slice() : [],
+    modes:    modes && modes.length ? modes : ['detail']
+  };
+  console.log('[KM-FORM v44c] Données sauvegardées ✅ | Produit:', nomProd, '| Type:', currentSellerType, '| Email:', email, '| Tel:', tel);
+
   var box = document.getElementById('mbox');
   var veil = document.getElementById('mveil');
   if(!box||!veil) return;
@@ -7348,7 +7372,7 @@ document.addEventListener('DOMContentLoaded', function(){
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/kassanmou/sw.js')
+      navigator.serviceWorker.register('/kassanmou/sw.js?v=44c')
         .then(function(reg) {
           console.log('[KM-PWA] SW enregistré. Scope:', reg.scope);
           reg.addEventListener('updatefound', function() {
