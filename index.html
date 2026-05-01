@@ -5767,10 +5767,15 @@ function kmShowConfirmTarif(modes){
   var packBg   = isVed ? "#FAEEDA" : "#E1F5EE";
   var packTxt  = isVed ? "#412402" : "#085041";
 
-  var nomProd = (document.getElementById('prod-nom')    ||{value:""}).value || "votre produit";
-  var vendNom = (document.getElementById('prod-vendeur')||{value:""}).value || "";
-  var tel     = (document.getElementById('prod-phone')  ||{value:""}).value || "";
-  var email   = (document.getElementById('prod-email')  ||{value:""}).value || "";
+  /* v44 FIX : IDs corrects du formulaire sell */
+  var nomProd = (document.getElementById('prod-name') ||{value:""}).value || "";
+  var tel     = (document.getElementById('prod-phone')||{value:""}).value || "";
+  var email   = (document.getElementById('prod-email')||{value:""}).value || "";
+  var prix    = (document.getElementById('prod-price')||{value:""}).value || "";
+  var unite   = (document.getElementById('prod-unit') ||{value:""}).value || "FCFA";
+  /* Vérifications bloquantes */
+  if(!nomProd){toast('Veuillez entrer le nom du produit.',true);return;}
+  if(!tel.trim()&&!email.trim()){toast('Veuillez entrer votre email ou téléphone.',true);return;}
 
   var box = document.getElementById('mbox');
   var veil = document.getElementById('mveil');
@@ -5783,7 +5788,7 @@ function kmShowConfirmTarif(modes){
 
    +"<div style='background:#f5f5f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#333;line-height:1.8'>"
    +"<div style='font-weight:700;font-size:15px;color:#1a1a1a;margin-bottom:4px'>"+kmEsc(nomProd)+"</div>"
-   +(vendNom ? "<div>Vendeur : "+kmEsc(vendNom)+"</div>" : "")
+   +(prix  ? "<div>Prix : <strong>"+kmEsc(prix)+" "+kmEsc(unite)+"</strong></div>" : "")
    +(tel     ? "<div>Tél/WhatsApp : "+kmEsc(tel)+"</div>" : "")
    +(email   ? "<div>Email : "+kmEsc(email)+"</div>" : "")
    +"</div>"
@@ -5792,7 +5797,7 @@ function kmShowConfirmTarif(modes){
    +"<div style='font-size:13px;font-weight:600;color:"+packTxt+";margin-bottom:4px'>Offre choisie</div>"
    +"<div style='font-size:26px;font-weight:900;color:"+packCol+"'>"+packNom+"</div>"
    +"<div style='font-size:28px;font-weight:900;color:"+packCol+";margin:4px 0'>"+packPrix+" FCFA</div>"
-   +"<div style='font-size:12px;color:"+packTxt+"'>par an · renouvelable</div>"
+   +"<div style='font-size:12px;color:"+packTxt+"'>par an · jusqu'à épuisement du produit</div>"
    +"</div>"
 
    +"<div style='background:#fff8e1;border-left:4px solid #F9A825;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#5D4037;line-height:1.9'>"
