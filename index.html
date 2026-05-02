@@ -4138,9 +4138,26 @@ function wirePhotoUpload(){
       });
       if(zone)zone.style.display=uploadedPhotos.length>=5?'none':'block';
     }
-    inp.addEventListener('change',function(){addPhotos(inp.files);});
-    if(cam)cam.addEventListener('change',function(){addPhotos(cam.files);});
-    if(camBtn)camBtn.addEventListener('click',function(){if(cam)cam.click();});
+    /* v44h FIX DOUBLE PHOTO : remplacer le listener au lieu d'en ajouter un */
+    if(inp._kmPhotoWired){
+      inp.removeEventListener('change', inp._kmPhotoHandler);
+    }
+    inp._kmPhotoHandler = function(){addPhotos(inp.files); inp.value='';};
+    inp.addEventListener('change', inp._kmPhotoHandler);
+    inp._kmPhotoWired = true;
+
+    if(cam){
+      if(cam._kmCamWired) cam.removeEventListener('change', cam._kmCamHandler);
+      cam._kmCamHandler = function(){addPhotos(cam.files); cam.value='';};
+      cam.addEventListener('change', cam._kmCamHandler);
+      cam._kmCamWired = true;
+    }
+    if(camBtn){
+      if(camBtn._kmWired) camBtn.removeEventListener('click', camBtn._kmHandler);
+      camBtn._kmHandler = function(){if(cam)cam.click();};
+      camBtn.addEventListener('click', camBtn._kmHandler);
+      camBtn._kmWired = true;
+    }
     if(zone){
       zone.addEventListener('dragover',function(e){e.preventDefault();zone.classList.add('drag');});
       zone.addEventListener('dragleave',function(){zone.classList.remove('drag');});
@@ -4782,7 +4799,7 @@ async function dashCommandes(){
           /* Montant */
           '<div style="display:flex;justify-content:space-between;margin-bottom:10px">'+
             '<span style="font-size:13px;color:rgba(255,255,255,.5)">Montant total</span>'+
-            '<span style="font-size:14px;font-weight:700;color:#C49A3C">'+parseFloat(cmd.montant_total||0).toLocaleString('fr-FR')+' FCFA</span>'+
+            '<span style="font-size:14px;font-weight:700;color:#C49A3C">'+Math.round(parseFloat(cmd.montant_total||0)).toLocaleString('fr-FR')+' FCFA</span>'+
           '</div>'+
           /* Actions */
           '<div style="display:flex;gap:6px;flex-wrap:wrap">'+
@@ -5446,9 +5463,29 @@ async function dashVendeurs(){
   if(!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecté.</p>';return;}
   body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   try{
-    var rv=await kmDB.from('vendeurs').select('*').order('created_at',{ascending:false});
+    /* v44h FIX : vendeurs n'a pas created_at mais date_inscription */
+    var rv=await kmDB.from('vendeurs').select('*');
     var rp=await kmDB.from('produits').select('vendeur_id,statut');
+    if(rv.error) throw rv.error;
     var vends=rv.data||[], prods=rp.data||[];
+
+    /* Si aucun vendeur dans la table vendeurs, chercher depuis les produits */
+    if(vends.length===0){
+      body.innerHTML='<div style="padding:30px;text-align:center;color:#aaa">'
+        +'<div style="font-size:2rem;margin-bottom:12px">👥</div>'
+        +'<div style="font-size:15px;color:#E8C060;margin-bottom:8px">Aucun vendeur enregistré</div>'
+        +'<div style="font-size:13px;color:#666">Les vendeurs apparaîtront ici après leur première soumission de produit.</div>'
+        +'</div>';
+      return;
+    }
+
+    /* Trier par date_inscription si disponible */
+    vends.sort(function(a,b){
+      var da = a.date_inscription ? new Date(a.date_inscription) : new Date(0);
+      var db = b.date_inscription ? new Date(b.date_inscription) : new Date(0);
+      return db - da;
+    });
+
     var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:14px">Vendeurs ('+vends.length+')</div>';
     vends.forEach(function(v){
       var mp=prods.filter(function(p){return p.vendeur_id===v.id;});
@@ -5487,7 +5524,7 @@ async function dashVendeurDetail(vid){
   body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   try{
     var vR=await kmDB.from('vendeurs').select('*').eq('id',vid).single();
-    var pR=await kmDB.from('produits').select('*').eq('vendeur_id',vid).order('created_at',{ascending:false});
+    var pR=await kmDB.from('produits').select('*').eq('vendeur_id',vid);
     var cR=await kmDB.from('commissions').select('*').eq('vendeur_id',vid);
     var v=vR.data, prods=pR.data||[], comms=cR.data||[];
     var due=comms.filter(function(x){return x.statut==='due';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
@@ -5517,12 +5554,51 @@ async function dashVendeurDetail(vid){
 }
 
 /* ═══ ADMIN: COMMISSIONS ═══ */
+/* ══════════════════════════════════════════════════════
+   v44h — Facture mensuelle automatique
+   Génère un résumé des commissions dues par vendeur
+   pour le mois en cours — envoyable par WhatsApp/Email
+══════════════════════════════════════════════════════ */
+function kmGenererFactureMensuelle(vendeurId, vendeurNom, vendeurEmail, vendeurTel, commissions){
+  var now = new Date();
+  var mois = now.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+  var total = commissions.reduce(function(s,c){ return s + (parseFloat(c.montant_commission||c.montant||0)); }, 0);
+  var nl = "\n";
+  var details = commissions.map(function(c,i){
+    return (i+1)+". "+kmEsc(c.produit_nom||"Produit")+" — "
+      +Math.round(parseFloat(c.montant_commission||c.montant||0)).toLocaleString("fr-FR")+" FCFA";
+  }).join(nl);
+
+  var sep = "-------------------";
+  var factureTxt =
+    "🧾 *FACTURE COMMISSIONS — KASSAN'MOU*"+nl
+   +"📅 Période : "+mois+nl
+   +"👤 Vendeur : "+(vendeurNom||"—")+nl
+   +sep+nl
+   +details+nl
+   +sep+nl
+   +"💰 *TOTAL DÛ : "+Math.round(total).toLocaleString("fr-FR")+" FCFA*"+nl+nl
+   +"ℹ️ 2% des ventes réalisées via Kassan'Mou."+nl+nl
+   +"Règlement : Orange Money / Flooz — +227 99 85 15 32"+nl
+   +"_Kassan'Mou — Le pont commercial du Niger_";
+
+  if(vendeurTel){
+    var tel = vendeurTel.replace(/[^0-9]/g,"");
+    if(tel.length <= 8) tel = "227"+tel;
+    window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(factureTxt), "_blank");
+  } else {
+    if(navigator.clipboard) navigator.clipboard.writeText(factureTxt);
+    toast("Facture copiée dans le presse-papier !");
+  }
+  return factureTxt;
+}
+
 async function dashCommissions(){
   var body=g('dash-body');
   if(!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecté.</p>';return;}
   body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   try{
-    var res=await kmDB.from('commissions').select('*,vendeurs(nom,telephone)').order('created_at',{ascending:false});
+    var res=await kmDB.from('commissions').select('*,vendeurs(nom,telephone)').order('date_commission',{ascending:false});
     var comms=res.data||[];
     var due=comms.filter(function(x){return x.statut==='due';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
     var paye=comms.filter(function(x){return x.statut==='payee';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
@@ -5694,7 +5770,7 @@ async function vendeurProduits(){
   var body=g('vendeur-dash-body');
   if(!kmVendeurSession||!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecte.</p>';return;}
   body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
-  var r=await kmDB.from('produits').select('*').eq('vendeur_id',kmVendeurSession.id).order('created_at',{ascending:false});
+  var r=await kmDB.from('produits').select('*').eq('vendeur_id',kmVendeurSession.id).order('date_soumission',{ascending:false});
   var prods=r.data||[];
   var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:14px;color:#E8C060">Mes produits ('+prods.length+')</div>';
   if(!prods.length){html+='<p style="text-align:center;padding:40px;color:#666">Aucun produit encore.</p>';}
@@ -5717,7 +5793,7 @@ async function vendeurCommissions(){
   var body=g('vendeur-dash-body');
   if(!kmVendeurSession||!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecte.</p>';return;}
   body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
-  var r=await kmDB.from('commissions').select('*').eq('vendeur_id',kmVendeurSession.id).order('created_at',{ascending:false});
+  var r=await kmDB.from('commissions').select('*').eq('vendeur_id',kmVendeurSession.id).order('date_commission',{ascending:false});
   var comms=r.data||[];
   var due=comms.filter(function(x){return x.statut==='due';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
   var paye=comms.filter(function(x){return x.statut==='payee';}).reduce(function(s,x){return s+(parseFloat(x.montant)||0);},0);
@@ -5749,7 +5825,7 @@ async function vendeurCommandes(){
   var body=g('vendeur-dash-body');
   if(!kmVendeurSession||!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecte.</p>';return;}
   body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
-  var r=await kmDB.from('commandes').select('*').eq('vendeur_nom',kmVendeurSession.nom).order('created_at',{ascending:false});
+  var r=await kmDB.from('commandes').select('*').eq('vendeur_nom',kmVendeurSession.nom).order('date_commande',{ascending:false});
   var cmds=r.data||[];
   var ca=cmds.reduce(function(s,x){return s+(parseFloat(x.montant_total)||0);},0);
   var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:6px;color:#E8C060">Mes ventes ('+cmds.length+')</div>'
@@ -5760,7 +5836,7 @@ async function vendeurCommandes(){
     var d=cmd.created_at?new Date(cmd.created_at).toLocaleDateString('fr-FR'):'—';
     html+='<div style="background:#1a2a1a;border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid #2a3a2a">'
          +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
-         +'<div style="flex:1"><div style="font-weight:700;color:#fff">'+kmEsc(cmd.produit_nom||'Produit')+'</div>'
+         +'<div style="flex:1"><div style="font-weight:700;color:#fff">'+kmEsc(cmd.produit_nom||cmd.notes||'Produit')+'</div>'
          +'<div style="font-size:12px;color:#888;margin-top:2px">'+kmEsc(cmd.acheteur_nom||'Acheteur')+' · '+d+'</div></div>'
          +'<div style="text-align:right;flex-shrink:0;margin-left:10px"><div style="font-size:16px;font-weight:800;color:#E8C060">'+Math.round(parseFloat(cmd.montant_total)||0).toLocaleString()+' F</div>'
          +'<span style="color:'+sc+';font-size:11px">'+kmEsc(cmd.statut||'—')+'</span></div>'
@@ -6585,7 +6661,7 @@ function renderDetailStep3(p, client){
   ══════════════════════════════════════════ */
   var waMsgEquipe = [
     '🛒 *NOUVELLE COMMANDE — KASSAN\'MOU*',
-    '━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '-------------------━━━',
     '',
     '📦 *PRODUIT*',
     '  Nom : ' + p.nom,
@@ -6619,7 +6695,7 @@ function renderDetailStep3(p, client){
   ══════════════════════════════════════════ */
   var waMsgClient = [
     '✅ *MA COMMANDE KASSAN\'MOU*',
-    '━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '-------------------━━━',
     '',
     '📦 *' + p.nom + '*',
     '💰 ' + p.prix.toLocaleString('fr-FR') + ' FCFA / ' + p.unite,
@@ -6659,18 +6735,21 @@ function renderDetailStep3(p, client){
 
   /* Sauvegarder commande dans Supabase */
   kmSaveCommande({
-    reference: ref,
-    produitNom: p.nom || '',
-    vendeurNom: p.vendeur || '',
-    nom: client.nom,
-    telephone: client.tel,
-    whatsapp: client.tel,
-    ville: 'Niamey',
-    prixUnitaire: p.prix,
+    reference:    ref,
+    produitNom:   p.nom || '',
+    produitId:    p.id  || null,
+    vendeurNom:   p.vendeur || '',
+    nom:          client.nom,
+    telephone:    client.tel,
+    whatsapp:     client.tel,
+    ville:        client.ville || 'Niamey',
+    prixUnitaire: Number(p.prix),
     fraisLivraison: 1000,
-    montantTotal: p.prix + 1000,
+    montantTotal: Number(p.prix) + 1000,
     modePaiement: payName,
-    notes: 'Paiement: ' + payName + ' | Livreur: ' + livreur.nom + ' (' + livreur.telDisplay + ')'
+    livreurNom:   livreur.nom || '',
+    livreurTel:   livreur.telDisplay || '',
+    notes:        'Paiement: ' + payName + ' | Livreur: ' + livreur.nom + ' (' + livreur.telDisplay + ')'
   });
 
   // Envoi email automatique à '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+'
