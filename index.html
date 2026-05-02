@@ -4167,6 +4167,20 @@ function wirePhotoUpload(){
 }
 
 function submitProduct(modes){
+  /* SEC v44j : rate limiting — max 3 soumissions par heure par navigateur */
+  try{
+    var _rl = JSON.parse(sessionStorage.getItem('km_submit_rl')||'{"count":0,"reset":0}');
+    var _now = Date.now();
+    if(_rl.reset < _now){ _rl = {count:0, reset:_now + 3600000}; }
+    if(_rl.count >= 3){
+      toast("Limite atteinte — max 3 soumissions par heure. Contactez-nous sur WhatsApp.", true);
+      console.warn("[KM-SEC] Rate limit soumission produit atteint");
+      return;
+    }
+    _rl.count++;
+    sessionStorage.setItem('km_submit_rl', JSON.stringify(_rl));
+  }catch(e){ /* sessionStorage non disponible, on continue */ }
+
   /* v44c FIX RACINE : lire depuis window._kmFormSave
      car le modal a été remplacé par l'écran de confirmation
      et les éléments DOM du formulaire n'existent plus */
@@ -4179,8 +4193,21 @@ function submitProduct(modes){
 
   if(!sellerType){toast('Veuillez sélectionner votre profil (Vendeur, Producteur, Transformateur ou Maraîcher).',true);return;}
   if(!F.nom){toast('Veuillez nommer votre produit.',true);return;}
+  if(F.nom.length > 150){toast('Nom du produit trop long (max 150 caractères).',true);return;}
   if(!F.cat){toast('Veuillez choisir une catégorie.',true);return;}
   if(!emailVal.trim()&&!phoneVal.trim()){toast('Ajoutez votre email ou téléphone pour recevoir votre code.',true);return;}
+  /* SEC v44j : validation email basique */
+  if(emailVal && (!emailVal.includes('@') || emailVal.length > 100)){
+    toast('Email invalide.',true);return;
+  }
+  /* SEC v44j : validation téléphone */
+  if(phoneVal && (phoneVal.replace(/[^0-9]/g,'').length < 8 || phoneVal.length > 20)){
+    toast('Numéro de téléphone invalide.',true);return;
+  }
+  /* SEC v44j : description max */
+  if(F.desc && F.desc.length > 2000){
+    toast('Description trop longue (max 2000 caractères).',true);return;
+  }
   if(!modes||modes.length===0) modes = F.modes || ['detail'];
 
   var prodCode = generateCode();
@@ -4902,7 +4929,13 @@ async function formModifierLivreur(id){
    Prix : 5 000 FCFA ANNUEL jusqu'à épuisement du produit
 ══════════════════════════════════════════════════════════ */
 async function doValiderProduit(id,code){
+  /* SEC v44j : vérification admin côté client + session active */
   if(!kmDB){toast("Non connecté",true);return;}
+  if(!kmIsAdmin || !kmSession){
+    toast("Accès refusé — connexion admin requise.",true);
+    console.warn("[KM-SEC] Tentative doValiderProduit sans session admin");
+    return;
+  }
 
   /* Étape 1 : Valider le produit */
   var r=await kmDB.from('produits')
@@ -5918,7 +5951,7 @@ function kmShowConfirmTarif(modes){
     photos:   uploadedPhotos ? uploadedPhotos.slice() : [],
     modes:    modes && modes.length ? modes : ['detail']
   };
-  console.log('[KM-FORM v44c] Données sauvegardées ✅ | Produit:', nomProd, '| Type:', currentSellerType, '| Email:', email, '| Tel:', tel);
+  kmLog('[KM-FORM v44c] Données sauvegardées ✅ | Produit:', nomProd, '| Type:', currentSellerType, '| Email:', email, '| Tel:', tel);
 
   var box = document.getElementById('mbox');
   var veil = document.getElementById('mveil');
@@ -7062,10 +7095,20 @@ function animateHowSteps(mode){
 ═══════════════════════════════════════════════════════════ */
 var KM_SUPABASE_URL = 'https://nifnobbeictkbprsixxe.supabase.co';
 var KM_SUPABASE_KEY = 'sb_publishable_xTHizuii8kXP1RNam9qvzg_HejUYPcT';
+
+/* SEC v44j : logger conditionnel — logs désactivés en production */
+var KM_DEBUG = false; /* Mettre true pour déboguer localement */
+var kmLog = function(){
+  if(KM_DEBUG) console.log.apply(console, arguments);
+};
+var kmWarn = function(){
+  /* Warnings toujours visibles pour les erreurs importantes */
+  console.warn.apply(console, arguments);
+};
 var kmDB = null;
 try {
   kmDB = supabase.createClient(KM_SUPABASE_URL, KM_SUPABASE_KEY);
-  console.log('[KM-DB] Connexion Supabase etablie');
+  kmLog('[KM-DB] Connexion Supabase etablie');
 } catch(e) { console.warn('[KM-DB] Supabase non disponible:', e); }
 
 async function kmLoadLivreurs(){
@@ -7149,11 +7192,11 @@ async function kmLoadProduits() {
         });
       });
 
-      console.log('[KM-DB] ' + res.data.length + ' produit(s) chargé(s) depuis Supabase');
+      kmLog('[KM-DB] ' + res.data.length + ' produit(s) chargé(s) depuis Supabase');
       renderProdsPremium();
       renderFeaturedStrip();
     } else {
-      console.log('[KM-DB] Aucun produit validé en base');
+      kmLog('[KM-DB] Aucun produit validé en base');
     }
     return Promise.resolve();
   } catch(e) {
@@ -7200,7 +7243,7 @@ async function kmSaveProduit(d) {
     /* ── v43 FIX CRITIQUE : vendeur_id JAMAIS NULL ── */
     var vendeurId=null;
     if(d.email){var vEx=await kmDB.from('vendeurs').select('id').eq('email',d.email).maybeSingle();if(vEx&&vEx.data)vendeurId=vEx.data.id;}
-    console.log('[KM-DB] Recherche vendeur | email:',JSON.stringify(d.email),'| tel:',JSON.stringify(d.tel));
+    kmLog('[KM-DB] Recherche vendeur | email:',JSON.stringify(d.email),'| tel:',JSON.stringify(d.tel));
     if(!vendeurId&&d.tel){var vEx2=await kmDB.from('vendeurs').select('id').eq('telephone',d.tel).maybeSingle();if(vEx2&&vEx2.data)vendeurId=vEx2.data.id;}
     if(!vendeurId){
       var vIns=await kmDB.from('vendeurs').insert({
@@ -7227,15 +7270,16 @@ async function kmSaveProduit(d) {
     /* v44e: durée annuelle par défaut */
     var durees={'7jours':7,'30jours':30,'90jours':90,'annuel':365};
     var exp=new Date(); exp.setDate(exp.getDate()+(durees[d.pack]||365));
-    console.log('[KM-DB] Insert produit | vendeurId:',vendeurId,'| nom:',d.nom,'| pack:',d.pack);
-    /* v44g: description par défaut si trop courte pour la contrainte DB */
-    var descFinal = (d.description||'').trim();
+    kmLog('[KM-DB] Insert produit | vendeurId:',vendeurId,'| nom:',d.nom,'| pack:',d.pack);
+    /* SEC v44j : sanitisation complète avant insert */
+    var _sanitize = function(s, max){ return (s||'').toString().trim().substring(0, max||500); };
+    var descFinal = _sanitize(d.description, 2000);
     if(descFinal.length < 20) descFinal = descFinal + (descFinal.length > 0 ? ' — ' : '') + 'Produit disponible sur KassanMou.';
 
     console.log('[KM-DB v44g] Insert produit | vendeurId:',vendeurId,'| nom:',d.nom,'| pack:',d.pack,'| desc:',descFinal.substring(0,30));
     var pRes = await kmDB.from('produits').insert({
       vendeur_id:vendeurId,
-      nom:d.nom||'', description:descFinal, categorie:d.categorie||'Autres',
+      nom:_sanitize(d.nom,150)||'Produit', description:descFinal, categorie:_sanitize(d.categorie,50)||'Autres',
       prix:parseFloat(d.prix)||0, unite:d.unite||'kg',
       quantite_disponible:parseFloat(d.quantite)||0,
       region:d.region||'', ville:d.ville||'', photos:d.photos||[],
@@ -7245,7 +7289,7 @@ async function kmSaveProduit(d) {
       export_international:d.exportInternational||false
     }).select().single();
     if (pRes.error) { console.warn('[KM-DB]',pRes.error.message); return null; }
-    console.log('[KM-DB] Produit sauvegarde. Code:',pRes.data.code_validation);
+    kmLog('[KM-DB] Produit sauvegarde. Code:',pRes.data.code_validation);
     return pRes.data;
   } catch(e) { console.warn('[KM-DB]',e); return null; }
 }
@@ -7416,6 +7460,19 @@ document.addEventListener('DOMContentLoaded', function(){
     function executerValidation(){
       if(!kmDB){
         setTimeout(executerValidation, 500);
+        return;
+      }
+      /* SEC v44j : la validation URL nécessite une session admin active
+         On attend jusqu'à 3 secondes que la session soit restaurée */
+      var _secAttempts = (window._secValAttempts = (window._secValAttempts||0) + 1);
+      if(!kmIsAdmin && _secAttempts < 6){
+        console.log('[KM-SEC] Attente session admin pour validation URL... tentative', _secAttempts);
+        setTimeout(executerValidation, 600);
+        return;
+      }
+      if(!kmIsAdmin){
+        toast("Connexion admin requise pour valider ce produit.", true);
+        openModal('login');
         return;
       }
       if(codeAction === 'valider'){
