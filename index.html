@@ -4683,7 +4683,25 @@ async function dashAbonnements(){
 
     var tel=(v.telephone||'').replace(/[^0-9]/g,'');
     if(tel&&tel.length<=8)tel='227'+tel;
-    var waMsg='Bonjour *'+(v.nom||'Vendeur')+'* !\n\nVotre abonnement pour le produit *"'+p.nom+'"* arrive à expiration le *'+expStr+'*.\n\nPour renouveler votre abonnement (5 000 FCFA/an), contactez-nous.\n\n_Kassan\'Mou — Le pont commercial du Niger_ 🌿';
+    var _prenomV = (v.nom||'Vendeur').split(' ')[0];
+    var _heureV = new Date().getHours();
+    var _salutV = _heureV < 18 ? 'Bonjour' : 'Bonsoir';
+    var waMsg = _salutV+' *'+_prenomV+'* ! 🌿\n\n'
+      +'Nous espérons que vous allez bien.\n\n'
+      +'Votre annonce *"'+p.nom+'"* sur Kassan\'Mou arrive à expiration '
+      +'le *'+expStr+'*.\n\n'
+      +'Pour continuer à bénéficier de notre visibilité mondiale '
+      +'et garder votre produit en ligne, pensez à renouveler '
+      +'votre abonnement.\n\n'
+      +'💳 *Renouvellement : 5 000 FCFA / an*\n'
+      +'• Dépôt Nita → +227 99 85 15 32\n'
+      +'• Dépôt Amanata → +227 99 85 15 32\n'
+      +'• Wave → +227 99 85 15 32\n\n'
+      +'📸 Envoyez la preuve de paiement par WhatsApp '
+      +'et votre annonce sera renouvelée immédiatement.\n\n'
+      +'Merci pour votre confiance ! 🇳🇪\n'
+      +'_Kassan\'Mou — Le pont commercial du Niger_\n'
+      +'📞 +227 99 85 15 32';
     var waUrl=tel?'https://wa.me/'+tel+'?text='+encodeURIComponent(waMsg):'';
 
     html+='<tr style="border-bottom:1px solid rgba(255,255,255,.05);'+rowBg+'">'
@@ -5645,18 +5663,34 @@ function kmGenererFactureMensuelle(vendeurId, vendeurNom, vendeurEmail, vendeurT
       +Math.round(parseFloat(c.montant_commission||c.montant||0)).toLocaleString("fr-FR")+" FCFA";
   }).join(nl);
 
-  var sep = "-------------------";
+  /* v44k : message chaleureux selon l'heure */
+  var heure = new Date().getHours();
+  var salut = heure < 12 ? "Bonjour" : heure < 18 ? "Bonjour" : "Bonsoir";
+  var prenom = (vendeurNom||"").split(" ")[0] || "cher partenaire";
+
   var factureTxt =
-    "🧾 *FACTURE COMMISSIONS — KASSAN'MOU*"+nl
-   +"📅 Période : "+mois+nl
-   +"👤 Vendeur : "+(vendeurNom||"—")+nl
-   +sep+nl
+    salut+" *"+prenom+"* ! 🌿"+nl+nl
+   +"Nous espérons que vos affaires se portent bien."+nl
+   +"Voici le récapitulatif de vos commissions Kassan'Mou"+nl
+   +"pour la période de *"+mois+"* :"+nl+nl
+   +"---"+nl
+   +"🧾 *COMMISSIONS DUES*"+nl
+   +"---"+nl
    +details+nl
-   +sep+nl
-   +"💰 *TOTAL DÛ : "+Math.round(total).toLocaleString("fr-FR")+" FCFA*"+nl+nl
-   +"ℹ️ 2% des ventes réalisées via Kassan'Mou."+nl+nl
-   +"Règlement : Orange Money / Flooz — +227 99 85 15 32"+nl
-   +"_Kassan'Mou — Le pont commercial du Niger_";
+   +"---"+nl+nl
+   +"💰 *Total à régler : "+Math.round(total).toLocaleString("fr-FR")+" FCFA*"+nl+nl
+   +"Ces commissions représentent 2% des ventes réalisées"+nl
+   +"via la plateforme Kassan'Mou ce mois-ci."+nl+nl
+   +"💳 *MODES DE RÈGLEMENT :*"+nl
+   +"• Dépôt *Nita* → +227 99 85 15 32"+nl
+   +"• Dépôt *Amanata* → +227 99 85 15 32"+nl
+   +"• *Wave* → +227 99 85 15 32"+nl+nl
+   +"📸 Après paiement, merci d'envoyer la *preuve"+nl
+   +"de paiement* par WhatsApp au même numéro."+nl+nl
+   +"Merci pour votre confiance et votre fidélité."+nl
+   +"Ensemble, construisons le commerce du Niger ! 🇳🇪"+nl+nl
+   +"_Kassan'Mou — Le pont commercial du Niger_"+nl
+   +"📞 +227 99 85 15 32";
 
   if(vendeurTel){
     var tel = vendeurTel.replace(/[^0-9]/g,"");
@@ -6160,21 +6194,27 @@ async function kmEnvoyerNotifValidation(prod,vendeur){
   if(tel){
     var telN = tel.replace(/[^0-9]/g,'');
     if(telN.length <= 8) telN = '227' + telN;
-    var msg = "🎉 Bonjour *"+nomVend+"* !\n\n"
-            + "Votre produit *\""+nomProd+"\"* est maintenant *EN LIGNE* sur Kassan'Mou ! 🌿\n\n"
+    var _heureN = new Date().getHours();
+    var _salutN = _heureN < 12 ? "Bonjour" : _heureN < 18 ? "Bonjour" : "Bonsoir";
+    var _prenomN = nomVend.split(" ")[0] || nomVend;
+    var msg = _salutN+" *"+_prenomN+"* ! 🎉\n\n"
+            + "Excellente nouvelle ! Votre produit\n"
+            + "*\""+nomProd+"\"* est maintenant *EN LIGNE*\n"
+            + "sur Kassan'Mou et visible partout dans le monde ! 🌍\n\n"
             + "📋 *Votre abonnement :*\n"
             + "• Offre : "+packNom+"\n"
-            + "• Prix : *"+prixStr+"*\n"
-            + "• Durée : 1 an jusqu'à épuisement du produit\n\n"
+            + "• Tarif : *"+prixStr+"*\n"
+            + "• Durée : 1 an — jusqu'à épuisement du produit\n\n"
             + "💰 *Commission Kassan'Mou :*\n"
-            + "• 2% sur chaque vente via la plateforme\n"
-            + "• Ex: 100 000 FCFA vendus = 2 000 FCFA de commission\n\n"
-            + "🌍 *Votre visibilité :*\n"
-            + "Votre produit est visible partout dans le monde !\n\n"
-            + "👤 *Votre espace vendeur :*\n"
+            + "• 2% sur chaque vente réalisée via la plateforme\n"
+            + "• Exemple : 100 000 FCFA de ventes = 2 000 FCFA\n\n"
+            + "🌐 *Votre espace vendeur :*\n"
             + "https://laoulaboukar-ship-it.github.io/kassanmou\n"
-            + "Onglet 'Mon espace' → Suivez vos ventes\n\n"
-            + "_Kassan'Mou — Le pont commercial du Niger_ 🌿";
+            + "→ Onglet 'Mon espace' pour suivre vos ventes\n\n"
+            + "Merci de faire confiance à Kassan'Mou.\n"
+            + "Ensemble, faisons rayonner les produits du Niger ! 🇳🇪\n\n"
+            + "_Kassan'Mou — Le pont commercial du Niger_\n"
+            + "📞 +227 99 85 15 32";
     var waUrl = "https://wa.me/"+telN+"?text="+encodeURIComponent(msg);
     kmMontrerBoutonWA(waUrl, nomVend, nomProd);
   }
@@ -6599,6 +6639,10 @@ function renderProdsPremium(){
   s.textContent = `
 .order-step { animation: pgIn .22s ease; }
 .pay-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+.pay-card.online { grid-column: span 2; border-color:rgba(99,102,241,.5); background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.05)); }
+.pay-card.online.selected { border-color:#818cf8; background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.1)); box-shadow:0 0 0 2px rgba(99,102,241,.2); }
+.pay-card.online .pay-lbl { color:#a5b4fc; font-size:13px; }
+.pay-card.online .pay-ico { font-size:1.5rem; }
 .pay-card {
   border:2px solid var(--B); border-radius:var(--rl); padding:14px 12px;
   cursor:pointer; transition:all .18s; background:var(--W); text-align:center;
@@ -6698,9 +6742,14 @@ function renderDetailStep1(p){
 function renderDetailStep2(p){
   var selectedPay = '';
   var payments = [
-    {id:'amana', ico:'🏦', lbl:'Dépôt Amana',  sub:'Dépôt bancaire — coordonnées envoyées par WhatsApp', num:'Compte Amana'},
-    {id:'nita',  ico:'🏧', lbl:'Dépôt Nita',   sub:'Nita Bank — coordonnées envoyées par WhatsApp', num:'Compte Nita'},
-    {id:'cash',  ico:'💵', lbl:'Cash au livreur', sub:'Vous payez directement à la réception', num:'À la réception'},
+    {id:'cinetpay',     ico:'💳', lbl:'Payer en ligne',   sub:'Wave · Visa · Mastercard',   num:'', online:true},
+    {id:'orange_money', ico:'🟠', lbl:'Orange Money',     sub:'Transfert mobile',            num:KM_PHONE_RAW},
+    {id:'airtel_money', ico:'🔴', lbl:'Airtel Money',     sub:'Transfert mobile',            num:KM_PHONE_RAW},
+    {id:'wave',         ico:'🌊', lbl:'Wave',             sub:'Transfert mobile',            num:KM_PHONE_RAW},
+    {id:'flooz',        ico:'💙', lbl:'Flooz / Moov',     sub:'Transfert mobile',            num:KM_PHONE_RAW},
+    {id:'nita',         ico:'🏧', lbl:'Dépôt Nita',       sub:'Agence · preuve WhatsApp',    num:''},
+    {id:'amana',        ico:'🏦', lbl:'Dépôt Amana',      sub:'Agence · preuve WhatsApp',    num:''},
+    {id:'cash',         ico:'💵', lbl:'Cash à livraison', sub:'Payez à la réception',        num:''}
   ];
 
   g('detail-content').innerHTML =
@@ -6719,7 +6768,7 @@ function renderDetailStep2(p){
       '<div style="font-size:13px;font-weight:700;color:var(--S);margin-bottom:10px">Choisissez votre mode de paiement :</div>' +
       '<div class="pay-grid" id="pay-grid">' +
         payments.map(function(pm){
-          return '<div class="pay-card'+(pm.id==='cash'?' cash':'')+'" data-pay="'+pm.id+'" data-num="'+pm.num+'">' +
+          return '<div class="pay-card'+(pm.id==='cash'?' cash':'')+(pm.online?' online':'')+'" data-pay="'+pm.id+'" data-num="'+pm.num+'">' +
             '<div class="pay-ico">'+pm.ico+'</div>' +
             '<div class="pay-lbl">'+pm.lbl+'</div>' +
             '<div class="pay-sub">'+pm.sub+'</div>' +
@@ -6740,13 +6789,89 @@ function renderDetailStep2(p){
       c.classList.add('selected');
       selectedPay = c.dataset.pay;
       var numBox = g('pay-detail-box');
+      /* v45 : instructions complètes par mode de paiement */
+      var _num = KM_PHONE_DISPLAY;
       var payLabels = {
-        orange_money: '🟠 <strong>Orange Money</strong> — Envoyez le montant au numéro <strong>'+KM_PHONE_DISPLAY+'</strong> puis envoyez la preuve de paiement sur WhatsApp.',
-        airtel_money: '🔴 <strong>Airtel Money</strong> — Envoyez le montant au numéro <strong>'+KM_PHONE_DISPLAY+'</strong> puis envoyez la preuve de paiement sur WhatsApp.',
-        flooz: '💙 <strong>Flooz (Moov)</strong> — Envoyez le montant au numéro <strong>'+KM_PHONE_DISPLAY+'</strong> puis envoyez la preuve de paiement sur WhatsApp.',
-        amana: '🏦 <strong>Dépôt Amana</strong> — Notre équipe vous communiquera les coordonnées du compte sur WhatsApp après confirmation de commande.',
-        nita: '🏧 <strong>Dépôt Nita</strong> — Notre équipe vous communiquera les coordonnées du compte sur WhatsApp après confirmation de commande.',
-        cash: '💵 <strong>Cash à la livraison</strong> — Vous payez directement le livreur à la réception de votre commande. Aucun transfert nécessaire avant.'
+        cinetpay:
+          '<div style="padding:4px 0">'
+          +'<div style="font-weight:700;color:#818cf8;margin-bottom:6px">💳 Paiement en ligne sécurisé</div>'
+          +'<div style="font-size:12.5px;color:var(--Sm);line-height:1.8">'
+          +'Après confirmation, vous serez redirigé vers la page de paiement CinetPay.<br>'
+          +'Modes acceptés : <strong>Wave · Visa · Mastercard</strong><br>'
+          +'Paiement 100% sécurisé · Confirmation instantanée'
+          +'</div></div>',
+
+        orange_money:
+          '<div style="padding:4px 0">'
+          +'<div style="font-weight:700;color:var(--S);margin-bottom:6px">🟠 Orange Money</div>'
+          +'<div style="font-size:12.5px;color:var(--Sm);line-height:1.9">'
+          +'1. Transférez le montant au <strong>'+_num+'</strong><br>'
+          +'2. Prenez une photo de la confirmation<br>'
+          +'3. Envoyez-la sur WhatsApp : <strong>'+_num+'</strong><br>'
+          +'4. Votre commande est confirmée dès réception ✅'
+          +'</div></div>',
+
+        airtel_money:
+          '<div style="padding:4px 0">'
+          +'<div style="font-weight:700;color:var(--S);margin-bottom:6px">🔴 Airtel Money</div>'
+          +'<div style="font-size:12.5px;color:var(--Sm);line-height:1.9">'
+          +'1. Transférez le montant au <strong>'+_num+'</strong><br>'
+          +'2. Prenez une photo de la confirmation<br>'
+          +'3. Envoyez-la sur WhatsApp : <strong>'+_num+'</strong><br>'
+          +'4. Votre commande est confirmée dès réception ✅'
+          +'</div></div>',
+
+        wave:
+          '<div style="padding:4px 0">'
+          +'<div style="font-weight:700;color:var(--S);margin-bottom:6px">🌊 Wave</div>'
+          +'<div style="font-size:12.5px;color:var(--Sm);line-height:1.9">'
+          +'1. Ouvrez votre application Wave<br>'
+          +'2. Envoyez le montant au <strong>'+_num+'</strong><br>'
+          +'3. Prenez une photo de la confirmation<br>'
+          +'4. Envoyez-la sur WhatsApp : <strong>'+_num+'</strong><br>'
+          +'5. Votre commande est confirmée dès réception ✅'
+          +'</div></div>',
+
+        flooz:
+          '<div style="padding:4px 0">'
+          +'<div style="font-weight:700;color:var(--S);margin-bottom:6px">💙 Flooz / Moov</div>'
+          +'<div style="font-size:12.5px;color:var(--Sm);line-height:1.9">'
+          +'1. Transférez le montant au <strong>'+_num+'</strong><br>'
+          +'2. Prenez une photo de la confirmation<br>'
+          +'3. Envoyez-la sur WhatsApp : <strong>'+_num+'</strong><br>'
+          +'4. Votre commande est confirmée dès réception ✅'
+          +'</div></div>',
+
+        nita:
+          '<div style="padding:4px 0">'
+          +'<div style="font-weight:700;color:var(--S);margin-bottom:6px">🏧 Dépôt Nita</div>'
+          +'<div style="font-size:12.5px;color:var(--Sm);line-height:1.9">'
+          +'1. Rendez-vous dans une agence <strong>Nita</strong><br>'
+          +'2. Effectuez un dépôt au nom de <strong>KassanMou</strong><br>'
+          +'3. Photographiez le reçu de dépôt<br>'
+          +'4. Envoyez-le sur WhatsApp : <strong>'+_num+'</strong><br>'
+          +'5. Confirmation sous 30 min après vérification ✅'
+          +'</div></div>',
+
+        amana:
+          '<div style="padding:4px 0">'
+          +'<div style="font-weight:700;color:var(--S);margin-bottom:6px">🏦 Dépôt Amana</div>'
+          +'<div style="font-size:12.5px;color:var(--Sm);line-height:1.9">'
+          +'1. Rendez-vous dans une agence <strong>Amana</strong><br>'
+          +'2. Effectuez un dépôt au nom de <strong>KassanMou</strong><br>'
+          +'3. Photographiez le reçu de dépôt<br>'
+          +'4. Envoyez-le sur WhatsApp : <strong>'+_num+'</strong><br>'
+          +'5. Confirmation sous 30 min après vérification ✅'
+          +'</div></div>',
+
+        cash:
+          '<div style="padding:4px 0">'
+          +'<div style="font-weight:700;color:var(--G);margin-bottom:6px">💵 Cash à la livraison</div>'
+          +'<div style="font-size:12.5px;color:var(--Sm);line-height:1.9">'
+          +'Vous payez directement le livreur à la réception.<br>'
+          +'<strong>Aucun transfert avant la livraison.</strong><br>'
+          +'Le livreur vous remettra un reçu à la livraison ✅'
+          +'</div></div>'
       };
       numBox.innerHTML = payLabels[selectedPay] || '';
       numBox.style.display = 'block';
@@ -6760,23 +6885,121 @@ function renderDetailStep2(p){
     if(!nom){ toast('⚠️ Entrez votre nom complet', true); return; }
     if(!tel){ toast('⚠️ Entrez votre numéro WhatsApp', true); return; }
     if(!selectedPay){ toast('⚠️ Choisissez un mode de paiement', true); return; }
+
+    /* v45 : si CinetPay → lancer le paiement en ligne */
+    if(selectedPay === 'cinetpay'){
+      kmLancerCinetPay(p, {nom:nom, tel:tel});
+      return;
+    }
     renderDetailStep3(p, {nom:nom, tel:tel, pay:selectedPay});
   });
 }
 
 var _payNames = {
-  orange_money:'Orange Money 🟠',
-  airtel_money:'Airtel Money 🔴',
-  flooz:'Flooz 💙',
-  amana:'Dépôt Amana 🏦',
-  nita:'Dépôt Nita 🏧',
-  cash:'Cash à la livraison 💵'
+  cinetpay:     'Paiement en ligne 💳',
+  orange_money: 'Orange Money 🟠',
+  airtel_money: 'Airtel Money 🔴',
+  wave:         'Wave 🌊',
+  flooz:        'Flooz 💙',
+  amana:        'Dépôt Amana 🏦',
+  nita:         'Dépôt Nita 🏧',
+  cash:         'Cash à la livraison 💵'
 };
+
+/* ══════════════════════════════════════════════════════
+   v45 — CINETPAY : Paiement en ligne
+   Site ID : à obtenir sur cinetpay.com
+   Pour l'activer : créer un compte marchand CinetPay,
+   récupérer le Site ID et la clé API, les mettre ici.
+══════════════════════════════════════════════════════ */
+var KM_CINETPAY_SITE_ID = 'VOTRE_SITE_ID_CINETPAY'; /* À configurer */
+var KM_CINETPAY_APIKEY  = 'VOTRE_APIKEY_CINETPAY';  /* À configurer */
+var KM_CINETPAY_ACTIVE  = false; /* Passer à true quand configuré */
+
+function kmLancerCinetPay(produit, client){
+  if(!KM_CINETPAY_ACTIVE){
+    /* Mode simulation — afficher les instructions pour l'activation */
+    var box = g('mbox'), veil = g('mveil');
+    box.className = 'mbox center-modal';
+    box.innerHTML =
+      '<button class="mcls" onclick="closeModal()">✕</button>'
+     +'<div class="mh" style="color:#818cf8">💳 Paiement en ligne</div>'
+     +'<div style="background:rgba(99,102,241,.08);border:1.5px solid rgba(99,102,241,.3);border-radius:12px;padding:16px;margin-bottom:16px">'
+     +'<div style="font-weight:700;color:#a5b4fc;margin-bottom:8px">🚀 Bientôt disponible !</div>'
+     +'<div style="font-size:13px;color:var(--Sm);line-height:1.8">'
+     +'Le paiement en ligne via <strong style="color:#a5b4fc">Wave, Visa et Mastercard</strong> '
+     +'sera disponible très prochainement.<br><br>'
+     +'En attendant, choisissez un autre mode de paiement ou '
+     +'contactez-nous directement sur WhatsApp.'
+     +'</div></div>'
+     +'<a href="https://wa.me/'+KM_PHONE_RAW+'?text='+encodeURIComponent('Bonjour ! Je souhaite commander : '+produit.nom+' — Montant : '+produit.prix.toLocaleString('fr-FR')+' FCFA. Nom : '+client.nom+' / Tel : '+client.tel)+'" target="_blank" class="bp" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:#25D366;border-radius:10px;text-decoration:none;color:#fff;font-weight:700;font-size:15px;font-family:Outfit,sans-serif">'
+     +'📱 Commander via WhatsApp</a>'
+     +'<button class="bs" style="width:100%;padding:12px;margin-top:10px" onclick="closeModal();renderDetailStep2(_orderProduct)">← Choisir un autre mode</button>';
+    veil.classList.add('on');
+    return;
+  }
+
+  /* Mode production — intégration CinetPay SDK */
+  var transId = 'KM-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  var montant = Math.round(produit.prix + 1000); /* prix + frais livraison */
+
+  /* Charger le SDK CinetPay si pas encore chargé */
+  if(!window.CinetPay){
+    var script = document.createElement('script');
+    script.src = 'https://cdn.cinetpay.com/seamless/main.js';
+    script.onload = function(){
+      kmInitCinetPay(produit, client, transId, montant);
+    };
+    document.head.appendChild(script);
+  } else {
+    kmInitCinetPay(produit, client, transId, montant);
+  }
+}
+
+function kmInitCinetPay(produit, client, transId, montant){
+  CinetPay.setConfig({
+    apikey:      KM_CINETPAY_APIKEY,
+    site_id:     KM_CINETPAY_SITE_ID,
+    notify_url:  'https://laoulaboukar-ship-it.github.io/kassanmou/notify',
+    mode:        'PRODUCTION',
+    close_after_response: true
+  });
+
+  CinetPay.getCheckout({
+    transaction_id: transId,
+    amount:         montant,
+    currency:       'XOF',
+    channels:       'ALL',
+    description:    'Commande Kassan\'Mou : ' + produit.nom,
+    customer_name:  client.nom,
+    customer_phone_number: client.tel.replace(/[^0-9]/g,''),
+    customer_city:  'Niamey',
+    customer_country: 'NE',
+    customer_state: 'NE',
+    customer_zip_code: '0000'
+  });
+
+  CinetPay.waitResponse(function(data){
+    if(data.status === 'ACCEPTED'){
+      /* Paiement réussi — enregistrer et confirmer */
+      toast('✅ Paiement confirmé ! Commande enregistrée.', false);
+      renderDetailStep3(produit, {nom:client.nom, tel:client.tel, pay:'cinetpay', ref:transId, montant:montant});
+    } else {
+      toast('❌ Paiement échoué ou annulé. Réessayez.', true);
+    }
+  });
+
+  CinetPay.onError(function(data){
+    console.warn('[KM-CINETPAY] Erreur:', data);
+    toast('Erreur paiement. Choisissez un autre mode.', true);
+  });
+}
 
 function renderDetailStep3(p, client){
   var ref = generateRef();
   var payName = _payNames[client.pay] || client.pay;
   var isCash = client.pay === 'cash';
+  var isOnline = client.pay === 'cinetpay';
   var needBankInfo = client.pay === 'amana' || client.pay === 'nita';
 
   /* Choisir un livreur disponible automatiquement */
@@ -6808,7 +7031,13 @@ function renderDetailStep3(p, client){
     '  WhatsApp : ' + client.tel,
     '',
     '💳 *PAIEMENT : ' + payName.toUpperCase() + '*',
-    (isCash ? '  → Cash remis au livreur à la livraison' : needBankInfo ? '  → Dépôt ' + (client.pay==='amana'?'Amana':'Nita') + ' — envoyer coordonnées compte' : '  → Preuve de paiement à recevoir sur WhatsApp'),
+    (isCash
+      ? '  → Cash remis au livreur à la livraison'
+      : (client.pay==='cinetpay')
+        ? '  → ✅ Paiement en ligne confirmé — Réf: '+(client.ref||'')
+        : (client.pay==='nita'||client.pay==='amana')
+          ? '  → Dépôt '+(client.pay==='amana'?'Amana':'Nita')+' — preuve de paiement à recevoir sur WhatsApp'
+          : '  → Preuve de paiement à envoyer sur WhatsApp : '+KM_PHONE_DISPLAY),
     '',
     '🛵 *LIVREUR ASSIGNÉ*',
     '  ' + livreur.emoji + ' ' + livreur.nom,
