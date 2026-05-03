@@ -8,9 +8,9 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="description" content="Kassan'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
+<meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <meta name="theme-color" content="#0F1F0A">
-<title>Kassan'Mou — Marketplace Niger · Export B2B International</title>
+<title>Kassan\'Mou — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
 <link rel="manifest" href="/kassanmou/manifest.json">
@@ -26,7 +26,7 @@
 <meta name="application-name" content="Kassan'Mou">
 
 <!-- ═══ PWA — Open Graph (partage WhatsApp / réseaux) ═══ -->
-<meta property="og:title" content="Kassan'Mou — Marketplace Niger">
+<meta property="og:title" content="Kassan\'Mou — Marketplace Niger">
 <meta property="og:description" content="Achetez et vendez facilement. Produits locaux nigériens. Export sésame, paprika vers l'international.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/kassanmou/icon-512.png">
@@ -2660,7 +2660,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
         <div class="how-proto-step">1. Soumettez votre demande d'export via le formulaire (section Export sur la marketplace)</div>
         <div class="how-proto-step">2. Notre équipe vous contacte sous 48h pour évaluer votre capacité de production</div>
         <div class="how-proto-step">3. Contrôle qualité par une structure compétente agréée (certifications Bio EU, Fair Trade, ISO 22000)</div>
-        <div class="how-proto-step">4. Signature d'un protocole d'accord Kassan'Mou — Commission claire et transparente</div>
+        <div class="how-proto-step">4. Signature d'un protocole d'accord Kassan\'Mou — Commission claire et transparente</div>
         <div class="how-proto-step">5. Mise en relation directe avec l'acheteur international qualifié</div>
         <div class="how-proto-step">6. Suivi de l'export et accompagnement documentation (certificats, douane, logistique)</div>
       </div>
@@ -5143,7 +5143,7 @@ async function kmEnvoyerEmailCompteVendeur(vendeur, produit, tmpPwd, email){
       "Contact : WhatsApp +227 99 85 15 32",
       "Email   : kassanmou@gmail.com",
       "",
-      "Bienvenue sur Kassan'Mou — Le pont commercial du Niger !"
+      "Bienvenue sur Kassan\'Mou — Le pont commercial du Niger !"
     ].join("\n");
 
     await emailjs.send(EJS.serviceId, EJS.templateVendeur, {
@@ -5689,7 +5689,7 @@ function kmGenererFactureMensuelle(vendeurId, vendeurNom, vendeurEmail, vendeurT
    +"de paiement* par WhatsApp au même numéro."+nl+nl
    +"Merci pour votre confiance et votre fidélité."+nl
    +"Ensemble, construisons le commerce du Niger ! 🇳🇪"+nl+nl
-   +"_Kassan'Mou — Le pont commercial du Niger_"+nl
+   +"_Kassan\'Mou — Le pont commercial du Niger_"+nl
    +"📞 +227 99 85 15 32";
 
   if(vendeurTel){
@@ -6174,7 +6174,7 @@ async function kmEnvoyerNotifValidation(prod,vendeur){
         "Contact : WhatsApp +227 99 85 15 32",
         "Email   : kassanmou@gmail.com",
         "",
-        "Bienvenue sur Kassan'Mou — Le pont commercial du Niger !"
+        "Bienvenue sur Kassan\'Mou — Le pont commercial du Niger !"
       ].join("\n");
       await emailjs.send(EJS.serviceId, EJS.templateVendeur, {
         to_email:    email,
@@ -6213,7 +6213,7 @@ async function kmEnvoyerNotifValidation(prod,vendeur){
             + "→ Onglet 'Mon espace' pour suivre vos ventes\n\n"
             + "Merci de faire confiance à Kassan'Mou.\n"
             + "Ensemble, faisons rayonner les produits du Niger ! 🇳🇪\n\n"
-            + "_Kassan'Mou — Le pont commercial du Niger_\n"
+            + "_Kassan\'Mou — Le pont commercial du Niger_\n"
             + "📞 +227 99 85 15 32";
     var waUrl = "https://wa.me/"+telN+"?text="+encodeURIComponent(msg);
     kmMontrerBoutonWA(waUrl, nomVend, nomProd);
@@ -6878,21 +6878,92 @@ function renderDetailStep2(p){
     });
   });
 
+  /* v46 : calcul frais en temps réel quand ville change */
+  var orderVille = g('order-ville');
+  if(orderVille){
+    orderVille.addEventListener('change', function(){
+      var villeA = orderVille.value;
+      var villeV = p.zone || p.ville || "Niamey";
+      var preview = g('km-frais-preview');
+      if(!villeA || !preview) return;
+      var info = kmGetFraisLivraison(villeV, villeA);
+      var total = Number(p.prix) + info.prix;
+      preview.style.display = 'block';
+      var isInterVille = info.interville;
+      preview.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+       +'<span style="font-size:1.5rem">'+(isInterVille?'🚌':'🛵')+'</span>'
+       +'<div><div style="font-weight:700;color:var(--S);font-size:14px">'+kmFormatTypeLivraison(info.type)+'</div>'
+       +'<div style="color:var(--Mu);font-size:12px">'+(isInterVille?'Délai et tarif confirmés par WhatsApp avant expédition':'Livraison dans la journée')+'</div>'
+       +'</div></div>'
+       +(isInterVille
+         ? '<div style="background:rgba(196,154,60,.08);border-left:3px solid var(--G);border-radius:8px;padding:10px 12px;font-size:12.5px;color:var(--Sm);line-height:1.8;margin-bottom:10px">'
+           +'📋 <strong>Comment ça marche :</strong><br>'
+           +'1. Votre commande est enregistrée<br>'
+           +'2. Kassan\'Mou contacte le vendeur et calcule le coût de transport<br>'
+           +'3. Vous recevez le tarif exact sur WhatsApp<br>'
+           +'4. Vous validez et payez → expédition immédiate ✅'
+           +'</div>'
+         : '')
+       +'<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--SD);border-radius:8px">'
+       +'<span style="color:var(--Sm);font-size:13px">Frais mise en route</span>'
+       +'<span style="font-weight:700;color:var(--O)">'+info.prix.toLocaleString('fr-FR')+' FCFA</span>'
+       +'</div>'
+       +(isInterVille
+         ? '<div style="text-align:center;font-size:11.5px;color:var(--Mu);margin-top:6px">+ tarif transport selon poids et destination</div>'
+         : '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--SD);border-radius:8px;margin-top:6px"><span style="font-weight:700;color:var(--S)">Total estimé</span><span style="font-weight:700;color:var(--G);font-size:15px">'+total.toLocaleString('fr-FR')+' FCFA</span></div>');
+    });
+  }
+
   var btnConf = g('btn-confirm-order');
   if(btnConf) btnConf.addEventListener('click', function(){
-    var nom = (g('order-nom')||{}).value.trim();
-    var tel = (g('order-tel')||{}).value.trim();
-    if(!nom){ toast('⚠️ Entrez votre nom complet', true); return; }
-    if(!tel){ toast('⚠️ Entrez votre numéro WhatsApp', true); return; }
+    var nom   = (g('order-nom')  ||{}).value.trim();
+    var tel   = (g('order-tel')  ||{}).value.trim();
+    var ville = (g('order-ville')||{}).value || 'Niamey';
+    if(!nom)  { toast('⚠️ Entrez votre nom complet', true); return; }
+    if(!tel)  { toast('⚠️ Entrez votre numéro WhatsApp', true); return; }
     if(!selectedPay){ toast('⚠️ Choisissez un mode de paiement', true); return; }
-
-    /* v45 : si CinetPay → lancer le paiement en ligne */
     if(selectedPay === 'cinetpay'){
-      kmLancerCinetPay(p, {nom:nom, tel:tel});
+      kmLancerCinetPay(p, {nom:nom, tel:tel, ville:ville});
       return;
     }
-    renderDetailStep3(p, {nom:nom, tel:tel, pay:selectedPay});
+    renderDetailStep3(p, {nom:nom, tel:tel, pay:selectedPay, ville:ville});
   });
+}
+
+/* ═══════════════════════════════════════════════════════
+   v46b — LIVRAISON KASSAN'MOU
+   Simple et honnête — tarif exact communiqué par WhatsApp
+═══════════════════════════════════════════════════════ */
+var KM_VILLES = [
+  "Niamey","Dosso","Tahoua","Maradi","Zinder","Agadez","Diffa",
+  "Tillabéri","Birni-N'Konni","Gaya","Tessaoua","Dakoro","Tanout","Autre"
+];
+
+/* Frais fixes :
+   - Livraison locale (même ville) : 1 000 FCFA par livreur moto
+   - Transport inter-villes : 1 000 FCFA frais de mise en route
+     + tarif bus communiqué par WhatsApp selon poids/quantité/destination */
+function kmGetFraisLivraison(villeDepart, villeArrivee){
+  var d = (villeDepart||'Niamey').trim();
+  var a = (villeArrivee||'Niamey').trim();
+  if(d === a || !a || a === 'Autre'){
+    return {prix:1000, delai:'2-4h', type:'local', interville:false};
+  }
+  /* Inter-villes : 1000 FCFA frais fixes + tarif bus à confirmer */
+  return {prix:1000, delai:'À confirmer', type:'interville', interville:true};
+}
+
+function kmFormatDelai(info){
+  if(!info) return 'À confirmer';
+  if(typeof info === 'string') return info;
+  return info.delai || 'À confirmer';
+}
+
+function kmFormatTypeLivraison(type){
+  if(type === 'local') return '🛵 Livreur local';
+  if(type === 'interville') return '🚌 Transport inter-villes';
+  return '🚚 Livraison';
 }
 
 var _payNames = {
@@ -7068,6 +7139,10 @@ function renderDetailStep3(p, client){
     '📱 Mon numéro : ' + client.tel,
     '',
     '💳 Paiement : *' + payName + '*',
+    '🚚 Livraison : ' + kmFormatTypeLivraison(_typeLivr),
+    (_livraisonInfo&&_livraisonInfo.interville
+      ? '   ℹ️ Tarif transport sera confirmé par WhatsApp selon poids/quantité'
+      : '   Frais : ' + _fraisLivr.toLocaleString('fr-FR') + ' FCFA'),
     (isCash ? '✅ Je paie cash au livreur' : ''),
     (needBankInfo ? '🏦 J\'attends les coordonnées ' + (client.pay==='amana'?'Amana':'Nita') : ''),
     '',
@@ -7076,6 +7151,10 @@ function renderDetailStep3(p, client){
     '  Zone : ' + livreur.zone,
     '  📞 ' + livreur.telDisplay,
     '',
+    '💰 Total : *' + (Number(p.prix) + _fraisLivr).toLocaleString('fr-FR') + ' FCFA* (produit + livraison)',
+    (_livraisonInfo&&_livraisonInfo.interville
+      ? '⚠️ *INTER-VILLES* — Calculer et communiquer le tarif transport à l\'acheteur avant expédition'
+      : ''),
     '🔖 Réf : *' + ref + '*',
     '',
     '_→ Je peux contacter mon livreur directement au ' + livreur.telDisplay + '_',
@@ -7170,7 +7249,8 @@ function renderDetailStep3(p, client){
         '<div class="conf-row"><span>Client</span><span style="font-weight:600">'+client.nom+'</span></div>' +
         '<div class="conf-row"><span>WhatsApp</span><span>'+client.tel+'</span></div>' +
         '<div class="conf-row"><span>Paiement</span><span style="color:var(--O);font-weight:600">'+payName+'</span></div>' +
-        '<div class="conf-row"><span>Livraison</span><span>1 000 FCFA</span></div>' +
+        '<div class="conf-row"><span>Livraison ('+kmFormatTypeLivraison(_typeLivr)+')</span><span style="color:var(--O)">'+_fraisLivr.toLocaleString('fr-FR')+' FCFA</span></div>' +
+        '<div class="conf-row"><span>Délai estimé</span><span style="color:var(--Om)">'+kmFormatDelai(_delaiLivr)+'</span></div>' +
       '</div>' +
 
       '<div class="wa-instr">' +
@@ -7615,7 +7695,10 @@ async function kmSaveProduit(d) {
       statut:'en_attente',
       code_validation:d.code||('KM-'+Math.random().toString(36).substr(2,6).toUpperCase()),
       pack_publication:(d.pack==='5000'?'30jours':d.pack==='15000'?'annuel':d.pack||'annuel'), date_expiration:exp.toISOString(),
-      export_international:d.exportInternational||false
+      export_international:d.exportInternational||false,
+      livraison_locale:     d.livraisonLocale!==undefined ? d.livraisonLocale : true,
+      livraison_interville: d.livraisonInterville||false,
+      produit_frais:        d.produitFrais||false
     }).select().single();
     if (pRes.error) { console.warn('[KM-DB]',pRes.error.message); return null; }
     kmLog('[KM-DB] Produit sauvegarde. Code:',pRes.data.code_validation);
