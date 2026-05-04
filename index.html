@@ -4491,7 +4491,109 @@ async function dashOverview(){
       '</div>'+
     '</div>';
   var footer_html = '<div class="adm-box" style="font-size:12px;color:rgba(255,255,255,.35);text-align:center">Mise \u00e0 jour : '+now+'</div>';
-  body.innerHTML = alert_html + kpi_html + actions_html + footer_html;
+    /* v47 : tableau de bord financier — sera injecté après chargement */
+  body.innerHTML = '<div style="text-align:center;padding:30px;color:var(--Mu)"><div class="spinner"></div><br>Chargement du tableau de bord...</div>';
+  kmDashOverviewV47(body, s, moisNom, now);
+}
+
+async function kmDashOverviewV47(body, s, moisNom, now){
+  var finData = {ca_mois:0, ca_total:0, comm_dues:0, comm_payees:0, nb_vendeurs:0, nb_commandes_mois:0, top_vendeurs:[]};
+  var moisDebut = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  try{
+    var rCa = await kmDB.from('commandes').select('montant_total').gte('date_commande',moisDebut);
+    if(rCa.data) finData.ca_mois = rCa.data.reduce(function(a,c){return a+(parseFloat(c.montant_total)||0);},0);
+    var rCaT = await kmDB.from('commandes').select('montant_total');
+    if(rCaT.data) finData.ca_total = rCaT.data.reduce(function(a,c){return a+(parseFloat(c.montant_total)||0);},0);
+    var rCd = await kmDB.from('commissions').select('montant_commission,montant').eq('statut','due');
+    if(rCd.data) finData.comm_dues = rCd.data.reduce(function(a,c){return a+(parseFloat(c.montant_commission||c.montant)||0);},0);
+    var rCp = await kmDB.from('commissions').select('montant_commission,montant').eq('statut','payee');
+    if(rCp.data) finData.comm_payees = rCp.data.reduce(function(a,c){return a+(parseFloat(c.montant_commission||c.montant)||0);},0);
+    var rV = await kmDB.from('vendeurs').select('id',{count:'exact',head:true});
+    finData.nb_vendeurs = rV.count||0;
+    var rCm = await kmDB.from('commandes').select('id',{count:'exact',head:true}).gte('date_commande',moisDebut);
+    finData.nb_commandes_mois = rCm.count||0;
+    var rTop = await kmDB.from('vendeurs').select('nom,telephone,produits(id,statut)').limit(5);
+    if(rTop.data) finData.top_vendeurs = rTop.data;
+  }catch(e){ console.warn('[KM-v47]',e); }
+
+  var nowStr = new Date().toLocaleString('fr-FR');
+  var alert_html = s.a>0
+    ? '<div class="adm-alert" style="margin-bottom:12px"><span class="adm-alert-txt">⚡ '+s.a+' produit(s) en attente</span><button class="adm-btn adm-btn-r adm-goto" data-goto="admin">Valider →</button></div>' : '';
+
+  var kpi_html =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">'+
+    '<div style="background:linear-gradient(135deg,rgba(45,90,27,.25),rgba(45,90,27,.1));border:1px solid rgba(45,90,27,.3);border-radius:14px;padding:16px">'+
+      '<div style="font-size:11px;color:var(--Om);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">CA — '+moisNom+'</div>'+
+      '<div style="font-size:22px;font-weight:800;color:#fff">'+Math.round(finData.ca_mois).toLocaleString('fr-FR')+'</div>'+
+      '<div style="font-size:11px;color:rgba(255,255,255,.4)">FCFA ce mois</div></div>'+
+    '<div style="background:linear-gradient(135deg,rgba(196,154,60,.15),rgba(196,154,60,.05));border:1px solid rgba(196,154,60,.2);border-radius:14px;padding:16px">'+
+      '<div style="font-size:11px;color:var(--G);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">CA Total</div>'+
+      '<div style="font-size:22px;font-weight:800;color:#fff">'+Math.round(finData.ca_total).toLocaleString('fr-FR')+'</div>'+
+      '<div style="font-size:11px;color:rgba(255,255,255,.4)">FCFA cumulé</div></div>'+
+    '<div style="background:linear-gradient(135deg,rgba(200,75,47,.15),rgba(200,75,47,.05));border:1px solid rgba(200,75,47,.25);border-radius:14px;padding:16px;cursor:pointer" class="adm-goto" data-goto="commissions_admin">'+
+      '<div style="font-size:11px;color:var(--T);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Commissions dues</div>'+
+      '<div style="font-size:22px;font-weight:800;color:#fff">'+Math.round(finData.comm_dues).toLocaleString('fr-FR')+'</div>'+
+      '<div style="font-size:11px;color:rgba(255,255,255,.4)">FCFA à encaisser →</div></div>'+
+    '<div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(99,102,241,.04));border:1px solid rgba(99,102,241,.2);border-radius:14px;padding:16px">'+
+      '<div style="font-size:11px;color:#a5b4fc;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Encaissé total</div>'+
+      '<div style="font-size:22px;font-weight:800;color:#fff">'+Math.round(finData.comm_payees).toLocaleString('fr-FR')+'</div>'+
+      '<div style="font-size:11px;color:rgba(255,255,255,.4)">FCFA reçus</div></div>'+
+    '</div>';
+
+  var counters_html =
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">'+
+    '<div class="adm-kcard adm-goto" data-goto="admin" style="padding:12px"><div class="adm-kcard-val'+(s.a>0?' urgent':'')+'">'+s.a+'</div><div class="adm-kcard-lbl">En attente</div></div>'+
+    '<div class="adm-kcard adm-goto" data-goto="allprod" style="padding:12px"><div class="adm-kcard-val">'+s.p+'</div><div class="adm-kcard-lbl">Produits</div></div>'+
+    '<div class="adm-kcard adm-goto" data-goto="vendeurs_admin" style="padding:12px"><div class="adm-kcard-val">'+finData.nb_vendeurs+'</div><div class="adm-kcard-lbl">Vendeurs</div></div>'+
+    '<div class="adm-kcard adm-goto" data-goto="commandes_admin" style="padding:12px"><div class="adm-kcard-val">'+finData.nb_commandes_mois+'</div><div class="adm-kcard-lbl">Cmdes/mois</div></div>'+
+    '</div>';
+
+  var top_html = '';
+  if(finData.top_vendeurs.length>0){
+    top_html = '<div class="adm-box" style="margin-bottom:12px"><div class="adm-box-title" style="margin-bottom:10px">👥 Vendeurs actifs</div>';
+    finData.top_vendeurs.forEach(function(v){
+      var actifs=(v.produits||[]).filter(function(p){return p.statut==='validé';}).length;
+      var tel=(v.telephone||'').replace(/[^0-9]/g,''); if(tel.length<=8)tel='227'+tel;
+      top_html+='<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--B)">'
+        +'<div style="width:34px;height:34px;background:var(--Ok);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🌿</div>'
+        +'<div style="flex:1"><div style="font-weight:700;color:#fff;font-size:13px">'+kmEsc(v.nom||'Vendeur')+'</div>'
+        +'<div style="font-size:11px;color:var(--Mu)">'+actifs+' produit(s) en ligne</div></div>'
+        +(tel?'<a href="https://wa.me/'+tel+'" target="_blank" style="padding:5px 10px;background:rgba(37,211,102,.1);color:#25D366;border:1px solid rgba(37,211,102,.2);border-radius:8px;text-decoration:none;font-size:12px">📱</a>':'')
+        +'</div>';
+    });
+    top_html+='</div>';
+  }
+
+  var actions_html =
+    '<div class="adm-box" style="margin-bottom:12px"><div class="adm-box-title" style="margin-bottom:10px">Actions rapides</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
+    '<button class="adm-btn adm-btn-g adm-goto" data-goto="admin" style="justify-content:center;padding:12px;font-size:13px">✅ Valider produits</button>'+
+    '<button class="adm-btn adm-btn-n adm-goto" data-goto="commissions_admin" style="justify-content:center;padding:12px;font-size:13px">💰 Commissions</button>'+
+    '<button class="adm-btn adm-btn-n adm-goto" data-goto="abonnements" style="justify-content:center;padding:12px;font-size:13px">🗓️ Abonnements</button>'+
+    '<button class="adm-btn adm-btn-n adm-goto" data-goto="commandes_admin" style="justify-content:center;padding:12px;font-size:13px">📦 Commandes</button>'+
+    '</div></div>';
+
+  var export_html =
+    '<div class="adm-box" style="margin-bottom:12px"><div class="adm-box-title" style="margin-bottom:10px">📊 Export données</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+    '<button data-export="commissions" style="padding:8px 14px;background:rgba(196,154,60,.1);color:var(--G);border:1px solid rgba(196,154,60,.2);border-radius:8px;cursor:pointer;font-family:Outfit,sans-serif;font-size:12px;font-weight:600">📥 Commissions</button>'+
+    '<button data-export="commandes" style="padding:8px 14px;background:rgba(45,90,27,.1);color:var(--Om);border:1px solid rgba(45,90,27,.2);border-radius:8px;cursor:pointer;font-family:Outfit,sans-serif;font-size:12px;font-weight:600">📥 Commandes</button>'+
+    '<button data-export="vendeurs" style="padding:8px 14px;background:rgba(99,102,241,.08);color:#a5b4fc;border:1px solid rgba(99,102,241,.2);border-radius:8px;cursor:pointer;font-family:Outfit,sans-serif;font-size:12px;font-weight:600">📥 Vendeurs</button>'+
+    '</div></div>';
+
+  var footer_html =
+    '<div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:rgba(255,255,255,.25);padding:4px 0">'+
+    '<span>Mis à jour : '+nowStr+'</span>'+
+    '<button onclick="kmRunDiagnostic()" style="background:none;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.2);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:10px;font-family:Outfit,sans-serif">Diagnostic</button>'+
+    '</div>';
+
+  body.innerHTML = alert_html+kpi_html+counters_html+top_html+actions_html+export_html+footer_html;
+  body.querySelectorAll('.adm-goto').forEach(function(b){
+    b.addEventListener('click',function(){ renderDash(b.dataset.goto); });
+  });
+  body.querySelectorAll('[data-export]').forEach(function(b){
+    b.addEventListener('click',function(){ kmExportCSV(b.dataset.export); });
+  });
 }
 
 /* ─── EN ATTENTE ─────────────────────────────── */
@@ -5613,6 +5715,70 @@ async function dashVendeurDetail(vid){
    pour le mois en cours — envoyable par WhatsApp/Email
 ══════════════════════════════════════════════════════ */
 /* v44k — Vérifier les abonnements expirant dans 7 jours et alerter l'admin */
+/* ══════════════════════════════════════════════════════
+   v47 — EXPORT CSV
+   Exporte les données en fichier CSV téléchargeable
+══════════════════════════════════════════════════════ */
+async function kmExportCSV(table){
+  if(!kmDB||!kmIsAdmin){ toast('Connexion admin requise.',true); return; }
+  toast('Préparation export '+table+'...');
+  try{
+    var r;
+    if(table==='commissions'){
+      r = await kmDB.from('commissions').select('*,vendeurs(nom,email,telephone)');
+    } else if(table==='commandes'){
+      r = await kmDB.from('commandes').select('*,produits(nom)');
+    } else {
+      r = await kmDB.from(table).select('*');
+    }
+    if(r.error) throw r.error;
+    if(!r.data||r.data.length===0){ toast('Aucune donnée à exporter.'); return; }
+
+    /* Construire le CSV */
+    var rows = r.data;
+    var headers = Object.keys(rows[0]).filter(function(k){
+      return typeof rows[0][k]!=='object' || rows[0][k]===null;
+    });
+    /* Ajouter colonnes des joins */
+    if(table==='commissions'&&rows[0].vendeurs){
+      headers.push('vendeur_nom','vendeur_email','vendeur_telephone');
+    }
+    if(table==='commandes'&&rows[0].produits){
+      headers.push('produit_nom');
+    }
+
+    var _nl = "\n";
+    var csv = headers.join(';') + _nl;
+    rows.forEach(function(row){
+      var vals = headers.map(function(h){
+        if(h==='vendeur_nom') return (row.vendeurs&&row.vendeurs.nom)||'';
+        if(h==='vendeur_email') return (row.vendeurs&&row.vendeurs.email)||'';
+        if(h==='vendeur_telephone') return (row.vendeurs&&row.vendeurs.telephone)||'';
+        if(h==='produit_nom') return (row.produits&&row.produits.nom)||'';
+        var v = row[h];
+        if(v===null||v===undefined) return '';
+        return '"'+String(v).replace(/"/g,'""')+'"';
+      });
+      csv += vals.join(';') + _nl;
+    });
+
+    /* Télécharger */
+    var now = new Date().toISOString().split('T')[0];
+    var fname = 'kassanmou_'+table+'_'+now+'.csv';
+    var blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('✅ Export '+fname+' téléchargé !');
+  }catch(e){
+    toast('Erreur export: '+e.message, true);
+    console.warn('[KM-v47] Export CSV:', e);
+  }
+}
+
 async function kmVerifierAbonnementsExpirants(){
   if(!kmDB || !kmIsAdmin) return;
   try{
