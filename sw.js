@@ -1,5 +1,5 @@
-/* Kassan'Mou SW v44c */
-var CACHE_NAME = 'kassanmou-v44c';
+/* Kassan'Mou SW v50 */
+var CACHE_NAME = 'kassanmou-v50';
 var OFFLINE_URL = '/kassanmou/';
 var PRECACHE_URLS = ['/kassanmou/', '/kassanmou/index.html', '/kassanmou/manifest.json'];
 
@@ -28,7 +28,9 @@ self.addEventListener('fetch', function(e) {
   if (req.method !== 'GET') return;
   if (url.hostname.includes('supabase.co') ||
       url.hostname.includes('emailjs.com') ||
-      url.hostname.includes('jsdelivr.net')) return;
+      url.hostname.includes('jsdelivr.net') ||
+      url.hostname.includes('fonts.googleapis.com') ||
+      url.hostname.includes('fonts.gstatic.com')) return;
   e.respondWith(
     fetch(req).then(function(res) {
       if (res && res.status === 200) {
@@ -43,4 +45,4 @@ self.addEventListener('fetch', function(e) {
     })
   );
 });
-console.log("[KM-SW] v44c actif");
+console.log("[KM-SW] v50 actif");

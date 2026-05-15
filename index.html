@@ -4,13 +4,13 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v44c-kassanmou-2026">
+<meta name="km-version" content="v50-kassanmou-2026">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <meta name="theme-color" content="#0F1F0A">
-<title>Kassan\'Mou — Marketplace Niger · Export B2B International</title>
+<title>Kassan\'Mou v50 — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
 <link rel="manifest" href="/kassanmou/manifest.json">
@@ -2412,12 +2412,37 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   <!-- GRILLE PRODUITS -->
   <div class="mkt-info-bar-premium">
     <span><strong id="prod-count-premium">0</strong> produits disponibles</span>
-    <select class="mkt-sort-premium" id="mkt-sort-premium" onchange="renderProdsPremium()">
-      <option value="recent">Plus récents</option>
-      <option value="price-asc">Prix ↑</option>
-      <option value="price-desc">Prix ↓</option>
-      <option value="vedette">Vedettes d'abord</option>
-    </select>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="km-filter-btn-mkt" onclick="kmToggleFiltresMkt()" style="padding:7px 14px;border-radius:var(--rs);border:1.5px solid var(--B);background:var(--W);font-size:12px;font-weight:700;cursor:pointer;color:var(--Sm);font-family:Outfit,sans-serif;display:flex;align-items:center;gap:6px">⚙ Filtres</button>
+      <select class="mkt-sort-premium" id="mkt-sort-premium" onchange="renderProdsPremium()">
+        <option value="recent">Plus récents</option>
+        <option value="price-asc">Prix &#8593;</option>
+        <option value="price-desc">Prix &#8595;</option>
+        <option value="vedette">Vedettes</option>
+        <option value="note">Mieux notés</option>
+      </select>
+    </div>
+  </div>
+  <!-- PANNEAU FILTRES AVANCÉS v49 -->
+  <div id="km-filtres-mkt" style="display:none;background:var(--W);border:1.5px solid var(--B);border-radius:var(--rl);padding:16px;margin:0 1rem 10px;box-shadow:var(--sm)">
+    <div style="font-size:12px;font-weight:800;color:var(--Mu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;font-family:JetBrains Mono,monospace">Filtres avancés</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:var(--Sm);display:block;margin-bottom:4px">Ville</label>
+        <input id="km-filtre-ville-mkt" placeholder="Ex: Niamey, Agadez..." oninput="renderProdsPremium()" style="width:100%;border:1.5px solid var(--B);border-radius:var(--rs);padding:9px 11px;font-size:13px;background:var(--W);color:var(--S);outline:none;font-family:Outfit,sans-serif">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:var(--Sm);display:block;margin-bottom:4px">Prix max (FCFA)</label>
+        <input id="km-prix-max-mkt" type="number" placeholder="Ex: 50000" oninput="renderProdsPremium()" style="width:100%;border:1.5px solid var(--B);border-radius:var(--rs);padding:9px 11px;font-size:13px;background:var(--W);color:var(--S);outline:none;font-family:Outfit,sans-serif">
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--S);cursor:pointer"><input type="checkbox" id="km-filtre-interville" onchange="renderProdsPremium()"> Inter-villes</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--S);cursor:pointer"><input type="checkbox" id="km-filtre-vedette" onchange="renderProdsPremium()"> Vedettes seul.</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--S);cursor:pointer"><input type="checkbox" id="km-filtre-export" onchange="renderProdsPremium()"> Export intl.</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--S);cursor:pointer"><input type="checkbox" id="km-filtre-frais" onchange="renderProdsPremium()"> Frais seul.</label>
+    </div>
+    <button onclick="kmResetFiltresMkt()" style="padding:8px 16px;border-radius:var(--rs);border:none;background:var(--SD);color:var(--Mu);font-size:12px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Réinitialiser</button>
   </div>
 
   <div class="pgrid-premium" id="prods-grid-premium"></div>
@@ -2848,6 +2873,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   <button class="adm-tab" data-vtab="vendeur-produits">🌾 Produits</button>
   <button class="adm-tab" data-vtab="vendeur-commissions">💰 Commissions</button>
   <button class="adm-tab" data-vtab="vendeur-commandes">📦 Ventes</button>
+  <button class="adm-tab" data-vtab="vendeur-renouveler">🔄 Renouveler</button>
 </div>
 <div class="adm-body" id="vendeur-dash-body"></div>
 </div>
@@ -3232,7 +3258,7 @@ function goTo(page){
   if(page==='marketplace'){
     g('bn-marketplace')&&g('bn-marketplace').classList.add('on');
     kmLoadLivreurs();
-  kmLoadProduits().then(function(){ renderProdsPremium(); });
+  kmLoadProduits().then(function(){ renderProdsPremium(); kmChargerNotes(); });
   }
   if(page==='tracking'){g('bn-tracking')&&g('bn-tracking').classList.add('on');}
   if(page==='dashboard'){
@@ -6058,6 +6084,7 @@ function renderVendeurDash(tab){
   else if(tab==='vendeur-produits')  vendeurProduits();
   else if(tab==='vendeur-commissions')vendeurCommissions();
   else if(tab==='vendeur-commandes') vendeurCommandes();
+  else if(tab==='vendeur-renouveler')vendeurRenouveler();
 }
 
 async function vendeurOverview(){
@@ -6100,21 +6127,100 @@ async function vendeurProduits(){
   body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
   var r=await kmDB.from('produits').select('*').eq('vendeur_id',kmVendeurSession.id).order('date_soumission',{ascending:false});
   var prods=r.data||[];
-  var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:14px;color:#E8C060">Mes produits ('+prods.length+')</div>';
+  var html='<div style="padding:16px"><div style="font-size:15px;font-weight:700;color:#E8C060;margin-bottom:14px">Mes produits ('+prods.length+')</div>';
   if(!prods.length){html+='<p style="text-align:center;padding:40px;color:#666">Aucun produit encore.</p>';}
   prods.forEach(function(p){
     var sc=p.statut==='valid\u00e9'?'#4CAF50':p.statut==='refus\u00e9'?'#f44':'#E8C060';
     var sb=p.statut==='valid\u00e9'?'#0a2a0a':p.statut==='refus\u00e9'?'#2a0a0a':'#2a2a0a';
+    var photos=[];
+    try{photos=JSON.parse(p.photos||'[]');}catch(e){if(typeof p.photos==='string'&&p.photos.indexOf('http')===0)photos=[p.photos];}
+    var ph1=photos[0]||'';
+    var photoHtml=ph1?'<img src="'+ph1+'" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-right:12px;flex-shrink:0">'
+      :'<div style="width:60px;height:60px;background:#2a3a2a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-right:12px;flex-shrink:0">&#128230;</div>';
+    var expDate=p.date_expiration?new Date(p.date_expiration).toLocaleDateString('fr-FR'):'—';
+    var canEdit=(p.statut==='valid\u00e9'||p.statut==='en_attente');
     html+='<div style="background:#1a2a1a;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #2a3a2a">'
-         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
-         +'<div style="font-weight:700;color:#fff;font-size:15px;flex:1">'+kmEsc(p.nom||'Produit')+'</div>'
-         +'<span style="background:'+sb+';color:'+sc+';padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;margin-left:8px">'+p.statut+'</span>'
-         +'</div>'
-         +'<div style="font-size:12px;color:#888">'+kmEsc(p.categorie||'—')+(p.prix?' · '+p.prix+' FCFA':'')+'</div>'
-         +'</div>';
+      +'<div style="display:flex;align-items:flex-start">'
+      +photoHtml
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'
+      +'<div style="font-weight:700;color:#fff;font-size:14px;flex:1;line-height:1.3">'+kmEsc(p.nom||'Produit')+'</div>'
+      +'<span style="background:'+sb+';color:'+sc+';padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;margin-left:8px;white-space:nowrap">'+p.statut+'</span>'
+      +'</div>'
+      +'<div style="font-size:12px;color:#888;margin-bottom:4px">'+kmEsc(p.categorie||'\u2014')+(p.prix?' \u00b7 '+(parseFloat(p.prix)||0).toLocaleString('fr-FR')+' FCFA / '+(p.unite||'kg'):'')+'</div>'
+      +(p.date_expiration?'<div style="font-size:11px;color:#C49A3C">&#9203; Expire le '+expDate+'</div>':'')
+      +'</div></div>'
+      +(canEdit?'<div style="margin-top:10px;display:flex;gap:8px">'
+        +'<button data-modprod="'+p.id+'" style="flex:1;padding:8px;background:#2a3a2a;color:#E8C060;border:1px solid #3a4a3a;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">&#9999; Modifier</button>'
+        +'<button data-renprod="'+p.id+'" data-rennm="'+kmEsc(p.nom||'Produit')+'" style="flex:1;padding:8px;background:#2a1500;color:#E8C060;border:1px solid #4a3000;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">&#128260; Renouveler</button>'
+        +'</div>':'')
+      +'</div>';
   });
   html+='</div>';
   body.innerHTML=html;
+  body.querySelectorAll('[data-modprod]').forEach(function(b){
+    b.addEventListener('click',function(){vendeurModifierProduit(b.dataset.modprod);});
+  });
+  body.querySelectorAll('[data-renprod]').forEach(function(b){
+    b.addEventListener('click',function(){vendeurRenouvelerProduit(b.dataset.renprod,b.dataset.rennm);});
+  });
+}
+
+async function vendeurModifierProduit(prodId){
+  if(!kmDB||!kmVendeurSession) return;
+  var r=await kmDB.from('produits').select('*').eq('id',prodId).eq('vendeur_id',kmVendeurSession.id).maybeSingle();
+  if(!r.data){toast('Produit introuvable.',true);return;}
+  var p=r.data;
+  var h='<span class="mhandle"></span><button class="mcls" id="mcls-btn">&#x2715;</button>'
+    +'<div class="mh">Modifier le produit</div>'
+    +'<div class="msub" style="margin-bottom:16px">'+kmEsc(p.nom||'')+'</div>'
+    +'<div class="fg"><label>Nom du produit</label><input id="mod-nom" value="'+kmEsc(p.nom||'')+'" maxlength="80"></div>'
+    +'<div class="fg2">'
+    +'<div class="fg"><label>Prix (FCFA)</label><input id="mod-prix" type="number" value="'+kmEsc(String(p.prix||''))+'" min="0"></div>'
+    +'<div class="fg"><label>Unit\u00e9</label><input id="mod-unite" value="'+kmEsc(p.unite||'kg')+'" maxlength="20"></div>'
+    +'</div>'
+    +'<div class="fg"><label>Quantit\u00e9 disponible</label><input id="mod-qty" type="number" value="'+kmEsc(String(p.quantite_disponible||''))+'" min="0"></div>'
+    +'<div class="fg"><label>Description</label><textarea id="mod-desc" rows="4">'+kmEsc(p.description||'')+'</textarea></div>'
+    +'<button id="mod-save-btn" class="bp" style="width:100%;margin-top:8px">Enregistrer les modifications</button>'
+    +'<div id="mod-status" style="text-align:center;margin-top:10px;font-size:13px;color:#888"></div>';
+  g('mbox').innerHTML=h;
+  g('mveil').classList.add('on');
+  g('mcls-btn').onclick=closeModal;
+  g('mveil').onclick=function(e){if(e.target===g('mveil'))closeModal();};
+  g('mod-save-btn').onclick=async function(){
+    var nom=(g('mod-nom').value||''). trim();
+    var prix=parseFloat(g('mod-prix').value)||0;
+    var unite=(g('mod-unite').value||''). trim();
+    var qty=parseInt(g('mod-qty').value)||0;
+    var desc=(g('mod-desc').value||''). trim();
+    if(!nom){toast('Le nom est obligatoire.',true);return;}
+    if(prix<=0){toast('Le prix doit \u00eatre sup\u00e9rieur \u00e0 0.',true);return;}
+    g('mod-save-btn').disabled=true;
+    g('mod-status').textContent='Enregistrement...';
+    var upd=await kmDB.from('produits').update({
+      nom:nom,prix:prix,unite:unite,
+      quantite_disponible:qty,description:desc
+    }).eq('id',prodId).eq('vendeur_id',kmVendeurSession.id);
+    if(upd.error){
+      g('mod-status').textContent='Erreur: '+upd.error.message;
+      g('mod-save-btn').disabled=false;
+    } else {
+      toast('Produit modifi\u00e9 avec succ\u00e8s !');
+      closeModal();
+      vendeurProduits();
+    }
+  };
+}
+
+function vendeurRenouvelerProduit(prodId,prodNom){
+  var nl='\n';
+  var msg='Bonjour Kassan\'Mou,'+nl+nl
+    +'Je souhaite renouveler mon abonnement pour le produit :'+nl
+    +'*'+prodNom+'* (ID: '+prodId+')'+nl+nl
+    +'Mode de paiement souhait\u00e9 : '+nl
+    +'Pack choisi : Standard (5 000 FCFA) / Vedette (15 000 FCFA)'+nl+nl
+    +'_Kassan\'Mou \u2014 Espace Vendeur_';
+  openWhatsApp(msg);
 }
 
 async function vendeurCommissions(){
@@ -6154,34 +6260,92 @@ async function vendeurCommandes(){
   var body=g('vendeur-dash-body');
   if(!kmVendeurSession||!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecte.</p>';return;}
   body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
-  var r=await kmDB.from('commandes').select('*').eq('vendeur_nom',kmVendeurSession.nom).order('date_commande',{ascending:false});
-  var cmds=r.data||[];
+  var prodIds=[];
+  var rp=await kmDB.from('produits').select('id').eq('vendeur_id',kmVendeurSession.id);
+  if(rp.data) prodIds=rp.data.map(function(x){return x.id;});
+  var cmds=[];
+  if(prodIds.length>0){
+    var rc=await kmDB.from('commandes').select('*').in('produit_id',prodIds).order('date_commande',{ascending:false});
+    cmds=rc.data||[];
+  }
+  if(!cmds.length&&kmVendeurSession.nom){
+    var rc2=await kmDB.from('commandes').select('*').eq('vendeur_nom',kmVendeurSession.nom).order('date_commande',{ascending:false});
+    cmds=rc2.data||[];
+  }
   var ca=cmds.reduce(function(s,x){return s+(parseFloat(x.montant_total)||0);},0);
-  var html='<div style="padding:16px"><div class="adm-box-title" style="margin-bottom:6px;color:#E8C060">Mes ventes ('+cmds.length+')</div>'
-    +'<div style="font-size:13px;color:#888;margin-bottom:14px">CA : <strong style="color:#E8C060">'+Math.round(ca).toLocaleString()+' FCFA</strong></div>';
+  var html='<div style="padding:16px"><div style="font-size:15px;font-weight:700;color:#E8C060;margin-bottom:6px">Mes ventes ('+cmds.length+')</div>'
+    +'<div style="font-size:13px;color:#888;margin-bottom:14px">CA total : <strong style="color:#E8C060">'+Math.round(ca).toLocaleString()+' FCFA</strong></div>';
   if(!cmds.length){html+='<p style="text-align:center;padding:40px;color:#666">Aucune vente encore.</p>';}
   cmds.forEach(function(cmd){
     var sc=cmd.statut==='livr\u00e9'?'#4CAF50':cmd.statut==='annul\u00e9'?'#f44':'#E8C060';
-    var d=cmd.created_at?new Date(cmd.created_at).toLocaleDateString('fr-FR'):'—';
+    var d=cmd.date_commande?new Date(cmd.date_commande).toLocaleDateString('fr-FR'):(cmd.created_at?new Date(cmd.created_at).toLocaleDateString('fr-FR'):'—');
     html+='<div style="background:#1a2a1a;border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid #2a3a2a">'
-         +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
-         +'<div style="flex:1">'
-        +'<div style="font-weight:700;color:#fff">'+kmEsc(cmd.produit_nom||'Produit non spécifié')+'</div>'
-        +'<div style="font-size:11px;color:#888;margin-top:2px">Qté: '+(cmd.quantite||1)+' · '+kmEsc(cmd.mode_paiement||'')+(cmd.livreur_nom?' · 🛵 '+kmEsc(cmd.livreur_nom):'')+'</div>'
-        +'</div>'
-        +'<div><!-- spacer -->'
-         +'<div style="font-size:12px;color:#888;margin-top:2px">'+kmEsc(cmd.acheteur_nom||'Acheteur')+' · '+d+'</div></div>'
-         +'<div style="text-align:right;flex-shrink:0;margin-left:10px"><div style="font-size:16px;font-weight:800;color:#E8C060">'+Math.round(parseFloat(cmd.montant_total)||0).toLocaleString()+' F</div>'
-         +'<span style="color:'+sc+';font-size:11px">'+kmEsc(cmd.statut||'—')+'</span></div>'
+         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
+         +'<div style="flex:1;min-width:0">'
+         +'<div style="font-weight:700;color:#fff;font-size:14px">'+kmEsc(cmd.produit_nom||'Produit')+'</div>'
+         +'<div style="font-size:11px;color:#888;margin-top:2px">Qt\u00e9: '+(cmd.quantite||1)+' \u00b7 '+kmEsc(cmd.mode_paiement||'')+' \u00b7 '+kmEsc(cmd.acheteur_nom||'Acheteur')+(cmd.livreur_nom?' \u00b7 &#128661; '+kmEsc(cmd.livreur_nom):'')+'</div>'
+         +'<div style="font-size:11px;color:#666;margin-top:2px">'+d+'</div>'
+         +'</div>'
+         +'<div style="text-align:right;flex-shrink:0">'
+         +'<div style="font-size:15px;font-weight:800;color:#E8C060">'+Math.round(parseFloat(cmd.montant_total)||0).toLocaleString()+' F</div>'
+         +'<span style="color:'+sc+';font-size:11px">'+kmEsc(cmd.statut||'—')+'</span>'
+         +'</div>'
          +'</div></div>';
   });
   html+='</div>';
   body.innerHTML=html;
 }
 
-/* ═══════════════════════════════════════════════
-   SÉLECTION PACK + CONFIRMATION AVANT SOUMISSION
-═══════════════════════════════════════════════ */
+async function vendeurRenouveler(){
+  var body=g('vendeur-dash-body');
+  if(!kmVendeurSession||!kmDB){body.innerHTML='<p style="padding:30px;color:#aaa">Non connecte.</p>';return;}
+  body.innerHTML='<p style="padding:30px;text-align:center;color:#aaa">Chargement...</p>';
+  var r=await kmDB.from('produits').select('id,nom,statut,date_expiration,pack_publication').eq('vendeur_id',kmVendeurSession.id).order('date_expiration',{ascending:true});
+  var prods=r.data||[];
+  var now=new Date();
+  var html='<div style="padding:16px">'
+    +'<div style="font-size:15px;font-weight:700;color:#E8C060;margin-bottom:8px">Renouveler un abonnement</div>'
+    +'<div style="background:#1a1400;border-radius:10px;padding:14px;margin-bottom:16px;border:1px solid #3a2800;font-size:13px;color:#C49A3C;line-height:1.9">'
+    +'<strong style="color:#E8C060">Comment renouveler ?</strong><br>'
+    +'1. Cliquez le bouton WhatsApp du produit<br>'
+    +'2. Payez via Orange Money / Wave / Nita / Amana<br>'
+    +'3. Envoyez la preuve de paiement sur WhatsApp<br>'
+    +'<div style="margin-top:8px;padding:8px;background:#0a0800;border-radius:8px">'
+    +'Standard : <strong>5 000 FCFA / an</strong> &#160; Vedette : <strong>15 000 FCFA / an</strong>'
+    +'</div></div>';
+  if(!prods.length){html+='<p style="text-align:center;padding:40px;color:#666">Aucun produit trouv\u00e9.</p>';}
+  prods.forEach(function(p){
+    var expDate=p.date_expiration?new Date(p.date_expiration):null;
+    var daysLeft=expDate?Math.ceil((expDate-now)/(1000*60*60*24)):null;
+    var isExpired=daysLeft!==null&&daysLeft<=0;
+    var isSoon=daysLeft!==null&&daysLeft>0&&daysLeft<=30;
+    var color=isExpired?'#f44':isSoon?'#E8C060':'#4CAF50';
+    var expStr=expDate?expDate.toLocaleDateString('fr-FR'):'—';
+    var nl='\n';
+    var waMsg='Bonjour Kassan\'Mou,'+nl+nl
+      +'Renouvellement pour :'+nl
+      +'Produit : *'+kmEsc(p.nom||'')+'*'+nl
+      +'ID : '+p.id+nl+nl
+      +'Pack souhait\u00e9 : Standard (5 000 FCFA) / Vedette (15 000 FCFA)'+nl
+      +'Mode paiement : '+nl+nl
+      +'_Kassan\'Mou \u2014 Espace Vendeur_';
+    var waLink='https://wa.me/22799851532?text='+encodeURIComponent(waMsg);
+    html+='<div style="background:#1a2a1a;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid '+(isExpired?'#4a0a0a':isSoon?'#3a2800':'#2a3a2a')+'">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'
+      +'<div style="flex:1">'
+      +'<div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:4px">'+kmEsc(p.nom||'Produit')+'</div>'
+      +'<div style="font-size:12px;color:'+color+'">'
+      +(isExpired?'Expir\u00e9 le ':isSoon?'Expire le ':'Valide jusqu\u00e0 ')+expStr
+      +(daysLeft!==null&&!isExpired?' ('+daysLeft+' j)':'')
+      +'</div></div>'
+      +'<span style="font-size:11px;color:#888;margin-left:8px">'+(p.pack_publication==='15000'?'Vedette':'Standard')+'</span>'
+      +'</div>'
+      +'<a href="'+waLink+'" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;background:#25D366;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none">Renouveler via WhatsApp</a>'
+      +'</div>';
+  });
+  html+='</div>';
+  body.innerHTML=html;
+}
 
 function kmSelectPack(val){
   var isStd = (val === '5000');
@@ -6674,6 +6838,7 @@ var DB_PREMIUM = {
 };
 
 var activeCatPremium = 'all';
+var _kmNotes = {}; /* cache notes { produit_id: {moy, nb} } — v50 */
 
 function badgePremiumHtml(key, small){
   var map = {v:{cls:'v',lbl:'✓ Vérifié'},p:{cls:'p',lbl:'★ Premium'},n:{cls:'n',lbl:'✦ Nouveau'},e:{cls:'e',lbl:'🌍 Export'},l:{cls:'l',lbl:'📍 Local'}};
@@ -6709,20 +6874,60 @@ function renderFeaturedStrip(){
   }).join('');
 }
 
+function kmToggleFiltresMkt(){
+  var p=g('km-filtres-mkt');
+  if(!p) return;
+  var btn=g('km-filter-btn-mkt');
+  if(p.style.display==='none'||!p.style.display){
+    p.style.display='block';
+    if(btn)btn.style.background='var(--O)',btn.style.color='#fff';
+  } else {
+    p.style.display='none';
+    if(btn)btn.style.background='var(--W)',btn.style.color='var(--Sm)';
+  }
+}
+
+function kmResetFiltresMkt(){
+  var ids=['km-filtre-ville-mkt','km-prix-max-mkt'];
+  ids.forEach(function(id){var el=g(id);if(el)el.value='';});
+  var checks=['km-filtre-interville','km-filtre-vedette','km-filtre-export','km-filtre-frais'];
+  checks.forEach(function(id){var el=g(id);if(el)el.checked=false;});
+  var s=g('mkt-sort-premium');if(s)s.value='recent';
+  renderProdsPremium();
+}
+
 function getPremiumFiltered(){
   var q = (g('search-inp-premium')||{value:''}).value.toLowerCase().trim();
   var sort = (g('mkt-sort-premium')||{value:'recent'}).value;
+  /* v49 filtres avancés */
+  var filtVille = (g('km-filtre-ville-mkt')||{value:''}).value.trim().toLowerCase();
+  var filtPrixMax = parseFloat((g('km-prix-max-mkt')||{value:''}).value)||0;
+  var filtInterville = g('km-filtre-interville') && g('km-filtre-interville').checked;
+  var filtVedette = g('km-filtre-vedette') && g('km-filtre-vedette').checked;
+  var filtExport = g('km-filtre-export') && g('km-filtre-export').checked;
+  var filtFrais = g('km-filtre-frais') && g('km-filtre-frais').checked;
   var list = DB_PREMIUM.produits.filter(function(p){
     var mc = activeCatPremium === 'all' || p.cat === activeCatPremium;
-    var mq = !q || p.nom.toLowerCase().includes(q) || p.vendeur.toLowerCase().includes(q) || p.catLbl.toLowerCase().includes(q);
-    return mc && mq;
+    var mq = !q || p.nom.toLowerCase().includes(q) || p.vendeur.toLowerCase().includes(q)
+          || (p.catLbl||''). toLowerCase().includes(q) || (p.zone||''). toLowerCase().includes(q)
+          || (p.desc||''). toLowerCase().includes(q);
+    var mv = !filtVille || (p.zone||''). toLowerCase().includes(filtVille);
+    var mp = !filtPrixMax || p.prix <= filtPrixMax;
+    var mi = !filtInterville || p.livraison_interville;
+    var mved = !filtVedette || p.vedette;
+    var mexp = !filtExport || p.export_international;
+    var mfr = !filtFrais || p.produit_frais;
+    return mc && mq && mv && mp && mi && mved && mexp && mfr;
   });
   if(sort === 'price-asc') list.sort(function(a,b){return a.prix-b.prix;});
   else if(sort === 'price-desc') list.sort(function(a,b){return b.prix-a.prix;});
   else if(sort === 'vedette') list.sort(function(a,b){return (b.vedette?1:0)-(a.vedette?1:0);});
+  else if(sort === 'note') list.sort(function(a,b){
+    var na=(_kmNotes[a.id]||{moy:0}).moy; var nb=(_kmNotes[b.id]||{moy:0}).moy;
+    return nb-na;
+  });
   return list;
 }
-
 
 function kmGetPhoto(photos){
   if(!photos) return null;
@@ -6752,6 +6957,53 @@ function kmGetAllPhotos(photos){
   return arr.filter(function(u){ return u && typeof u==='string' && u.indexOf('http')===0; });
 }
 
+/* ═══════════════════════════════
+   NOTATION v50 — Étoiles & Avis
+═══════════════════════════════ */
+
+function kmStarsHtml(moy, nb){
+  if(!nb) return '<span style="font-size:11px;color:#666">Pas encore noté</span>';
+  var full=Math.floor(moy); var half=(moy-full)>=0.5; var empty=5-full-(half?1:0);
+  var s='';
+  for(var i=0;i<full;i++) s+='<span style="color:#E8C060">★</span>';
+  if(half) s+='<span style="color:#E8C060;opacity:.6">★</span>';
+  for(var j=0;j<empty;j++) s+='<span style="color:#444">★</span>';
+  return '<span title="'+(Math.round(moy*10)/10)+'/5 — '+nb+' avis">'+s+' <span style="font-size:10px;color:#888">('+(Math.round(moy*10)/10)+')</span></span>';
+}
+
+async function kmChargerNotes(){
+  if(!kmDB) return;
+  try{
+    var r=await kmDB.from('notations').select('produit_id,note');
+    if(r.error||!r.data) return;
+    var acc={};
+    r.data.forEach(function(n){
+      if(!acc[n.produit_id]) acc[n.produit_id]={sum:0,nb:0};
+      acc[n.produit_id].sum+=parseFloat(n.note)||0;
+      acc[n.produit_id].nb++;
+    });
+    Object.keys(acc).forEach(function(id){
+      _kmNotes[id]={moy:acc[id].sum/acc[id].nb, nb:acc[id].nb};
+    });
+    renderProdsPremium();
+  }catch(e){}
+}
+
+async function kmSoumettrNote(produitId, note, commentaire){
+  if(!kmDB) return;
+  var key='km_noted_'+produitId;
+  if(sessionStorage.getItem(key)){toast('Vous avez déjà noté ce produit.',true);return;}
+  var r=await kmDB.from('notations').insert({produit_id:produitId,note:parseInt(note),commentaire:commentaire||''});
+  if(r.error){toast('Erreur notation.',true);return;}
+  sessionStorage.setItem(key,'1');
+  toast('Merci pour votre avis !');
+  /* Mise à jour cache local */
+  if(!_kmNotes[produitId]) _kmNotes[produitId]={moy:0,nb:0};
+  var old=_kmNotes[produitId];
+  _kmNotes[produitId]={moy:(old.moy*old.nb+parseInt(note))/(old.nb+1), nb:old.nb+1};
+  renderProdsPremium();
+}
+
 function renderProdsPremium(){
   var grid = g('prods-grid-premium');
   var empty = g('prods-empty-premium');
@@ -6778,6 +7030,9 @@ function renderProdsPremium(){
         '<div class="pcat-premium">'+p.catLbl+'</div>' +
         '<div class="pnm-premium">'+p.nom+'</div>' +
         '<div class="porg-premium">'+p.vendeur+' '+badgePremiumHtml(p.badge,true)+'</div>' +
+        '<div style="font-size:11px;margin:3px 0 4px">' + kmStarsHtml((_kmNotes[p.id]||{moy:0}).moy, (_kmNotes[p.id]||{nb:0}).nb) + '</div>' +
+        (p.produit_frais?'<span style="font-size:10px;background:#1a3a4a;color:#7dd3fc;padding:2px 7px;border-radius:20px;font-weight:700;margin-right:4px">❄ Frais</span>':'')+
+        (p.livraison_interville?'<span style="font-size:10px;background:#1a2a1a;color:#86efac;padding:2px 7px;border-radius:20px;font-weight:700">🚌 Inter-villes</span>':'')+
         '<div class="pfooter-premium">' +
           '<div><div class="pprice-premium">'+p.prix.toLocaleString('fr-FR')+'</div><div class="punit-premium">FCFA · '+p.unite+'</div></div>' +
           '<a class="btn-pwa" href="'+waLinkPremium(p)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="WhatsApp">' +
@@ -6887,6 +7142,23 @@ function renderDetailStep1(p){
         '<div class="dsheet-mi"><div class="dsheet-ml">Zone vendeur</div><div class="dsheet-mv">📍 '+p.zone+'</div></div>' +
       '</div>' +
       '<div class="dsheet-desc">'+p.desc+'</div>' +
+      /* v50 — notation */
+      '<div style="margin:14px 0;padding:12px;background:rgba(200,97,47,.06);border:1.5px solid rgba(200,97,47,.18);border-radius:var(--rm)">' +
+        '<div style="font-size:13px;font-weight:700;color:var(--S);margin-bottom:8px">Évaluation du produit</div>' +
+        '<div style="margin-bottom:10px;font-size:16px">' + kmStarsHtml((_kmNotes[p.id]||{moy:0}).moy, (_kmNotes[p.id]||{nb:0}).nb) + '</div>' +
+        (!sessionStorage.getItem('km_noted_'+p.id)?
+          '<div style="font-size:12px;color:var(--Mu);margin-bottom:8px">Laisser un avis :</div>' +
+          '<div id="km-star-row" style="display:flex;gap:6px;margin-bottom:8px">' +
+          '<button data-star="1" style="font-size:1.5rem;background:none;border:none;cursor:pointer;color:#444;padding:2px">★</button>' +
+          '<button data-star="2" style="font-size:1.5rem;background:none;border:none;cursor:pointer;color:#444;padding:2px">★</button>' +
+          '<button data-star="3" style="font-size:1.5rem;background:none;border:none;cursor:pointer;color:#444;padding:2px">★</button>' +
+          '<button data-star="4" style="font-size:1.5rem;background:none;border:none;cursor:pointer;color:#444;padding:2px">★</button>' +
+          '<button data-star="5" style="font-size:1.5rem;background:none;border:none;cursor:pointer;color:#444;padding:2px">★</button>' +
+          '</div>' +
+          '<textarea id="km-note-comment" placeholder="Commentaire (facultatif)" rows="2" style="width:100%;border:1.5px solid var(--B);border-radius:var(--rs);padding:8px 10px;font-size:12px;font-family:Outfit,sans-serif;background:var(--W);color:var(--S);outline:none;resize:none;margin-bottom:8px"></textarea>' +
+          '<button id="km-submit-note" data-pid="'+p.id+'" style="padding:8px 18px;border-radius:var(--rs);background:var(--O);color:#fff;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Envoyer mon avis</button>'
+        :'<div style="font-size:12px;color:#4CAF50">✅ Vous avez déjà noté ce produit.</div>') +
+      '</div>' +
       '<div class="dsheet-vendor">' +
         '<div class="dsheet-vav">'+p.emoji+'</div>' +
         '<div><div class="dsheet-vnm">'+p.vendeur+'</div><div class="dsheet-vz">📍 '+p.zone+'</div></div>' +
@@ -6903,6 +7175,29 @@ function renderDetailStep1(p){
 
   var btn = g('btn-go-order');
   if(btn) btn.addEventListener('click', function(){ renderDetailStep2(_orderProduct); });
+  /* v50 — wire star buttons */
+  window._kmStarNote = 0;
+  var starRow = g('km-star-row');
+  if(starRow){
+    starRow.querySelectorAll('[data-star]').forEach(function(b){
+      b.addEventListener('click', function(){
+        var n = parseInt(b.dataset.star);
+        window._kmStarNote = n;
+        starRow.querySelectorAll('[data-star]').forEach(function(x){
+          x.style.color = parseInt(x.dataset.star) <= n ? '#E8C060' : '#444';
+        });
+      });
+    });
+  }
+  var submitBtn = g('km-submit-note');
+  if(submitBtn){
+    var pid = submitBtn.dataset.pid;
+    submitBtn.addEventListener('click', function(){
+      if(!window._kmStarNote){toast('Choisissez une note.',true);return;}
+      var comment = (g('km-note-comment')||{value:''}).value;
+      kmSoumettrNote(pid, window._kmStarNote, comment);
+    });
+  }
 }
 
 function renderDetailStep2(p){
@@ -7748,6 +8043,9 @@ async function kmLoadProduits() {
           id:      p.id,
           source:  'supabase',
           vedette: p.est_vedette || false,
+          export_international: p.export_international || false,
+          livraison_interville: p.livraison_interville || false,
+          produit_frais:        p.produit_frais || false,
           emoji:   emojiMap[c] || '📦',
           cat:     catMap[c] || 'alimentaire',
           catLbl:  lblMap[c] || 'Produit',
@@ -8082,7 +8380,7 @@ document.addEventListener('DOMContentLoaded', function(){
             } else {
               toast('✅ Produit ' + codeVal + ' validé et mis en ligne !');
               setTimeout(function(){
-                kmLoadProduits().then(function(){ renderFeaturedStrip(); renderProdsPremium(); });
+                kmLoadProduits().then(function(){ renderFeaturedStrip(); renderProdsPremium(); kmChargerNotes(); });
                 if(kmIsAdmin){ renderDash('allprod'); goTo('dashboard'); }
                 else { goTo('marketplace'); }
               }, 800);
@@ -8153,7 +8451,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v12 — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v50 — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
