@@ -4,13 +4,13 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v51-kassanmou-2026">
+<meta name="km-version" content="v52-kassanmou-2026">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <meta name="theme-color" content="#0F1F0A">
-<title>Kassan\'Mou v51 — Marketplace Niger · Export B2B International</title>
+<title>Kassan\'Mou v52 — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
 <link rel="manifest" href="/kassanmou/manifest.json">
@@ -2903,7 +2903,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
       <span class="ftlnk" id="ft-about">Mission & Vision</span>
       <span class="ftlnk" id="ft-contact">Contact</span>
       <span class="ftlnk" onclick="goTo('contact')">Partenariat international</span>
-      <a class="ftlnk" href="https://eppridad.netlify.app/" target="_blank" rel="noopener">EPPRIDAD ↗</a>
+      <a class="ftlnk" href="https://www.eppridad.com" target="_blank" rel="noopener">EPPRIDAD ↗</a>
     </div>
     <div>
       <div class="ftcolh">Légal</div>
@@ -2913,8 +2913,35 @@ select.adm-input option{background:#0F1F0A;color:#fff}
       <span class="ftlnk">Contrat Point Focal</span>
     </div>
   </div>
+  <!-- PARTENAIRES v52 -->
+  <div style="border-top:1px solid rgba(255,255,255,.08);padding:28px 32px 0;margin-top:8px">
+    <div style="font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.25);font-family:'JetBrains Mono',monospace;margin-bottom:16px">Écosystème partenaire</div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+      <a href="https://www.eppridad.com" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);font-size:12px;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;transition:all .2s"
+         onmouseover="this.style.borderColor='rgba(200,97,47,.5)';this.style.color='#C8612F'"
+         onmouseout="this.style.borderColor='rgba(255,255,255,.12)';this.style.color='rgba(255,255,255,.6)'">
+        <span style="width:6px;height:6px;border-radius:50%;background:#C8612F;display:inline-block"></span>
+        EPPRIDAD ↗
+      </a>
+      <a href="https://businessbridge227-lab.github.io/businessbridge/" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);font-size:12px;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;transition:all .2s"
+         onmouseover="this.style.borderColor='rgba(200,97,47,.5)';this.style.color='#C8612F'"
+         onmouseout="this.style.borderColor='rgba(255,255,255,.12)';this.style.color='rgba(255,255,255,.6)'">
+        <span style="width:6px;height:6px;border-radius:50%;background:#C8612F;display:inline-block"></span>
+        Business Bridge Niger ↗
+      </a>
+      <a href="https://laoulaboukar-ship-it.github.io/eclosionrurale" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.6);font-size:12px;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;transition:all .2s"
+         onmouseover="this.style.borderColor='rgba(196,154,60,.5)';this.style.color='#C49A3C'"
+         onmouseout="this.style.borderColor='rgba(255,255,255,.12)';this.style.color='rgba(255,255,255,.6)'">
+        <span style="width:6px;height:6px;border-radius:50%;background:#C49A3C;display:inline-block"></span>
+        Éclosion Rurale ↗
+      </a>
+    </div>
+  </div>
   <div class="ftbtm">
-    <div>© 2025 Kassan'Mou · Business Bridge Niger · Tous droits réservés</div>
+    <div>© 2026 Kassan'Mou · Business Bridge Niger · Tous droits réservés</div>
     <div style="display:flex;gap:16px;align-items:center">
       <span>Niamey, Niger · Helsinki, Finlande</span>
       <span style="opacity:.4">|</span>
@@ -5163,10 +5190,13 @@ async function doValiderProduit(id,code){
       prodData=pR.data;
 
       /* Prix unique v44 : 5 000 FCFA annuel jusqu'à épuisement
-         Commission 2% = 100 FCFA sur 5 000 FCFA de publication */
+         Commission 2% standard — 5% pour partenaires convention (Banituri etc.) */
       var PRIX_PUBLICATION = 5000;
-      var COMMISSION_RATE  = 0.02;
-      var montantCommission = Math.round(PRIX_PUBLICATION * COMMISSION_RATE); /* 100 FCFA */
+      /* v52 — taux dynamique selon vendeur */
+      var _vendNom = (prodData.vendeurs ? (prodData.vendeurs.nom||'') : '').toLowerCase();
+      var COMMISSION_RATE = _vendNom.includes('banituri') ? 0.05 : 0.02;
+      var _tauxPct = _vendNom.includes('banituri') ? 5 : 2;
+      var montantCommission = Math.round(PRIX_PUBLICATION * COMMISSION_RATE);
 
       /* Créer la commission si elle n'existe pas déjà */
       var commExist = await kmDB.from('commissions')
@@ -5179,8 +5209,8 @@ async function doValiderProduit(id,code){
           montant:        montantCommission,
           montant_commission: montantCommission,
           montant_vente:  PRIX_PUBLICATION,
-          taux:           2,
-          taux_commission:2.00,
+          taux:           _tauxPct,
+          taux_commission:_tauxPct,
           base_calcul:    PRIX_PUBLICATION,
           statut:         "due",
           type:           "publication",
@@ -6019,10 +6049,12 @@ function buildCommList(comms,filtre){
     var _dc = comm.date_commission || comm.date_paiement || null;
     var d=_dc?new Date(_dc).toLocaleDateString('fr-FR'):'—';
     var typeLabel=comm.type==='publication'?'Publication':comm.type==='vente'?'Vente':'Commission';
-    h+='<div id="cr-'+comm.id+'" style="background:'+(isDue?'#2a1a0a':'#0a1a0a')+';border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid '+(isDue?'#8B4513':'#1a4a1a')+'">'
+    var _isBanituri=(vNom.toLowerCase().includes('banituri'));
+    var _tauxLabel=_isBanituri?'<span style="font-size:10px;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;padding:2px 8px;border-radius:20px;font-weight:800;margin-left:6px">⭐ 5% Conv.</span>':'<span style="font-size:10px;color:#888;margin-left:6px">2%</span>';
+    h+='<div id="cr-'+comm.id+'" style="background:'+(isDue?(_isBanituri?'#2a1008':'#2a1a0a'):(_isBanituri?'#0a1a08':'#0a1a0a'))+';border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid '+(isDue?(_isBanituri?'#C8612F':'#8B4513'):(_isBanituri?'#1a3a1a':'#1a4a1a'))+'">'
       +'<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
       +'<div style="flex:1;min-width:140px">'
-      +'<div style="font-weight:700;color:#fff">'+kmEsc(vNom)+'</div>'
+      +'<div style="font-weight:700;color:#fff;display:flex;align-items:center">'+kmEsc(vNom)+_tauxLabel+'</div>'
       +'<div style="font-size:12px;color:#888;margin-top:2px">'+kmEsc(comm.produit_nom||'—')+' · '+d+' · '+typeLabel+'</div>'
       +'</div>'
       +'<div style="text-align:right"><div style="font-size:18px;font-weight:800;color:'+(isDue?'#E85D24':'#4CAF50')+'">'+Math.round(parseFloat(comm.montant)||0).toLocaleString()+' F</div></div>'
@@ -6904,6 +6936,11 @@ var DB_PREMIUM = {
 
 var activeCatPremium = 'all';
 var _kmNotes = {}; /* cache notes { produit_id: {moy, nb} } — v50 */
+/* v52 — Partenaires convention spéciale (commission 5%) */
+var KM_PARTENAIRES_SPECIAUX = {
+  'banituri': { nom: 'BANITURI', taux: 5, badge: 'Produit Phare', email: 'banituriniger@gmail.com', tel: '+22796966582' }
+};
+var KM_BANITURI_VENDEUR_ID = null; /* sera chargé depuis Supabase au démarrage */
 
 function badgePremiumHtml(key, small){
   var map = {v:{cls:'v',lbl:'✓ Vérifié'},p:{cls:'p',lbl:'★ Premium'},n:{cls:'n',lbl:'✦ Nouveau'},e:{cls:'e',lbl:'🌍 Export'},l:{cls:'l',lbl:'📍 Local'}};
@@ -7096,6 +7133,7 @@ function renderProdsPremium(){
         '<div class="pnm-premium">'+p.nom+'</div>' +
         '<div class="porg-premium">'+p.vendeur+' '+badgePremiumHtml(p.badge,true)+'</div>' +
         '<div style="font-size:11px;margin:3px 0 4px">' + kmStarsHtml((_kmNotes[p.id]||{moy:0}).moy, (_kmNotes[p.id]||{nb:0}).nb) + '</div>' +
+        (p.is_phare?'<span style="font-size:10px;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;padding:2px 9px;border-radius:20px;font-weight:800;margin-right:4px">⭐ Produit Phare</span>':'')+
         (p.produit_frais?'<span style="font-size:10px;background:#1a3a4a;color:#7dd3fc;padding:2px 7px;border-radius:20px;font-weight:700;margin-right:4px">❄ Frais</span>':'')+
         (p.livraison_interville?'<span style="font-size:10px;background:#1a2a1a;color:#86efac;padding:2px 7px;border-radius:20px;font-weight:700">🚌 Inter-villes</span>':'')+
         '<div class="pfooter-premium">' +
@@ -8111,6 +8149,10 @@ async function kmLoadProduits() {
           export_international: p.export_international || false,
           livraison_interville: p.livraison_interville || false,
           produit_frais:        p.produit_frais || false,
+          /* v52 — partenaire convention */
+          vendeur_id: p.vendeur_id || null,
+          is_phare:   (p.vendeurs && p.vendeurs.nom && p.vendeurs.nom.toLowerCase().includes('banituri')) || false,
+          taux_commission: (p.vendeurs && p.vendeurs.nom && p.vendeurs.nom.toLowerCase().includes('banituri')) ? 5 : 2,
           emoji:   emojiMap[c] || '📦',
           cat:     catMap[c] || 'alimentaire',
           catLbl:  lblMap[c] || 'Produit',
@@ -8130,6 +8172,12 @@ async function kmLoadProduits() {
         });
       });
 
+      /* v52 — Produits Phare Banituri en tête */
+      DB_PREMIUM.produits.sort(function(a,b){
+        if(a.is_phare && !b.is_phare) return -1;
+        if(!a.is_phare && b.is_phare) return 1;
+        return 0;
+      });
       kmLog('[KM-DB] ' + res.data.length + ' produit(s) chargé(s) depuis Supabase');
       renderProdsPremium();
       renderFeaturedStrip();
@@ -8516,7 +8564,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v51 — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v52 — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
