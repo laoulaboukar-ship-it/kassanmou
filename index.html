@@ -4,13 +4,13 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v50-kassanmou-2026">
+<meta name="km-version" content="v51-kassanmou-2026">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <meta name="theme-color" content="#0F1F0A">
-<title>Kassan\'Mou v50 — Marketplace Niger · Export B2B International</title>
+<title>Kassan\'Mou v51 — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
 <link rel="manifest" href="/kassanmou/manifest.json">
@@ -3111,6 +3111,45 @@ function buildWhatsAppMsg(data){
   return lines;
 }
 
+/* Message vendeur simplifié — sans liens de validation (v51) */
+function buildWhatsAppMsgVendeur(data){
+  var nl='\n';
+  var typeLbl={
+    vendeur:'Vendeur',producteur:'Producteur',
+    transformateur:'Transformateur · '+(data.categorie||'—'),
+    maraicher:'Maraîcher'
+  }[data.sellerType]||(data.sellerType||'Vendeur');
+  var lines=[
+    '🌿 *KASSAN\'MOU — Nouveau produit soumis*',
+    '',
+    '📦 *Produit :* '+(data.nom||'—'),
+    '🏷️ *Type :* '+typeLbl,
+    '💰 *Prix :* '+(data.prix||'—')+' '+(data.unite||'FCFA'),
+    (data.prixGros?'📦 *Gros :* '+data.prixGros:''),
+    '🛍️ *Mode :* '+((data.modes||[]).join(' + ')||'—'),
+    '📍 *Origine :* '+(data.origine||'—'),
+    '📏 *Quantité :* '+(data.quantite||'—'),
+    '',
+    (data.exportable?'🌍 *EXPORT : OUI ✓*':''),
+    (data.exportable&&data.normes?'📋 *Certifications :* '+data.normes:''),
+    '',
+    '👤 *Contact :*',
+    '   📧 '+(data.email||'—'),
+    '   📱 '+(data.phone||'—'),
+    '',
+    '💳 *Pack choisi :* '+(data.pack||'5000')+' FCFA · '+(data.duree||'1 an'),
+    '📸 *Photos :* '+(data.photos||0)+' soumise(s)',
+    '',
+    '🕐 *Soumis le :* '+(data.soumisLe||'—'),
+    '',
+    '✅ Notre équipe examine votre dossier sous 48h.',
+    'Vous serez contacté(e) pour le paiement.',
+    '',
+    '_Kassan\'Mou · Business Bridge Niger_'
+  ].filter(function(l){return l!==undefined&&l!=='';}).join(nl);
+  return lines;
+}
+
 function openWhatsApp(msg){
   var url='https://wa.me/'+_wap+'?text='+encodeURIComponent(msg);
   window.open(url,'_blank','noopener');
@@ -3438,6 +3477,20 @@ function renderProds(){
 ══════════════════════════════ */
 function openModal(type){
   uploadedPhotos=[];currentStep=1;selectedRole='';currentSellerType='';
+  /* v51 — protection formulaire avant de quitter */
+  if(type==='sell'||type==='export-b2b'||type==='community-manager'){
+    window._kmFormOpen=true;
+    if(!window._kmBeforeUnload){
+      window._kmBeforeUnload=function(e){
+        if(window._kmFormOpen){
+          e.preventDefault();
+          e.returnValue='Votre formulaire n\'est pas encore envoyé. Quitter ?';
+          return e.returnValue;
+        }
+      };
+      window.addEventListener('beforeunload',window._kmBeforeUnload);
+    }
+  }
   var h='',wide=false;
   var X='<span class="mhandle"></span><button class="mcls" id="mcls-btn">✕</button>';
 
@@ -4314,10 +4367,14 @@ function submitProduct(modes){
   });
 
   var waMsg=buildWhatsAppMsg(prodData);
+  var waMsgVendeur=buildWhatsAppMsgVendeur(prodData);
   var mailtoLink=buildMailtoLink(prodData);
   var typeLbl={'vendeur':'🏪 Vendeur','producteur':'🌾 Producteur','transformateur':'🏭 Transformateur','maraicher':'🥬 Maraîcher'}[prodData.sellerType]||'🏪 Vendeur';
   var nbPhotos=uploadedPhotos.length;
 
+  /* v51 — formulaire soumis avec succès, plus besoin de la protection */
+  window._kmFormOpen=false;
+  if(window._kmBeforeUnload){window.removeEventListener('beforeunload',window._kmBeforeUnload);window._kmBeforeUnload=null;}
   closeModal();
   setTimeout(function(){
     var box=g('mbox');box.className='mbox center-modal';
@@ -4382,7 +4439,7 @@ function submitProduct(modes){
 
     var wb = document.getElementById('btn-wa-submit');
     if(wb) wb.addEventListener('click', function(){
-      openWhatsApp(waMsg);
+      openWhatsApp(waMsgVendeur);
       toast('WhatsApp ouvert !');
     });
 
@@ -4404,6 +4461,12 @@ function submitProduct(modes){
 
 function closeModal(){
   g('mveil').classList.remove('on');
+  /* v51 — retirer la protection beforeunload */
+  window._kmFormOpen=false;
+  if(window._kmBeforeUnload){
+    window.removeEventListener('beforeunload',window._kmBeforeUnload);
+    window._kmBeforeUnload=null;
+  }
   /* v44f: on vide les photos SEULEMENT après confirmation d'upload Supabase
      pour ne pas interrompre un kmSaveProduit en cours */
   if(!window._kmSaveInProgress) uploadedPhotos=[];
@@ -4476,7 +4539,10 @@ async function dashOverview(){
       if(r3.count!=null) s.c=r3.count;
     }catch(e){console.warn(e);}
   }
-  var now=new Date().toLocaleString('fr-FR');
+  var _now=new Date();
+  var now=_now.toLocaleString('fr-FR');
+  var moisNom=_now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  var moisDebut=new Date(_now.getFullYear(),_now.getMonth(),1).toISOString();
   var alert_html = s.a>0
     ? '<div class="adm-alert"><span class="adm-alert-txt">\u26a1 '+s.a+' produit(s) en attente</span><button class="adm-btn adm-btn-r adm-goto" data-goto="admin">Valider \u2192</button></div>'
     : '';
@@ -4519,12 +4585,11 @@ async function dashOverview(){
   var footer_html = '<div class="adm-box" style="font-size:12px;color:rgba(255,255,255,.35);text-align:center">Mise \u00e0 jour : '+now+'</div>';
     /* v47 : tableau de bord financier — sera injecté après chargement */
   body.innerHTML = '<div style="text-align:center;padding:30px;color:var(--Mu)"><div class="spinner"></div><br>Chargement du tableau de bord...</div>';
-  kmDashOverviewV47(body, s, moisNom, now);
+  kmDashOverviewV47(body, s, moisNom, _now, moisDebut);
 }
 
-async function kmDashOverviewV47(body, s, moisNom, now){
+async function kmDashOverviewV47(body, s, moisNom, now, moisDebut){
   var finData = {ca_mois:0, ca_total:0, comm_dues:0, comm_payees:0, nb_vendeurs:0, nb_commandes_mois:0, top_vendeurs:[]};
-  var moisDebut = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   try{
     var rCa = await kmDB.from('commandes').select('montant_total').gte('date_commande',moisDebut);
     if(rCa.data) finData.ca_mois = rCa.data.reduce(function(a,c){return a+(parseFloat(c.montant_total)||0);},0);
@@ -8451,7 +8516,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v50 — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v51 — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {

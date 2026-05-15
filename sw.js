@@ -1,5 +1,5 @@
-/* Kassan'Mou SW v50 */
-var CACHE_NAME = 'kassanmou-v50';
+/* Kassan'Mou SW v51 */
+var CACHE_NAME = 'kassanmou-v51';
 var OFFLINE_URL = '/kassanmou/';
 var PRECACHE_URLS = ['/kassanmou/', '/kassanmou/index.html', '/kassanmou/manifest.json'];
 
@@ -45,4 +45,4 @@ self.addEventListener('fetch', function(e) {
     })
   );
 });
-console.log("[KM-SW] v50 actif");
+console.log("[KM-SW] v51 actif");
