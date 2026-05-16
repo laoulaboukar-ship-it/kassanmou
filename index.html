@@ -4,13 +4,13 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v52-kassanmou-2026">
+<meta name="km-version" content="v53-kassanmou-2026">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <meta name="theme-color" content="#0F1F0A">
-<title>Kassan\'Mou v52 — Marketplace Niger · Export B2B International</title>
+<title>Kassan\'Mou v53 — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
 <link rel="manifest" href="/kassanmou/manifest.json">
@@ -2580,11 +2580,26 @@ select.adm-input option{background:#0F1F0A;color:#fff}
     <div class="sin">
       <div class="stag">Logistique</div>
       <h2 class="sh2">Suivi de Commande</h2>
-      <p class="sp" style="margin-bottom:1.5rem">Entrez votre numéro de commande pour voir le statut en temps réel.</p>
-      <div style="max-width:680px">
-        <div class="tform"><input class="tinp" id="track-inp" value="KM-2024-00847" placeholder="ex: KM-2024-00847"><button class="tgo" id="btn-track">Suivre</button></div>
-        <div class="qrow"><span class="qlbl">Exemples :</span><button class="qpill" data-order="KM-2024-00847">KM-2024-00847</button><button class="qpill" data-order="KM-2024-00901">KM-2024-00901</button></div>
-        <div id="track-result"></div>
+      <p class="sp" style="margin-bottom:1.5rem">Entrez votre référence de commande pour voir le statut en temps réel.</p>
+      <div style="max-width:640px;margin:0 auto">
+        <!-- Recherche par référence -->
+        <div style="display:flex;gap:10px;margin-bottom:12px">
+          <input id="track-inp" placeholder="Ex: KM-ABC123" maxlength="20"
+            style="flex:1;padding:14px 16px;border-radius:var(--rl);border:1.5px solid var(--B);background:rgba(255,255,255,.06);color:var(--S);font-size:15px;font-family:'JetBrains Mono',monospace;outline:none;letter-spacing:.05em"
+            onkeydown="if(event.key==='Enter')kmSuivreCommande()">
+          <button onclick="kmSuivreCommande()"
+            style="padding:14px 24px;border-radius:var(--rl);background:var(--O);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif;white-space:nowrap">Suivre</button>
+        </div>
+        <!-- Recherche par téléphone -->
+        <div style="font-size:12px;color:var(--Mu);margin-bottom:6px;text-align:center">ou</div>
+        <div style="display:flex;gap:10px;margin-bottom:20px">
+          <input id="track-tel" placeholder="Votre numéro de téléphone" maxlength="20"
+            style="flex:1;padding:12px 16px;border-radius:var(--rl);border:1.5px solid var(--B);background:rgba(255,255,255,.04);color:var(--S);font-size:14px;font-family:Outfit,sans-serif;outline:none"
+            onkeydown="if(event.key==='Enter')kmSuivreParTel()">
+          <button onclick="kmSuivreParTel()"
+            style="padding:12px 20px;border-radius:var(--rl);background:rgba(255,255,255,.08);color:var(--S);border:1.5px solid var(--B);font-size:13px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif;white-space:nowrap">Mes commandes</button>
+        </div>
+        <div id="track-result" style="min-height:80px"></div>
       </div>
     </div>
   </section>
@@ -4615,6 +4630,68 @@ async function dashOverview(){
   kmDashOverviewV47(body, s, moisNom, _now, moisDebut);
 }
 
+async function kmBuildChartCA(){
+  if(!kmDB) return '';
+  try{
+    /* Récupérer commandes des 6 derniers mois */
+    var now=new Date();
+    var debut=new Date(now.getFullYear(),now.getMonth()-5,1).toISOString();
+    var r=await kmDB.from('commandes').select('montant_total,date_commande')
+      .gte('date_commande',debut)
+      .neq('statut','annulee');
+    var cmds=r.data||[];
+    /* Agréger par mois */
+    var moisNoms=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+    var buckets=[];
+    for(var i=5;i>=0;i--){
+      var d=new Date(now.getFullYear(),now.getMonth()-i,1);
+      buckets.push({label:moisNoms[d.getMonth()],year:d.getFullYear(),month:d.getMonth(),total:0});
+    }
+    cmds.forEach(function(c){
+      if(!c.date_commande) return;
+      var d=new Date(c.date_commande);
+      var b=buckets.find(function(x){return x.year===d.getFullYear()&&x.month===d.getMonth();});
+      if(b) b.total+=parseFloat(c.montant_total)||0;
+    });
+    var max=Math.max.apply(null,buckets.map(function(b){return b.total;}));
+    if(max===0) max=1;
+    /* Construire SVG */
+    var W=460, H=140, PL=50, PR=16, PT=16, PB=36;
+    var gW=W-PL-PR, gH=H-PT-PB;
+    var barW=Math.floor(gW/buckets.length*0.55);
+    var gap=Math.floor(gW/buckets.length);
+    var bars=''; var labels=''; var values='';
+    buckets.forEach(function(b,i){
+      var x=PL+i*gap+gap/2-barW/2;
+      var barH=max>0?Math.round((b.total/max)*gH):0;
+      var y=PT+gH-barH;
+      var isLast=(i===buckets.length-1);
+      bars+='<rect x="'+x+'" y="'+y+'" width="'+barW+'" height="'+barH+'"'
+        +' rx="4" fill="'+(isLast?'#C8612F':'rgba(196,154,60,.55)')+'"/>'
+        +(b.total>0?'<text x="'+(x+barW/2)+'" y="'+(y-4)+'" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)" font-family="JetBrains Mono,monospace">'+(b.total>=1000?Math.round(b.total/1000)+'k':Math.round(b.total))+'</text>':'')
+      labels+='<text x="'+(x+barW/2)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.4)" font-family="Outfit,sans-serif">'+ b.label +'</text>';
+    });
+    /* Lignes de grille */
+    var grid='';
+    [0.25,0.5,0.75,1].forEach(function(t){
+      var y=PT+gH-Math.round(t*gH);
+      grid+='<line x1="'+PL+'" y1="'+y+'" x2="'+(W-PR)+'" y2="'+y+'" stroke="rgba(255,255,255,.06)" stroke-width="1"/>'
+        +'<text x="'+(PL-6)+'" y="'+(y+3)+'" text-anchor="end" font-size="9" fill="rgba(255,255,255,.3)" font-family="JetBrains Mono,monospace">'+(max*t>=1000?Math.round(max*t/1000)+'k':Math.round(max*t))+'</text>';
+    });
+    var totalCA=buckets.reduce(function(s,b){return s+b.total;},0);
+    var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">'+ grid + bars + labels +'</svg>';
+    return '<div class="adm-box" style="margin-bottom:14px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+      +'<div style="font-size:13px;font-weight:700;color:var(--G)">📊 CA — 6 derniers mois</div>'
+      +'<div style="font-size:12px;color:var(--Mu);font-family:JetBrains Mono,monospace">Total : '+Math.round(totalCA).toLocaleString()+' FCFA</div>'
+      +'</div>'
+      + svg
+      +'</div>';
+  }catch(e){
+    return '';
+  }
+}
+
 async function kmDashOverviewV47(body, s, moisNom, now, moisDebut){
   var finData = {ca_mois:0, ca_total:0, comm_dues:0, comm_payees:0, nb_vendeurs:0, nb_commandes_mois:0, top_vendeurs:[]};
   try{
@@ -4705,7 +4782,9 @@ async function kmDashOverviewV47(body, s, moisNom, now, moisDebut){
     '<button onclick="kmRunDiagnostic()" style="background:none;border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.2);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:10px;font-family:Outfit,sans-serif">Diagnostic</button>'+
     '</div>';
 
-  body.innerHTML = alert_html+kpi_html+counters_html+top_html+actions_html+export_html+footer_html;
+  /* v53 — graphique CA 6 derniers mois */
+  var chart_html = await kmBuildChartCA();
+  body.innerHTML = alert_html+kpi_html+counters_html+chart_html+top_html+actions_html+export_html+footer_html;
   body.querySelectorAll('.adm-goto').forEach(function(b){
     b.addEventListener('click',function(){ renderDash(b.dataset.goto); });
   });
@@ -7060,6 +7139,88 @@ function kmGetAllPhotos(photos){
 }
 
 /* ═══════════════════════════════
+   SUIVI COMMANDE v53
+═══════════════════════════════ */
+
+async function kmSuivreCommande(){
+  var ref=(g('track-inp')||{value:''}).value.trim().toUpperCase();
+  if(!ref){toast('Entrez une référence de commande.',true);return;}
+  var box=g('track-result');
+  box.innerHTML='<p style="text-align:center;padding:20px;color:var(--Mu)">Recherche...</p>';
+  if(!kmDB){box.innerHTML='<p style="color:#f44;padding:20px">Service indisponible.</p>';return;}
+  var r=await kmDB.from('commandes').select('*').ilike('reference','%'+ref+'%').order('date_commande',{ascending:false});
+  kmRenderTrackResult(r.data||[], box, 'Référence : '+ref);
+}
+
+async function kmSuivreParTel(){
+  var tel=(g('track-tel')||{value:''}).value.trim().replace(/\s/g,'');
+  if(!tel||tel.length<8){toast('Entrez votre numéro de téléphone.',true);return;}
+  var box=g('track-result');
+  box.innerHTML='<p style="text-align:center;padding:20px;color:var(--Mu)">Recherche...</p>';
+  if(!kmDB){box.innerHTML='<p style="color:#f44;padding:20px">Service indisponible.</p>';return;}
+  var r=await kmDB.from('commandes').select('*').or('acheteur_telephone.ilike.%'+tel+'%,acheteur_whatsapp.ilike.%'+tel+'%').order('date_commande',{ascending:false});
+  kmRenderTrackResult(r.data||[], box, 'Commandes pour '+tel);
+}
+
+function kmRenderTrackResult(cmds, box, titre){
+  if(!cmds||!cmds.length){
+    box.innerHTML='<div style="text-align:center;padding:30px;background:rgba(255,255,255,.03);border-radius:var(--rl);border:1.5px solid var(--B)">'
+      +'<div style="font-size:2rem;margin-bottom:10px">🔍</div>'
+      +'<div style="font-size:14px;font-weight:700;color:var(--S);margin-bottom:6px">Aucune commande trouvée</div>'
+      +'<div style="font-size:13px;color:var(--Mu)">Vérifiez la référence ou le numéro de téléphone.</div>'
+      +'<div style="margin-top:14px;font-size:12px;color:var(--Mu)">Besoin d\'aide ? Contactez-nous sur WhatsApp</div>'
+      +'<a href="https://wa.me/22799851532" target="_blank" style="display:inline-block;margin-top:10px;padding:8px 18px;background:#25D366;color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700">📱 WhatsApp</a>'
+      +'</div>';
+    return;
+  }
+  var statCfg={
+    'en_attente': {color:'#E8C060',bg:'rgba(232,192,96,.1)',icon:'⏳',label:'En attente de confirmation'},
+    'confirmee':  {color:'#4CAF50',bg:'rgba(76,175,80,.1)',icon:'✅',label:'Confirmée'},
+    'livree':     {color:'#2196F3',bg:'rgba(33,150,243,.1)',icon:'📦',label:'Livrée'},
+    'annulee':    {color:'#f44336',bg:'rgba(244,67,54,.1)',icon:'❌',label:'Annulée'}
+  };
+  var html='<div style="font-size:12px;font-weight:700;color:var(--Mu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;font-family:JetBrains Mono,monospace">'+titre+' — '+cmds.length+' commande(s)</div>';
+  cmds.forEach(function(cmd){
+    var st=statCfg[cmd.statut]||{color:'#888',bg:'rgba(255,255,255,.05)',icon:'❓',label:cmd.statut||'Inconnu'};
+    var d=cmd.date_commande?new Date(cmd.date_commande).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}):'—';
+    var montant=Math.round(parseFloat(cmd.montant_total)||0).toLocaleString('fr-FR');
+    html+='<div style="background:rgba(255,255,255,.04);border:1.5px solid '+st.color+'30;border-left:4px solid '+st.color+';border-radius:var(--rl);padding:16px;margin-bottom:12px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">'
+      +'<div>'
+      +'<div style="font-size:11px;color:var(--Mu);font-family:JetBrains Mono,monospace;letter-spacing:.06em;margin-bottom:4px">'+(cmd.reference||'—')+'</div>'
+      +'<div style="font-size:15px;font-weight:700;color:var(--S)">'+(cmd.produit_nom||'Produit')+(cmd.quantite>1?' × '+cmd.quantite:'')+'</div>'
+      +'<div style="font-size:12px;color:var(--Mu);margin-top:2px">'+ d +'</div>'
+      +'</div>'
+      +'<div style="text-align:right">'
+      +'<div style="font-size:18px;font-weight:800;color:var(--G)">'+ montant +' FCFA</div>'
+      +'<div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:'+st.bg+';color:'+st.color+';font-size:11px;font-weight:700;margin-top:4px">'+ st.icon +' '+ st.label +'</div>'
+      +'</div></div>'
+      /* Progression visuelle */
+      +'<div style="display:flex;gap:4px;margin-bottom:12px">'
+      +['en_attente','confirmee','livree'].map(function(s){
+          var done=(cmd.statut==='livree'||(cmd.statut==='confirmee'&&s!=='livree')||(cmd.statut==='en_attente'&&s==='en_attente'));
+          var active=cmd.statut===s;
+          return '<div style="flex:1;height:4px;border-radius:2px;background:'+(active?st.color:done?'rgba(76,175,80,.4)':'rgba(255,255,255,.1)')+'"></div>';
+        }).join('')
+      +'</div>'
+      /* Détails */
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">'
+      +(cmd.acheteur_nom?'<div><span style="color:var(--Mu)">Acheteur</span><br><strong style="color:var(--S)">'+(cmd.acheteur_nom)+'</strong></div>':'')
+      +(cmd.mode_livraison?'<div><span style="color:var(--Mu)">Livraison</span><br><strong style="color:var(--S)">'+(cmd.mode_livraison)+'</strong></div>':'')
+      +(cmd.mode_paiement?'<div><span style="color:var(--Mu)">Paiement</span><br><strong style="color:var(--S)">'+(cmd.mode_paiement)+'</strong></div>':'')
+      +(cmd.livreur_nom?'<div><span style="color:var(--Mu)">Livreur</span><br><strong style="color:var(--S)">🛵 '+(cmd.livreur_nom)+'</strong></div>':'')
+      +'</div>'
+      /* CTA WhatsApp si en_attente */
+      +(cmd.statut==='en_attente'?
+        '<div style="margin-top:12px;padding:10px;background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.2);border-radius:var(--rm);font-size:12px;color:#15803d">💬 Votre commande est en cours de traitement. Pour toute question, contactez-nous.</div>'
+        +'<a href="https://wa.me/22799851532?text='+encodeURIComponent('Bonjour, je voudrais des informations sur ma commande : '+(cmd.reference||'')+' — '+(cmd.produit_nom||'')+'')+'" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:8px 16px;background:#25D366;color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700">📱 Contacter sur WhatsApp</a>'
+        :'')
+      +'</div>';
+  });
+  box.innerHTML=html;
+}
+
+/* ═══════════════════════════════
    NOTATION v50 — Étoiles & Avis
 ═══════════════════════════════ */
 
@@ -7224,12 +7385,107 @@ function openDetailSheet(id){
   document.body.style.overflow = 'hidden';
 }
 
+/* ═══════════════════════════════
+   CAROUSEL PHOTOS v53
+═══════════════════════════════ */
+function kmBuildCarousel(p){
+  var photos=[];
+  try{
+    if(Array.isArray(p.photos)) photos=p.photos.filter(Boolean);
+    else if(typeof p.photos==='string'){
+      var parsed=JSON.parse(p.photos);
+      photos=Array.isArray(parsed)?parsed.filter(Boolean):[];
+    }
+  }catch(e){
+    if(typeof p.photos==='string'&&p.photos.indexOf('http')===0) photos=[p.photos];
+  }
+  if(!photos.length){
+    return '<div style="width:100%;height:220px;background:var(--PC);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:14px">'+p.emoji+'</div>';
+  }
+  if(photos.length===1){
+    return '<div style="width:100%;height:220px;border-radius:14px;overflow:hidden;margin-bottom:14px;background:#000">'
+      +'<img src="'+photos[0]+'" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=\''+p.emoji+'\'">'
+      +'</div>';
+  }
+  /* Multi-photos : carousel */
+  var uid='kmc-'+(p.id||Date.now());
+  var mainImgs=photos.map(function(ph,i){
+    return '<div class="km-cs-slide"' +(i>0?' style="display:none"':'')+ '>'  
+      +'<img src="'+ph+'" style="width:100%;height:220px;object-fit:cover">'
+      +'</div>';
+  }).join('');
+  var dots=photos.map(function(_,i){
+    return '<button class="km-cs-dot' +(i===0?' active':'')+'" data-idx="'+i+'" style="width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;padding:0;background:'+(i===0?'#C8612F':'rgba(255,255,255,.35)')+';transition:background .2s"></button>';
+  }).join('');
+  var thumbs=photos.map(function(ph,i){
+    return '<img src="'+ph+'" data-idx="'+i+'" style="width:54px;height:54px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid '+(i===0?'#C8612F':'transparent')+';opacity:'+(i===0?'1':'.6')+';transition:all .2s;flex-shrink:0">';
+  }).join('');
+  return '<div id="'+uid+'" style="margin-bottom:14px">'
+    +'<div style="position:relative;border-radius:14px;overflow:hidden;background:#000;height:220px">'
+    +mainImgs
+    +(photos.length>1
+      ?'<button onclick="kmCsPrev(\''+ uid +'\')" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#8249;</button>'
+       +'<button onclick="kmCsNext(\''+ uid +'\')" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#8250;</button>'
+      :'')
+    +'<div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px">'+dots+'</div>'
+    +'</div>'
+    +(photos.length>1
+      ?'<div style="display:flex;gap:6px;margin-top:8px;overflow-x:auto;padding-bottom:4px">'+thumbs+'</div>'
+      :'')
+    +'</div>';
+}
+
+function kmCsNav(uid, dir){
+  var wrap=g(uid); if(!wrap) return;
+  var slides=wrap.querySelectorAll('.km-cs-slide');
+  var dots=wrap.querySelectorAll('.km-cs-dot');
+  var thumbs=wrap.querySelectorAll('img[data-idx]');
+  var cur=0;
+  slides.forEach(function(s,i){if(s.style.display!=='none') cur=i;});
+  var next=(cur+dir+slides.length)%slides.length;
+  slides[cur].style.display='none';
+  slides[next].style.display='block';
+  dots.forEach(function(d,i){
+    d.style.background=i===next?'#C8612F':'rgba(255,255,255,.35)';
+    d.classList.toggle('active',i===next);
+  });
+  thumbs.forEach(function(t,i){
+    t.style.border=i===next?'2px solid #C8612F':'2px solid transparent';
+    t.style.opacity=i===next?'1':'.6';
+  });
+}
+function kmCsPrev(uid){kmCsNav(uid,-1);}
+function kmCsNext(uid){kmCsNav(uid,1);}
+
+/* Câblage des dots et thumbs — appelé après renderDetailStep1 */
+function kmWireCarousel(uid){
+  var wrap=g(uid); if(!wrap) return;
+  wrap.querySelectorAll('.km-cs-dot').forEach(function(d){
+    d.addEventListener('click',function(){
+      var idx=parseInt(d.dataset.idx);
+      var cur=0;
+      wrap.querySelectorAll('.km-cs-slide').forEach(function(s,i){if(s.style.display!=='none') cur=i;});
+      kmCsNav(uid, idx-cur);
+    });
+  });
+  wrap.querySelectorAll('img[data-idx]').forEach(function(t){
+    t.addEventListener('click',function(){
+      var idx=parseInt(t.dataset.idx);
+      var cur=0;
+      wrap.querySelectorAll('.km-cs-slide').forEach(function(s,i){if(s.style.display!=='none') cur=i;});
+      kmCsNav(uid, idx-cur);
+    });
+  });
+}
+
 function renderDetailStep1(p){
   var dispoLbl = p.dispo==='immediat' ? '✅ Disponible immédiatement' : '📦 Sur commande · ' + p.delai;
   g('detail-content').innerHTML =
     '<div class="order-step">' +
     '<div class="order-progress"><div class="op-step active"></div><div class="op-step"></div><div class="op-step"></div></div>' +
-    '<div class="dsheet-thumb" id="dt-main">'+(kmGetPhoto(p.photos)?'<img src="'+kmGetPhoto(p.photos)+'" style="width:100%;height:100%;object-fit:cover;border-radius:12px">':'')+(!kmGetPhoto(p.photos)?p.emoji:'')+'</div>' +
+    /* v53 — carousel photos */
+    kmBuildCarousel(p) +
+
     '<div class="dsheet-body">' +
       '<div class="dsheet-badges">'+badgePremiumHtml(p.badge)+(p.vedette?'<span class="vbp p">★ En vedette</span>':'')+'</div>' +
       '<div class="dsheet-name">'+p.nom+'</div>' +
@@ -7301,6 +7557,9 @@ function renderDetailStep1(p){
       kmSoumettrNote(pid, window._kmStarNote, comment);
     });
   }
+  /* v53 — câbler carousel si multi-photos */
+  var uid='kmc-'+(p.id||'x');
+  if(g(uid)) kmWireCarousel(uid);
 }
 
 function renderDetailStep2(p){
@@ -8564,7 +8823,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v52 — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v53 — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
