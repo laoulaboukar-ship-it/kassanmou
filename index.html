@@ -4,13 +4,13 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v53-kassanmou-2026">
+<meta name="km-version" content="v55-kassanmou-2026">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <meta name="theme-color" content="#0F1F0A">
-<title>Kassan\'Mou v53 — Marketplace Niger · Export B2B International</title>
+<title>Kassan\'Mou v55 — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
 <link rel="manifest" href="/kassanmou/manifest.json">
@@ -831,6 +831,36 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
   .bni{min-height:var(--bnav)}
   .mbox{max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .fg input,.fg select,.fg textarea{font-size:16px!important} /* prevent iOS zoom */
+}
+/* ── v55 Mobile UX améliorations ───────── */
+@media(max-width:768px){
+  /* Barre de recherche marketplace */
+  .mkt-search-wrap-premium{gap:6px}
+  .mkt-sinp-premium{font-size:16px!important;padding:12px 14px}
+  .mkt-sbtn-premium{padding:12px 16px;font-size:13px;white-space:nowrap}
+  /* Panneau filtres */
+  #km-filtres-mkt{margin:0 0 10px}
+  /* Page tracking */
+  #track-inp,#track-tel{font-size:16px!important;padding:14px 12px}
+  /* Détail sheet */
+  .detail-sheet{border-radius:20px 20px 0 0}
+  /* Espace vendeur tabs */
+  #vendeur-tabs-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;scrollbar-width:none;gap:4px}
+  #vendeur-tabs-bar .adm-tab{min-width:auto;padding:8px 12px;font-size:12px;flex-shrink:0}
+  /* Dashboard admin tabs */
+  #dash-tabs-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;scrollbar-width:none}
+  /* Bottom nav labels toujours visibles sur 360px+ */
+  .bni-lbl{font-size:10px}
+  /* Boutons achat en pleine largeur sur mobile */
+  .detail-sheet .bp{width:100%;margin-top:8px}
+  /* Grille KPIs dashboard 2 colonnes sur mobile */
+  .adm-kpis{grid-template-columns:1fr 1fr!important}
+  /* Footer partenaires wrap correct */
+  .ftbtm{flex-direction:column;gap:8px;text-align:center}
+  /* Cartes marketplace pleine hauteur image */
+  .pimg-real{height:130px}
+  /* Carousel mobile */
+  .km-cs-slide img{height:200px!important}
 }
 
 /* ── WhatsApp flottant ──────────────────── */
@@ -2499,13 +2529,27 @@ select.adm-input option{background:#0F1F0A;color:#fff}
     <div class="livreur-list" id="livreur-list-page"></div>
 
     <div style="background:var(--Gl);border:1.5px solid var(--gold-border);border-radius:var(--rl);padding:15px;margin-top:4px">
-      <div style="font-size:13px;font-weight:700;color:var(--Gd);margin-bottom:6px">📋 Informations</div>
+      <div style="font-size:13px;font-weight:700;color:var(--Gd);margin-bottom:6px">📋 Informations livraison locale</div>
       <div style="font-size:12px;color:var(--Mu);line-height:1.8">
         · Tarif fixe : <strong style="color:var(--Sm)">1 000 FCFA</strong> par livraison<br>
         · Niamey uniquement pour l'instant<br>
         · Paiement en espèces à la livraison<br>
         · Livreurs disponibles 7h–20h
       </div>
+    </div>
+    <!-- Inter-villes info -->
+    <div style="margin-top:12px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--rl);padding:15px">
+      <div style="font-size:13px;font-weight:700;color:var(--S);margin-bottom:8px">🚌 Livraison inter-villes</div>
+      <div style="font-size:12px;color:var(--Mu);line-height:1.9">
+        · Via les compagnies de transport (EHGM, SNT, etc.)<br>
+        · Tarifs selon la compagnie et la destination<br>
+        · Délai : 24h à 72h selon la ville<br>
+        · Contactez-nous pour organiser l'envoi
+      </div>
+      <a href="https://wa.me/22799851532?text=Bonjour%2C+je+voudrais+organiser+une+livraison+inter-villes" target="_blank"
+         style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:10px 18px;background:#25D366;color:#fff;border-radius:var(--rs);font-size:13px;font-weight:700;text-decoration:none">
+        📱 Organiser une livraison inter-villes
+      </a>
     </div>
   </div>
 </div>
@@ -2883,7 +2927,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
     <button class="adm-logout-btn" id="btn-vendeur-logout" style="background:#3D2000;color:#E8C060">🔓 Déco.</button>
   </div>
 </div>
-<div class="adm-tabs" id="vendeur-tabs-bar" style="background:#2a1500">
+<div class="adm-tabs" id="vendeur-tabs-bar" style="background:#2a1500;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:flex;flex-wrap:nowrap">
   <button class="adm-tab on" data-vtab="vendeur-overview" style="color:#E8C060">📊 Bord</button>
   <button class="adm-tab" data-vtab="vendeur-produits">🌾 Produits</button>
   <button class="adm-tab" data-vtab="vendeur-commissions">💰 Commissions</button>
@@ -3809,6 +3853,8 @@ function openModal(type){
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
           '<input placeholder="Email" id="prod-email" type="email">'+
           '<input placeholder="Téléphone / WhatsApp" id="prod-phone">'+
+          /* SEC v54 — honeypot anti-bot, caché CSS */
+          '<div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden" aria-hidden="true"><input name="km_website" id="km-hp" tabindex="-1" autocomplete="off"></div>'+
         '</div>'+
       '</div>'+
 
@@ -4237,16 +4283,48 @@ function wirePhotoUpload(){
     var inp=g('file-input-photos'),cam=g('camera-input'),camBtn=g('btn-camera'),zone=g('upload-zone'),preview=g('photo-preview');
     if(!inp)return;
     function addPhotos(files){
+      var allowed=['image/jpeg','image/jpg','image/png','image/webp','image/gif'];
       for(var i=0;i<files.length;i++){
         if(uploadedPhotos.length>=5)break;
-        (function(file){
+        var file=files[i];
+        /* SEC — type MIME */
+        if(!allowed.includes(file.type)){
+          toast('Format non accepté : '+file.name+'. Utilisez JPG, PNG ou WEBP.',true);
+          continue;
+        }
+        /* v55 — compression auto si >2Mo, alerte douce si >8Mo */
+        if(file.size>8*1024*1024){
+          toast('Photo très lourde ('+Math.round(file.size/1024/1024)+'Mo). Veuillez réduire la taille dans votre galerie.',true);
+          continue;
+        }
+        (function(f){
           var reader=new FileReader();
           reader.onload=function(e){
-            uploadedPhotos.push({url:e.target.result,name:file.name,base64:e.target.result});
-            renderPhotoPreview();
+            /* Compression Canvas si >2Mo */
+            if(f.size>2*1024*1024){
+              var img=new Image();
+              img.onload=function(){
+                var canvas=document.createElement('canvas');
+                var MAX=1200;
+                var w=img.width, h=img.height;
+                if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+                if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+                canvas.width=w; canvas.height=h;
+                canvas.getContext('2d').drawImage(img,0,0,w,h);
+                var compressed=canvas.toDataURL('image/jpeg',0.82);
+                var sizeMo=Math.round(compressed.length*0.75/1024/1024*10)/10;
+                toast('📸 Photo compressée automatiquement ('+sizeMo+'Mo)');
+                uploadedPhotos.push({url:compressed,name:f.name,base64:compressed});
+                renderPhotoPreview();
+              };
+              img.src=e.target.result;
+            } else {
+              uploadedPhotos.push({url:e.target.result,name:f.name,base64:e.target.result});
+              renderPhotoPreview();
+            }
           };
-          reader.readAsDataURL(file);
-        })(files[i]);
+          reader.readAsDataURL(f);
+        })(file);
       }
     }
     function renderPhotoPreview(){
@@ -4288,6 +4366,9 @@ function wirePhotoUpload(){
 }
 
 function submitProduct(modes){
+  /* SEC v54 — honeypot anti-bot */
+  var _hp=document.getElementById('km-hp');
+  if(_hp && _hp.value && _hp.value.length>0){toast('Formulaire envoyé.');return;}
   /* SEC v44j : rate limiting — max 3 soumissions par heure par navigateur */
   try{
     var _rl = JSON.parse(sessionStorage.getItem('km_submit_rl')||'{"count":0,"reset":0}');
@@ -4546,6 +4627,7 @@ function doTrack(){
    DASHBOARD
 ══════════════════════════════ */
 function renderDash(tab){
+  kmAdminActivity();
   document.querySelectorAll('.adm-tab').forEach(function(b){
     b.classList.toggle('on', b.dataset.atab===tab);
   });
@@ -5743,6 +5825,8 @@ async function kmDoLogin() {
       kmAuthReady = true;
       if (btn) { btn.disabled = false; btn.textContent = '🔓 Se connecter'; }
       kmSetLoginStatus('✅ Connexion réussie !', 'ok');
+      /* SEC v54 — Démarrer timeout inactivité admin */
+      kmResetAdminTimeout();
       closeModal();
       renderDash('overview');
       goTo('dashboard');
@@ -6897,6 +6981,84 @@ async function kmDoLogout() {
 }
 
 
+/* ═══════════════════════════════════════
+   SÉCURITÉ v54 — Protections plateforme
+═══════════════════════════════════════*/
+
+/* --- 1. Timeout session admin 2h --- */
+var _kmAdminTimer = null;
+var KM_ADMIN_TIMEOUT_MS = 2 * 60 * 60 * 1000; /* 2 heures */
+
+function kmResetAdminTimeout(){
+  if(_kmAdminTimer) clearTimeout(_kmAdminTimer);
+  _kmAdminTimer = setTimeout(function(){
+    if(kmIsAdmin){
+      kmIsAdmin = false; kmSession = null; kmUser = null;
+      if(kmDB) kmDB.auth.signOut();
+      goTo('home');
+      toast('Session admin expirée après 2h d\'inactivité. Reconnectez-vous.', true);
+    }
+  }, KM_ADMIN_TIMEOUT_MS);
+}
+
+/* Réinitialiser le timer à chaque action admin */
+function kmAdminActivity(){
+  if(kmIsAdmin) kmResetAdminTimeout();
+}
+
+/* --- 2. Validation type fichier upload (magic bytes) --- */
+function kmValidateImageFile(base64){
+  if(!base64) return false;
+  /* Vérifier les magic bytes dans le header base64 */
+  var header = base64.substring(0,30);
+  var allowedPrefixes = [
+    'data:image/jpeg',
+    'data:image/jpg',
+    'data:image/png',
+    'data:image/webp',
+    'data:image/gif'
+  ];
+  var ok = allowedPrefixes.some(function(p){ return header.indexOf(p) === 0; });
+  if(!ok) console.warn('[KM-SEC] Fichier refusé — type non autorisé:', header.substring(0,20));
+  return ok;
+}
+
+/* --- 3. Honeypot anti-bot --- */
+function kmCheckHoneypot(formEl){
+  /* Champ caché rempli = bot */
+  var hp = formEl ? formEl.querySelector('[name="km_website"]') : document.querySelector('[name="km_website"]');
+  if(hp && hp.value && hp.value.length > 0){
+    console.warn('[KM-SEC] Bot détecté via honeypot');
+    return true; /* est un bot */
+  }
+  return false;
+}
+
+/* --- 4. Sanitisation inputs --- */
+function kmSanitize(str, maxLen){
+  if(!str) return '';
+  var s = String(str).trim();
+  /* Retirer balises HTML */
+  s = s.replace(/<[^>]*>/g, '');
+  /* Retirer caractères de contrôle */
+  s = s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  if(maxLen) s = s.substring(0, maxLen);
+  return s;
+}
+
+/* --- 5. Validation email --- */
+function kmValidateEmail(email){
+  if(!email) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+}
+
+/* --- 6. Validation téléphone Niger --- */
+function kmValidateTel(tel){
+  if(!tel) return false;
+  var clean = tel.replace(/[\s\-\.\(\)\+]/g,'');
+  return clean.length >= 8 && /^[0-9]+$/.test(clean);
+}
+
 function wire(){
   /* Nouveaux boutons home */
   var brp=g('btn-request-product');if(brp)brp.addEventListener('click',function(){openModal('request-product');});
@@ -6931,9 +7093,11 @@ function wire(){
   // Bottom nav
   g('bn-home').addEventListener('click',function(){goTo('home');});
   g('bn-marketplace').addEventListener('click',function(){goTo('marketplace');});
-  g('bn-post').addEventListener('click',function(){openModal('register');});
+  g('bn-post').addEventListener('click',function(){openModal('sell');});
   if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
   /* v43: doublon supprimé */
+  /* v55 — câbler bn-livraison (manquait dans wire) */
+  if(g('bn-livraison')) g('bn-livraison').addEventListener('click',function(){goTo('livraison');});
   g('bn-account').addEventListener('click',function(){
     if(kmIsAdmin){ goTo('dashboard'); }
     else if(kmVendeurSession){ goTo('vendeur'); }
@@ -8543,6 +8707,31 @@ async function kmSaveProduit(d) {
 }
 
 async function kmSaveCommande(d) {
+  /* SEC v55 — Rate limiting commandes : 10 max / heure par session */
+  var _rl=JSON.parse(sessionStorage.getItem('km_cmd_rl')||'{"ts":0,"nb":0}');
+  var _now=Date.now();
+  if(_now-_rl.ts > 3600000){ _rl={ts:_now,nb:0}; }
+  if(_rl.nb>=10){
+    var nl='\n';
+    var msgLimite='Bonjour Kassan\'Mou,'+nl+nl
+      +'J\'ai atteint la limite de 10 commandes/heure.'+nl
+      +'Je souhaite lever cette restriction car mes commandes sont réelles.'+nl+nl
+      +'Merci de vérifier et de me débloquer.'+nl
+      +'_Kassan\'Mou — Sécurité_';
+    var waLimite='https://wa.me/22799851532?text='+encodeURIComponent(msgLimite);
+    /* Toast avec lien WA */
+    var tBox=document.getElementById('km-toast');
+    if(tBox){
+      tBox.innerHTML='⚠️ Limite de 10 commandes/heure atteinte.<br>'
+        +'<a href="'+waLimite+'" target="_blank" style="color:#E8C060;font-weight:700;text-decoration:underline">Demander la levée sur WhatsApp ↗</a>';
+      tBox.className='toast show err';
+      setTimeout(function(){tBox.className='toast';},8000);
+    } else {
+      toast('Limite atteinte. Contactez-nous sur WhatsApp pour lever la restriction.',true);
+    }
+    return null;
+  }
+  _rl.nb++; sessionStorage.setItem('km_cmd_rl',JSON.stringify(_rl));
   if (!kmDB) {
     console.error('[KM-CMD] Supabase non connecte - commande non sauvegardee');
     toast('Commande WhatsApp OK mais non enregistrée (hors ligne)', false);
@@ -8823,7 +9012,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v53 — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v55 — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
