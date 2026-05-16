@@ -1763,9 +1763,8 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   <div class="nlinks">
     <button class="nl on" id="nl-home">Accueil</button>
     <button class="nl" id="nl-marketplace">Marché 🛍️</button>
-
-
     <button class="nl" id="nl-tracking">Suivi</button>
+    <button class="nl" id="nl-livraison">Logistique</button>
     <button class="nl" id="nl-how">Comment ça marche</button>
     <button class="nl" id="nl-about">À propos · Export</button>
     <button class="nl" id="nl-contact">Contact</button>
@@ -1781,13 +1780,13 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 <!-- MENU MOBILE OVERLAY -->
 <div id="mnav">
   <button class="mi" id="mn-home"><span class="mi-ico">🏠</span><span>Accueil</span></button>
-  <button class="mi" id="mn-marketplace"><span class="mi-ico">🛒</span><span>Marché local</span></button>
-
-
+  <button class="mi" id="mn-marketplace"><span class="mi-ico">🛒</span><span>Marché</span></button>
   <button class="mi" id="mn-tracking"><span class="mi-ico">📦</span><span>Suivi commande</span></button>
+  <button class="mi" id="mn-livraison"><span class="mi-ico">🛵</span><span>Logistique</span></button>
   <button class="mi" id="mn-how"><span class="mi-ico">📋</span><span>Comment ça marche</span></button>
-  <button class="mi" id="mn-about"><span class="mi-ico">🌍</span><span>À propos</span></button>
+  <button class="mi" id="mn-about"><span class="mi-ico">🌍</span><span>À propos · Export</span></button>
   <button class="mi" id="mn-contact"><span class="mi-ico">✉️</span><span>Contact</span></button>
+  <button class="mi" id="mn-focal"><span class="mi-ico">🤝</span><span>Points Focaux</span></button>
   <div class="mdiv"></div>
   <div class="mbtns">
     <button class="mbtn mbg" id="mn-login">Connexion</button>
@@ -1809,449 +1808,88 @@ select.adm-input option{background:#0F1F0A;color:#fff}
      PAGE ACCUEIL
 ═══════════════════════════════════ -->
 <div class="page on" id="page-home">
-  <section class="hero" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;gap:0">
+  <section class="hero" style="min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;position:relative;overflow:hidden">
     <div class="ho ho1"></div><div class="ho ho2"></div>
     <div class="hero-particles" id="hero-particles"></div>
 
-    <!-- VITRINE PREMIUM -->
-    <div style="position:relative;z-index:2;width:100%;max-width:1100px;padding:2rem 1.5rem;text-align:center">
+    <div style="position:relative;z-index:2;width:100%;max-width:900px;padding:1.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0">
 
-      <!-- Badge live -->
-      <div class="hero-eyebrow" style="justify-content:center;margin-bottom:2rem">
-        <span class="ldot"></span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;color:rgba(196,154,60,.8)">NIGER → MONDE · KASSAN'MOU</span>
-      </div>
-
-      <!-- Titre principal v56 -->
-      <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.6rem,6.5vw,5.6rem);font-weight:800;color:#fff;line-height:1.06;margin-bottom:1.2rem;letter-spacing:-.01em">
-        Le Niger a des richesses.<br>
-        <span style="background:linear-gradient(135deg,#C49A3C 0%,#E8C060 50%,#B8863A 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Le monde les attend.</span>
-      </h1>
-
-      <p style="font-size:clamp(14px,1.8vw,18px);color:rgba(255,255,255,.48);max-width:540px;margin:0 auto 1rem;line-height:1.8;font-weight:300">
-        Kassan'Mou connecte les producteurs du Niger<br>aux acheteurs locaux et internationaux.
-      </p>
-      <p style="font-size:12px;color:rgba(255,255,255,.25);letter-spacing:.08em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:3.5rem">
-        Achetez local · Vendez mondial · Exportez partout
-      </p>
-
-      <!-- 3 PORTES D'ENTRÉE PREMIUM v56 -->
-      <div id="trois-portes" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:3.5rem;max-width:860px;margin-left:auto;margin-right:auto">
-
-        <!-- PORTE 1 : ACHETER -->
-        <button id="btn-see-mkt" style="
-          display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-          gap:0;padding:0;border-radius:22px;cursor:pointer;text-align:center;
-          background:rgba(255,255,255,.04);
-          border:1.5px solid rgba(255,255,255,.1);
-          transition:all .3s cubic-bezier(.4,0,.2,1);font-family:Outfit,sans-serif;
-          overflow:hidden;position:relative;
-        "
-        onmouseover="this.style.background='rgba(45,106,79,.15)';this.style.borderColor='rgba(45,106,79,.5)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 48px rgba(45,106,79,.2)'"
-        onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.1)';this.style.transform='';this.style.boxShadow=''">
-          <!-- Fond coloré haut -->
-          <div style="width:100%;padding:28px 20px 20px;background:linear-gradient(160deg,rgba(45,106,79,.3) 0%,rgba(45,106,79,.06) 100%);border-bottom:1px solid rgba(45,106,79,.2)">
-            <div style="font-size:3rem;margin-bottom:12px;line-height:1">🛒</div>
-            <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-.01em">Acheter</div>
-          </div>
-          <!-- Description bas -->
-          <div style="padding:18px 16px 22px;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:14px">
-            <div style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.75">
-              Explorez des centaines de produits<br>nigériens — alimentaire, artisanat,<br>agriculture, transformation.
-            </div>
-            <div style="display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;color:#4CAF50;background:rgba(45,106,79,.18);padding:7px 14px;border-radius:20px;border:1px solid rgba(45,106,79,.3);letter-spacing:.04em">
-              Explorer le marché →
-            </div>
-          </div>
-        </button>
-
-        <!-- PORTE 2 : VENDRE -->
-        <button id="btn-cta-sell" style="
-          display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-          gap:0;padding:0;border-radius:22px;cursor:pointer;text-align:center;
-          background:rgba(255,255,255,.04);
-          border:1.5px solid rgba(200,97,47,.35);
-          transition:all .3s cubic-bezier(.4,0,.2,1);font-family:Outfit,sans-serif;
-          overflow:hidden;position:relative;
-          box-shadow:0 0 0 1px rgba(200,97,47,.1);
-        "
-        onmouseover="this.style.background='rgba(200,97,47,.15)';this.style.borderColor='rgba(200,97,47,.6)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 48px rgba(200,97,47,.25)'"
-        onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(200,97,47,.35)';this.style.transform='';this.style.boxShadow='0 0 0 1px rgba(200,97,47,.1)'">
-          <!-- Fond coloré haut — CTA principal -->
-          <div style="width:100%;padding:28px 20px 20px;background:linear-gradient(160deg,rgba(200,97,47,.35) 0%,rgba(200,97,47,.08) 100%);border-bottom:1px solid rgba(200,97,47,.25)">
-            <div style="font-size:3rem;margin-bottom:12px;line-height:1">🏪</div>
-            <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-.01em">Vendre</div>
-          </div>
-          <!-- Description bas -->
-          <div style="padding:18px 16px 22px;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:14px">
-            <div style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.75">
-              Mettez vos produits en ligne en<br>quelques minutes. Touchez des<br>acheteurs locaux et internationaux.
-            </div>
-            <div style="display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#C8612F,#D4743F);padding:7px 14px;border-radius:20px;border:none;letter-spacing:.04em;box-shadow:0 4px 16px rgba(200,97,47,.4)">
-              Publier mon produit →
-            </div>
-          </div>
-        </button>
-
-        <!-- PORTE 3 : EXPLORER / EXPORTER -->
-        <button id="btn-export-home" style="
-          display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-          gap:0;padding:0;border-radius:22px;cursor:pointer;text-align:center;
-          background:rgba(255,255,255,.04);
-          border:1.5px solid rgba(196,154,60,.25);
-          transition:all .3s cubic-bezier(.4,0,.2,1);font-family:Outfit,sans-serif;
-          overflow:hidden;position:relative;
-        "
-        onmouseover="this.style.background='rgba(196,154,60,.12)';this.style.borderColor='rgba(196,154,60,.5)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 48px rgba(196,154,60,.18)'"
-        onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(196,154,60,.25)';this.style.transform='';this.style.boxShadow=''">
-          <!-- Fond coloré haut -->
-          <div style="width:100%;padding:28px 20px 20px;background:linear-gradient(160deg,rgba(196,154,60,.25) 0%,rgba(196,154,60,.05) 100%);border-bottom:1px solid rgba(196,154,60,.18)">
-            <div style="font-size:3rem;margin-bottom:12px;line-height:1">🌍</div>
-            <div style="font-size:18px;font-weight:800;color:#C49A3C;letter-spacing:-.01em">Exporter</div>
-          </div>
-          <!-- Description bas -->
-          <div style="padding:18px 16px 22px;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:14px">
-            <div style="font-size:12px;color:rgba(255,255,255,.45);line-height:1.75">
-              Sésame · Paprika · Gomme arabique<br>vers l'Inde, le Vietnam, l'Europe.<br>Export B2B international.
-            </div>
-            <div style="display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;color:#C49A3C;background:rgba(196,154,60,.12);padding:7px 14px;border-radius:20px;border:1px solid rgba(196,154,60,.25);letter-spacing:.04em">
-              Nous contacter →
-            </div>
-          </div>
-        </button>
-
-      </div>
-
-      <!-- KPIs -->
-      <div class="hkpis" style="max-width:600px;margin:0 auto 2rem">
-        <div class="kpic"><div class="kpin" id="kpi-producteurs">0</div><div class="kpil">Producteurs</div></div>
-        <div class="kpic"><div class="kpin" id="kpi-acheteurs">0</div><div class="kpil">Acheteurs</div></div>
-        <div class="kpic"><div class="kpin" id="kpi-exports">0</div><div class="kpil">Exports</div></div>
-        <div class="kpic"><div class="kpin" id="kpi-pays">0</div><div class="kpil">Pays</div></div>
-      </div>
-
-      <!-- Badge live -->
-      <div class="hero-live"><span class="live-dot"></span> MARCHÉ ACTIF · NIAMEY, NIGER</div>
-
-    </div>
-  </section>
-
-  <!-- MARQUEE EXPORT -->
-  <div class="mqw" style="background:linear-gradient(90deg,#1A0E00,#0F1A08,#001810,#0F1A08,#1A0E00);border-top:2px solid rgba(196,154,60,.28)">
-    <div class="mqt">
-      <span class="mqi"><span class="mqd-gold mqd"></span>🌻 Sésame Niger → Inde · Export confirmé</span>
-      <span class="mqi"><span class="mqd-green mqd" style="background:var(--Om)"></span>🦴 Cornes de bœufs → Vietnam · Partenariat actif</span>
-      <span class="mqi"><span class="mqd"></span>🌾 Mil Bio · 340 EUR/tonne · Export EU</span>
-      <span class="mqi"><span class="mqd"></span>🧈 Beurre Karité · 1200 EUR/t · Fair Trade</span>
-      <span class="mqi"><span class="mqd"></span>🌿 Moringa poudre · Bio EU · 2.000 FCFA/kg</span>
-      <span class="mqi"><span class="mqd"></span>🫘 Niébé · Grade A · Min. 2t · Maradi</span>
-      <span class="mqi"><span class="mqd-gold mqd"></span>🌻 Sésame Niger → Inde · Export confirmé</span>
-      <span class="mqi"><span class="mqd-green mqd" style="background:var(--Om)"></span>🦴 Cornes de bœufs → Vietnam · Partenariat actif</span>
-      <span class="mqi"><span class="mqd"></span>🌾 Mil Bio · 340 EUR/tonne · Export EU</span>
-      <span class="mqi"><span class="mqd"></span>🧈 Beurre Karité · 1200 EUR/t · Fair Trade</span>
-      <span class="mqi"><span class="mqd"></span>🌿 Moringa poudre · Bio EU · 2.000 FCFA/kg</span>
-      <span class="mqi"><span class="mqd"></span>🫘 Niébé · Grade A · Min. 2t · Maradi</span>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════
-       SECTION MARKETPLACE NIGER LOCALE
-  ═══════════════════════════════════ -->
-  <section class="mknl-section" id="section-marche-niger">
-    <!-- Grain texture overlay -->
-    <div class="mknl-grain"></div>
-    <div class="mknl-glow mknl-glow1"></div>
-    <div class="mknl-glow mknl-glow2"></div>
-
-    <div class="mknl-in">
-
-      <!-- Eyebrow tag -->
-      <div class="mknl-tag">
-        <span class="mknl-tag-dot"></span>
-        <span>Marketplace Niger · Disponible maintenant</span>
+      <!-- KASSAN'MOU — bien visible -->
+      <div style="margin-bottom:1.2rem">
+        <div style="display:inline-flex;align-items:center;gap:10px;padding:8px 20px;border-radius:100px;background:rgba(255,255,255,.06);border:1px solid rgba(196,154,60,.3);backdrop-filter:blur(10px)">
+          <span class="ldot"></span>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,3vw,1.3rem);font-weight:700;color:#C49A3C;letter-spacing:.06em">KASSAN'MOU</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(196,154,60,.5);letter-spacing:.1em">· NIGER → MONDE</span>
+        </div>
       </div>
 
       <!-- Titre principal -->
-      <h2 class="mknl-h2">
-        Acheter &amp; Vendre<br>
-        <span class="mknl-h2-gold">au Niger.</span>
-      </h2>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,7vw,5.2rem);font-weight:800;color:#fff;line-height:1.06;margin:0 0 .8rem;letter-spacing:-.01em">
+        Le Niger a des richesses.<br>
+        <span style="background:linear-gradient(135deg,#C49A3C 0%,#E8C060 55%,#B8863A 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Le monde les attend.</span>
+      </h1>
 
-      <p class="mknl-lead">
-        La première marketplace premium 100% nigérienne.<br>
-        Alimentaire · Cosmétique · Artisanat · Mode · Électronique · Parfumerie<br>
-        <strong>Livraison partout à Niamey — 1 000 FCFA.</strong>
+      <p style="font-size:clamp(13px,1.6vw,16px);color:rgba(255,255,255,.42);margin:0 0 2.4rem;line-height:1.7;font-weight:300;max-width:480px">
+        Achetez local · Vendez mondial · Exportez partout
       </p>
 
-      <!-- 2 Boutons CTA -->
-      <div class="mknl-ctas">
-        <button class="mknl-btn-sell" onclick="goTo('marketplace');setTimeout(function(){openModal('sell');},200)">
-          <span class="mknl-btn-ico">＋</span>
-          <span class="mknl-btn-text">
-            <span class="mknl-btn-main">Publier un produit</span>
-            <span class="mknl-btn-sub">Gratuit · 5 minutes · Mobile ou PC</span>
-          </span>
+      <!-- 3 BOUTONS PREMIUM — tout tient sur l'écran -->
+      <div id="trois-portes" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:820px;margin-bottom:2rem">
+
+        <!-- ACHETER -->
+        <button id="btn-see-mkt" style="display:flex;flex-direction:column;align-items:center;gap:0;padding:0;border-radius:20px;cursor:pointer;background:rgba(255,255,255,.04);border:1.5px solid rgba(45,106,79,.35);overflow:hidden;font-family:Outfit,sans-serif;transition:all .28s cubic-bezier(.4,0,.2,1)"
+          onmouseover="this.style.background='rgba(45,106,79,.16)';this.style.borderColor='rgba(45,106,79,.6)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 16px 40px rgba(45,106,79,.22)'"
+          onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(45,106,79,.35)';this.style.transform='';this.style.boxShadow=''">
+          <div style="width:100%;padding:clamp(16px,3vw,26px) 16px clamp(12px,2vw,20px);background:linear-gradient(160deg,rgba(45,106,79,.28) 0%,rgba(45,106,79,.05) 100%);border-bottom:1px solid rgba(45,106,79,.18)">
+            <div style="font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:8px;line-height:1">🛒</div>
+            <div style="font-size:clamp(14px,2vw,17px);font-weight:800;color:#fff;letter-spacing:-.01em">Acheter</div>
+          </div>
+          <div style="padding:clamp(10px,2vw,16px);display:flex;flex-direction:column;gap:10px;align-items:center;width:100%">
+            <div style="font-size:clamp(10px,1.2vw,12px);color:rgba(255,255,255,.4);line-height:1.7;text-align:center">Produits nigériens<br>alimentaire · artisanat<br>agriculture · transformation</div>
+            <div style="font-size:10px;font-weight:700;color:#4CAF50;background:rgba(45,106,79,.18);padding:5px 12px;border-radius:20px;border:1px solid rgba(45,106,79,.3);letter-spacing:.04em;white-space:nowrap">Explorer →</div>
+          </div>
         </button>
-        <button class="mknl-btn-buy" onclick="goTo('marketplace')">
-          <span class="mknl-btn-ico">🛒</span>
-          <span class="mknl-btn-text">
-            <span class="mknl-btn-main">Acheter maintenant</span>
-            <span class="mknl-btn-sub">Produits vérifiés · Livraison 1 000 F</span>
-          </span>
+
+        <!-- VENDRE — carte centrale mise en avant -->
+        <button id="btn-cta-sell" style="display:flex;flex-direction:column;align-items:center;gap:0;padding:0;border-radius:20px;cursor:pointer;background:rgba(200,97,47,.08);border:1.5px solid rgba(200,97,47,.5);overflow:hidden;font-family:Outfit,sans-serif;transition:all .28s cubic-bezier(.4,0,.2,1);box-shadow:0 0 30px rgba(200,97,47,.12)"
+          onmouseover="this.style.background='rgba(200,97,47,.18)';this.style.borderColor='rgba(200,97,47,.8)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 16px 40px rgba(200,97,47,.3)'"
+          onmouseout="this.style.background='rgba(200,97,47,.08)';this.style.borderColor='rgba(200,97,47,.5)';this.style.transform='';this.style.boxShadow='0 0 30px rgba(200,97,47,.12)'">
+          <div style="width:100%;padding:clamp(16px,3vw,26px) 16px clamp(12px,2vw,20px);background:linear-gradient(160deg,rgba(200,97,47,.38) 0%,rgba(200,97,47,.08) 100%);border-bottom:1px solid rgba(200,97,47,.3)">
+            <div style="font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:8px;line-height:1">🏪</div>
+            <div style="font-size:clamp(14px,2vw,17px);font-weight:800;color:#fff;letter-spacing:-.01em">Vendre</div>
+          </div>
+          <div style="padding:clamp(10px,2vw,16px);display:flex;flex-direction:column;gap:10px;align-items:center;width:100%">
+            <div style="font-size:clamp(10px,1.2vw,12px);color:rgba(255,255,255,.4);line-height:1.7;text-align:center">Publiez en quelques<br>minutes · Touchez des<br>acheteurs locaux & intl.</div>
+            <div style="font-size:10px;font-weight:700;color:#fff;background:linear-gradient(135deg,#C8612F,#D4743F);padding:5px 12px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;box-shadow:0 3px 12px rgba(200,97,47,.4)">Publier →</div>
+          </div>
         </button>
+
+        <!-- EXPORTER -->
+        <button id="btn-export-home" style="display:flex;flex-direction:column;align-items:center;gap:0;padding:0;border-radius:20px;cursor:pointer;background:rgba(255,255,255,.04);border:1.5px solid rgba(196,154,60,.28);overflow:hidden;font-family:Outfit,sans-serif;transition:all .28s cubic-bezier(.4,0,.2,1)"
+          onmouseover="this.style.background='rgba(196,154,60,.12)';this.style.borderColor='rgba(196,154,60,.55)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 16px 40px rgba(196,154,60,.18)'"
+          onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(196,154,60,.28)';this.style.transform='';this.style.boxShadow=''">
+          <div style="width:100%;padding:clamp(16px,3vw,26px) 16px clamp(12px,2vw,20px);background:linear-gradient(160deg,rgba(196,154,60,.24) 0%,rgba(196,154,60,.04) 100%);border-bottom:1px solid rgba(196,154,60,.16)">
+            <div style="font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:8px;line-height:1">🌍</div>
+            <div style="font-size:clamp(14px,2vw,17px);font-weight:800;color:#C49A3C;letter-spacing:-.01em">Exporter</div>
+          </div>
+          <div style="padding:clamp(10px,2vw,16px);display:flex;flex-direction:column;gap:10px;align-items:center;width:100%">
+            <div style="font-size:clamp(10px,1.2vw,12px);color:rgba(255,255,255,.4);line-height:1.7;text-align:center">Sésame · Paprika<br>Gomme arabique<br>Inde · Vietnam · Europe</div>
+            <div style="font-size:10px;font-weight:700;color:#C49A3C;background:rgba(196,154,60,.12);padding:5px 12px;border-radius:20px;border:1px solid rgba(196,154,60,.28);letter-spacing:.04em;white-space:nowrap">Nous contacter →</div>
+          </div>
+        </button>
+
       </div>
 
-      <!-- Bande de catégories animées -->
-      <div class="mknl-cats">
-        <div class="mknl-cat"><span>🍯</span><span>Alimentaire</span></div>
-        <div class="mknl-cat"><span>🧴</span><span>Cosmétique</span></div>
-        <div class="mknl-cat"><span>👗</span><span>Mode & Tissu</span></div>
-        <div class="mknl-cat mknl-cat-gold"><span>⭐</span><span>Vedette</span></div>
-        <div class="mknl-cat"><span>💐</span><span>Parfumerie</span></div>
-        <div class="mknl-cat"><span>🎨</span><span>Artisanat</span></div>
-        <div class="mknl-cat"><span>📱</span><span>Électronique</span></div>
-        <div class="mknl-cat"><span>🏪</span><span>Boutiques</span></div>
-      </div>
-
-      <!-- Stats de confiance -->
-      <div class="mknl-trust">
-        <div class="mknl-trust-item">
-          <span class="mknl-trust-ico">✓</span>
-          <span>Produits vérifiés par notre équipe</span>
-        </div>
-        <div class="mknl-trust-sep"></div>
-        <div class="mknl-trust-item">
-          <span class="mknl-trust-ico">🛵</span>
-          <span>Livraison Niamey — 1 000 FCFA</span>
-        </div>
-        <div class="mknl-trust-sep"></div>
-        <div class="mknl-trust-item">
-          <span class="mknl-trust-ico">🔒</span>
-          <span>Remboursement garanti si problème</span>
-        </div>
-      </div>
+      <!-- Lien discret "Visiter le site complet" -->
+      <button id="btn-visit-site" style="background:none;border:none;color:rgba(255,255,255,.25);font-size:12px;font-family:Outfit,sans-serif;cursor:pointer;padding:8px 16px;border-radius:8px;letter-spacing:.04em;transition:color .2s;display:flex;align-items:center;gap:6px"
+        onmouseover="this.style.color='rgba(255,255,255,.55)'"
+        onmouseout="this.style.color='rgba(255,255,255,.25)'">
+        ↓ Visiter le site complet
+      </button>
 
     </div>
   </section>
 
-  <!-- SECTION PONT COMMERCIAL B2B -->
-  <section class="bridge-section" id="section-bridge">
-    <div class="bridge-in">
-      <div class="bridge-tag">Mission · Vision · Activité principale</div>
-      <h2 class="bridge-h2">KassanMou est un <span>pont commercial</span><br>entre l'Afrique et le monde.</h2>
-      <p class="bridge-p">Notre activité principale est la mise en relation entre producteurs locaux du Niger et acheteurs/importateurs internationaux. La marketplace est notre outil de visibilité — mais notre cœur de métier est le B2B export.</p>
-      <div class="bridge-flow">
-        <div class="bridge-node">
-          <span class="bridge-ico">🌾</span>
-          <div class="bridge-nm">Producteurs locaux</div>
-          <div class="bridge-sub">Agriculteurs, coopératives, transformateurs du Niger</div>
-        </div>
-        <div class="bridge-arrow">→</div>
-        <div class="bridge-node gold">
-          <span class="bridge-ico">🌉</span>
-          <div class="bridge-nm" style="background:linear-gradient(135deg,#C49A3C,#E8C060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">KassanMou</div>
-          <div class="bridge-sub">Mise en relation · Facilitation export · Accompagnement</div>
-        </div>
-        <div class="bridge-arrow">→</div>
-        <div class="bridge-node">
-          <span class="bridge-ico">🌍</span>
-          <div class="bridge-nm">Acheteurs internationaux</div>
-          <div class="bridge-sub">Importateurs, entreprises, distributeurs Inde · Vietnam · Europe</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="bgold" onclick="document.getElementById('section-export').scrollIntoView({behavior:'smooth'})">Exporter avec KassanMou</button>
-        <button style="padding:13px 24px;border-radius:var(--rm);font-size:14px;font-weight:600;background:transparent;color:rgba(255,255,255,.7);border:1.5px solid rgba(255,255,255,.2);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s" onclick="goTo('contact')">Partenariat international →</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION CRÉDIBILITÉ EXPORT -->
-  <section class="cred-section" id="section-cred">
-    <div class="cred-in">
-      <div class="cred-tag">Références export · Cas concrets</div>
-      <h2 class="cred-h2">Nos exports réalisés</h2>
-      <p class="cred-sub">KassanMou connecte depuis le Niger. Ces partenariats prouvent notre capacité à faciliter des exports agricoles à l'international.</p>
-      <div class="cred-grid">
-        <div class="cred-card">
-          <span class="cred-flag">🇮🇳</span>
-          <div class="cred-dest">Export confirmé → Inde</div>
-          <div class="cred-title">Sésame blanc naturel</div>
-          <div class="cred-desc">Mise en relation producteurs de sésame du Niger avec importateurs indiens. Certification Fair Trade. Volume : plusieurs tonnes. Suivi complet depuis Diffa jusqu'à la livraison.</div>
-          <div class="cred-badge">✓ Certification Fair Trade</div>
-        </div>
-        <div class="cred-card">
-          <span class="cred-flag">🇻🇳</span>
-          <div class="cred-dest">Export confirmé → Vietnam</div>
-          <div class="cred-title">Cornes de bœufs</div>
-          <div class="cred-desc">Partenariat commercial actif avec acheteurs vietnamiens. KassanMou a facilité l'identification des fournisseurs nigériens, la logistique et les démarches administratives d'export.</div>
-          <div class="cred-badge">✓ Partenariat actif</div>
-        </div>
-      </div>
-      <div style="margin-top:1.5rem;padding:18px 22px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:var(--rm);display:flex;align-items:flex-start;gap:14px">
-        <span style="font-size:1.6rem;flex-shrink:0">⛏️</span>
-        <div>
-          <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:4px">Potentiel minier en cours d'exploration</div>
-          <div style="font-size:12.5px;color:rgba(255,255,255,.4);line-height:1.7">Le Niger dispose de ressources minières significatives. Si vous êtes partenaire intéressé par l'exploration de ces opportunités, contactez-nous pour en discuter.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- QUI PEUT VENDRE -->
-  <section class="sec sc" id="section-sellers">
-    <div class="sin">
-      <div class="stag">Qui peut vendre sur Kassan'Mou ?</div>
-      <h2 class="sh2">Trois profils de vendeurs</h2>
-      <p class="sp" style="margin-bottom:2rem">Que vous cultiviez, transformiez ou jardiniyez — il y a une place pour vous. Chaque profil a ses propres catégories et modes de vente.</p>
-      <div class="seller-types">
-        <div class="stype" onclick="openModal('register')">
-          <span class="stype-ico">🌾</span>
-          <div class="stype-tag">Producteur agricole</div>
-          <div class="stype-name">Producteur</div>
-          <div class="stype-desc">Vous cultivez des céréales, légumineuses, oléagineux ou fruits. Vous vendez directement, en volume ou à l'unité.</div>
-          <div class="stype-examples">
-            <span class="stype-ex">Mil · Sorgho</span>
-            <span class="stype-ex">Niébé · Arachides</span>
-            <span class="stype-ex">Sésame · Maïs</span>
-            <span class="stype-ex">Karité brut</span>
-          </div>
-          <div class="stype-modes">
-            <span class="smode smode-g">Gros</span>
-            <span class="smode smode-d">Détail</span>
-          </div>
-        </div>
-        <div class="stype highlight" onclick="openModal('register')">
-          <span class="stype-ico">🏭</span>
-          <div class="stype-tag">Produit local transformé</div>
-          <div class="stype-name">Transformateur</div>
-          <div class="stype-desc">Vous transformez des matières locales en produits finis : confitures, huiles, savons, farines, jus, artisanat alimentaire.</div>
-          <div class="stype-examples">
-            <span class="stype-ex">Confitures maison</span>
-            <span class="stype-ex">Huile de karité</span>
-            <span class="stype-ex">Savons naturels</span>
-            <span class="stype-ex">Moringa poudre</span>
-            <span class="stype-ex">Farine de mil</span>
-            <span class="stype-ex">Jus de bissap</span>
-          </div>
-          <div class="stype-modes">
-            <span class="smode smode-d">Détail</span>
-            <span class="smode smode-g">Gros</span>
-          </div>
-        </div>
-        <div class="stype" onclick="openModal('register')">
-          <span class="stype-ico">🥬</span>
-          <div class="stype-tag">Jardins & cultures fraîches</div>
-          <div class="stype-name">Maraîcher</div>
-          <div class="stype-desc">Vous cultivez des légumes, fruits frais, herbes aromatiques. Vous vendez au détail ou par caisse, avec livraison locale.</div>
-          <div class="stype-examples">
-            <span class="stype-ex">Tomates · Oignons</span>
-            <span class="stype-ex">Gombo · Piments</span>
-            <span class="stype-ex">Laitue · Carottes</span>
-            <span class="stype-ex">Pastèques · Mangues</span>
-          </div>
-          <div class="stype-modes">
-            <span class="smode smode-d">Détail</span>
-            <span class="smode smode-g">Caisse / Gros</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TARIFS v43 -->
-  <section class="sec sw">
-    <div class="sin">
-      <div class="stag">Tarification transparente · v43</div>
-      <h2 class="sh2">Publiez votre produit</h2>
-      <p class="sp" style="margin-bottom:.5rem">Soumettez, notre équipe valide sous 48h, payez <strong>5 000 FCFA par produit</strong> et c'est en ligne. Une commission de 2% sur chaque vente vous donne accès à une visibilité mondiale et une communication soutenue.</p>
-      <div style="background:linear-gradient(135deg,var(--Ok),#0a1a05);border-radius:var(--rl);padding:20px;margin-bottom:1.5rem;border:1px solid rgba(196,154,60,.2)">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--G);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px">Pourquoi 2% de commission ?</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,.7);line-height:1.8">
-          En étant sur Kassan'Mou, vos produits bénéficient d'une <strong style="color:#fff">présence internationale</strong> — visible par nos partenaires en Inde, Vietnam et Europe. Nous assurons une communication soutenue qui permet à votre produit d'être connu <strong style="color:#fff">partout dans le monde</strong>. Les 2% de commission financent cette visibilité et ce travail de mise en relation.
-        </div>
-      </div>
-      <div class="pgrid-pr">
-        <div class="prc">
-          <div class="prc-tag">Standard</div>
-          <div class="prc-name">Par produit</div>
-          <div class="prc-price">5.000</div>
-          <div class="prc-per">FCFA · par produit · 1 an en ligne</div>
-          <div class="prc-divider"></div>
-          <div class="prc-feat">Toutes catégories</div>
-          <div class="prc-feat">Gros + Détail</div>
-          <div class="prc-feat">Jusqu'à 5 photos</div>
-          <div class="prc-feat">Badge "Vérifié"</div>
-          <div class="prc-feat">Dashboard vendeur</div>
-          <div class="prc-feat">Code validation SMS/Email</div>
-          <div style="background:rgba(45,90,27,.1);border-radius:8px;padding:10px;margin:12px 0;font-size:12px;color:var(--Od);border-left:3px solid var(--O)">
-            + <strong>2% de commission</strong> sur chaque vente via Kassan'Mou
-          </div>
-          <button class="prc-btn" style="background:var(--Ol);color:var(--Od)" onclick="openModal('sell')">Publier un produit</button>
-        </div>
-        <div class="prc feat-pr">
-          <div class="prc-tag">⭐ Vedette</div>
-          <div class="prc-name">En Vedette</div>
-          <div class="prc-price">15.000</div>
-          <div class="prc-per">FCFA · par produit · Tête de liste</div>
-          <div class="prc-divider"></div>
-          <div class="prc-feat">Toujours EN TÊTE</div>
-          <div class="prc-feat">Badge VEDETTE doré</div>
-          <div class="prc-feat">Jusqu'à 10 photos</div>
-          <div class="prc-feat">Priorité recherches</div>
-          <div class="prc-feat">Promotion réseaux sociaux</div>
-          <div class="prc-feat">Rapport visibilité mensuel</div>
-          <div style="background:rgba(196,154,60,.12);border-radius:8px;padding:10px;margin:12px 0;font-size:12px;color:var(--G);border-left:3px solid var(--G)">
-            + <strong>2% de commission</strong> · Visibilité maximale
-          </div>
-          <button class="prc-btn bgold" onclick="openModal('sell')">Choisir Vedette</button>
-        </div>
-        <div class="prc">
-          <div class="prc-tag">🌐 Community Manager</div>
-          <div class="prc-name">Présence Web</div>
-          <div class="prc-price" style="font-size:1.4rem">Sur devis</div>
-          <div class="prc-per">Page dédiée produit ou vendeur</div>
-          <div class="prc-divider"></div>
-          <div class="prc-feat">Page dédiée pour votre produit</div>
-          <div class="prc-feat">Page dédiée pour votre boutique</div>
-          <div class="prc-feat">Présence sur les réseaux sociaux</div>
-          <div class="prc-feat">Contenu régulier et ciblé</div>
-          <div class="prc-feat">Audience internationale</div>
-          <div class="prc-feat">Rapport mensuel de performance</div>
-          <div style="background:rgba(200,75,47,.08);border-radius:8px;padding:10px;margin:12px 0;font-size:12px;color:var(--T);border-left:3px solid var(--T)">
-            Selon votre portefeuille · Devis gratuit
-          </div>
-          <button class="prc-btn" style="background:var(--T);color:#fff" onclick="openModal('community-manager')">Demander un devis</button>
-        </div>
-      </div>
-      <div style="text-align:center;font-size:13px;color:var(--Mu);margin-top:1.2rem;padding:14px;background:var(--SD);border-radius:var(--rm);max-width:640px;margin-left:auto;margin-right:auto">
-        💡 <strong>Transparence totale :</strong> 5 000 FCFA à la publication + 2% sur les ventes via la plateforme. Aucun frais caché.
-      </div>
-    </div>
-  </section>
-
-  <!-- PRODUITS EN VEDETTE -->
-  <section class="sec sw">
-    <div class="sin">
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
-        <div>
-          <div class="stag">⭐ Produits en vedette</div>
-          <h2 class="sh2" style="margin-bottom:4px">Les plus récents sur le marché</h2>
-          <p style="font-size:13px;color:var(--Mu)">Vérifiés par notre équipe · Disponibles maintenant</p>
-        </div>
-        <button class="bp" onclick="goTo('marketplace')" style="padding:11px 22px;font-size:13px">Voir tout le marché →</button>
-      </div>
-      <!-- Grille featured (3 premiers produits premium) -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px" id="home-featured-grid"></div>
-      <!-- CTA publier -->
-      <div style="margin-top:2rem;background:linear-gradient(135deg,var(--Ol),rgba(235,244,228,.5));border-radius:var(--rl);border:2px dashed var(--O);padding:24px;text-align:center">
-        <div style="font-size:2rem;margin-bottom:10px">📸</div>
-        <div style="font-size:16px;font-weight:700;color:var(--S);margin-bottom:6px">Publiez votre produit en quelques minutes</div>
-        <div style="font-size:13px;color:var(--Mu);margin-bottom:14px">Prenez une photo depuis votre téléphone · Remplissez le formulaire · Recevez votre code</div>
-        <button class="bp" onclick="openModal('sell')" style="padding:14px 28px;font-size:15px">+ Publier mon produit</button>
-      </div>
-    </div>
-  </section>
 
   <!-- ACHETER EN GROS / EXPORT -->
   <section class="sec ss" id="section-gros">
@@ -4116,6 +3754,20 @@ function openModal(type){
     if(!nm.trim()){toast('Veuillez entrer votre nom.',true);return;}
     if(!ct.trim()){toast('Veuillez entrer votre contact (email ou WhatsApp).',true);return;}
     var waMsg='🤝 *KASSAN\'MOU — Candidature Point Focal*\n\n👤 *Nom :* '+nm+'\n📱 *Contact :* '+ct+'\n🗺️ *Zone ciblée :* '+zone+'\n\n💼 *Expérience / Réseau :*\n'+exp+'\n\n_Kassan\'Mou · Business Bridge Niger_';
+    /* v56 — Sauvegarder dans Supabase table points_focaux */
+    if(kmDB){
+      kmDB.from('points_focaux').insert({
+        nom: nm.trim(),
+        contact: ct.trim(),
+        zone: zone.trim(),
+        experience: exp.trim(),
+        statut: 'en_attente',
+        date_candidature: new Date().toISOString()
+      }).then(function(r){
+        if(r.error) console.warn('[KM-FOCAL] Supabase error:',r.error.message);
+        else console.log('[KM-FOCAL] Candidature enregistrée');
+      });
+    }
     openWhatsApp(waMsg);
     closeModal();
     toast('✓ Candidature envoyée ! Nous vous contacterons sous 48h.');
@@ -5625,7 +5277,8 @@ function kmAfficherBanniereCompteVendeur(vendeur, produit, tmpPwd){
   body.insertBefore(banner, body.firstChild);
 }
 async function doRefuserProduit(id){
-  if(!kmDB)return;
+  /* SEC v56 — vérification session admin obligatoire */
+  if(!kmDB||!kmIsAdmin||!kmSession){toast('Action non autorisée.',true);return;}
   var r=await kmDB.from('produits').update({statut:'refusé'}).eq('id',id);
   if(r.error){toast('Erreur: '+r.error.message,true);return;}
   toast('Produit refusé.');
@@ -7007,6 +6660,11 @@ async function kmRunDiagnostic(){
 }
 
 async function kmDoLogout() {
+  /* v56 — reset complet de la session */
+  kmIsAdmin = false; kmSession = null; kmUser = null; kmVendeurSession = null;
+  kmAuthReady = false;
+  /* Annuler le timeout admin */
+  if(window._kmAdminTimer){clearTimeout(window._kmAdminTimer);window._kmAdminTimer=null;}
   if (kmDB) { try { await kmDB.auth.signOut(); } catch(e) {} }
   kmSession = null;
   kmUser    = null;
@@ -7107,52 +6765,62 @@ function wire(){
 
   // Nav desktop
   g('logo-svg').addEventListener('click',function(){goTo('home');});
-  ['home','marketplace','focal','tracking','how','about','contact'].forEach(function(p){
+  ['home','marketplace','focal','tracking','livraison','how','about','contact'].forEach(function(p){
     var b=g('nl-'+p);if(b)b.addEventListener('click',function(){goTo(p);});
     var bm=g('mn-'+p);if(bm)bm.addEventListener('click',function(){goTo(p);});
   });
-  g('btn-login').addEventListener('click',function(){
+  var bl=g('btn-login');if(bl)bl.addEventListener('click',function(){
     if(kmIsAdmin){goTo('dashboard');}
     else{openModal('login');}
   });
-  g('btn-register').addEventListener('click',function(){openModal('register');});
-  g('burger-btn').addEventListener('click',toggleMN);
-  g('mn-login').addEventListener('click',function(){
+  var breg=g('btn-register');if(breg)breg.addEventListener('click',function(){openModal('register');});
+  var burg=g('burger-btn');if(burg)burg.addEventListener('click',toggleMN);
+  var mnl=g('mn-login');if(mnl)mnl.addEventListener('click',function(){
     closeMN();
     if(kmIsAdmin){goTo('dashboard');}
     else{openModal('login');}
   });
-  g('mn-register').addEventListener('click',function(){closeMN();openModal('register');});
-  g('lb-fr').addEventListener('click',function(){setLang('fr');});
-  g('lb-en').addEventListener('click',function(){setLang('en');});
+  var mnr=g('mn-register');if(mnr)mnr.addEventListener('click',function(){closeMN();openModal('register');});
+  var lfr=g('lb-fr');if(lfr)lfr.addEventListener('click',function(){setLang('fr');});
+  var len=g('lb-en');if(len)len.addEventListener('click',function(){setLang('en');});
   // Bottom nav
-  g('bn-home').addEventListener('click',function(){goTo('home');});
-  g('bn-marketplace').addEventListener('click',function(){goTo('marketplace');});
-  g('bn-post').addEventListener('click',function(){openModal('sell');});
+  var bnh=g('bn-home');if(bnh)bnh.addEventListener('click',function(){goTo('home');});
+  var bnm=g('bn-marketplace');if(bnm)bnm.addEventListener('click',function(){goTo('marketplace');});
+  var bnp=g('bn-post');if(bnp)bnp.addEventListener('click',function(){openModal('sell');});
   if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
   /* v43: doublon supprimé */
   /* v55 — câbler bn-livraison (manquait dans wire) */
   if(g('bn-livraison')) g('bn-livraison').addEventListener('click',function(){goTo('livraison');});
-  g('bn-account').addEventListener('click',function(){
+  var bna=g('bn-account');if(bna)bna.addEventListener('click',function(){
     if(kmIsAdmin){ goTo('dashboard'); }
     else if(kmVendeurSession){ goTo('vendeur'); }
     else{ openVendeurLoginModal(); }
   });
   // Home
-  g('btn-see-mkt').addEventListener('click',function(){goTo('marketplace');});
+  var bsm=g('btn-see-mkt');if(bsm)bsm.addEventListener('click',function(){goTo('marketplace');});
   var bex=g('btn-export-home');if(bex)bex.addEventListener('click',function(){openModal('export-b2b');});
+  /* v56 — lien visiter site complet */
+  var bvs=g('btn-visit-site');if(bvs)bvs.addEventListener('click',function(){
+    var sg=document.getElementById('section-gros');
+    if(sg)sg.scrollIntoView({behavior:'smooth'});
+    else goTo('marketplace');
+  });
   var bb2b=g('btn-b2b-home');if(bb2b)bb2b.addEventListener('click',function(){goTo('how');});
   var bph=g('btn-post-home');if(bph)bph.addEventListener('click',function(){var se=document.getElementById('section-export');if(se)se.scrollIntoView({behavior:'smooth'});});
-  g('btn-cta-sell').addEventListener('click',function(){openModal('sell');});
-  g('btn-cta-buy').addEventListener('click',function(){goTo('marketplace');});
+  /* v56 — btn-cta-sell est dans les portes hero, sécuriser le câblage */
+  var bcs=g('btn-cta-sell');if(bcs)bcs.addEventListener('click',function(){openModal('sell');});
+  var bcb=g('btn-cta-buy');if(bcb)bcb.addEventListener('click',function(){goTo('marketplace');});
   // Marketplace
-  g('btn-publish').addEventListener('click',function(){openModal('sell');});
+  var bpub=g('btn-publish');if(bpub)bpub.addEventListener('click',function(){openModal('sell');});
   // Focal
-  g('btn-focal-apply').addEventListener('click',function(){openModal('focal');});
+  var bfa=g('btn-focal-apply');if(bfa)bfa.addEventListener('click',function(){openModal('focal');});
   // Tracking
-  g('btn-track').addEventListener('click',doTrack);
+  /* v56 — tracking redesigné: btn-track remplacé par onclick inline */
+  var btr=g('btn-track');if(btr)btr.addEventListener('click',doTrack);
   document.querySelectorAll('.qpill').forEach(function(p){
-    p.addEventListener('click',function(){g('track-inp').value=p.dataset.order;doTrack();});
+    p.addEventListener('click',function(){
+      var ti=g('track-inp');if(ti){ti.value=p.dataset.order;kmSuivreCommande();}
+    });
   });
   // Contact
   g('btn-send-contact').addEventListener('click',function(){
