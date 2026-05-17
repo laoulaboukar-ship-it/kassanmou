@@ -145,7 +145,7 @@ img{max-width:100%}
    PAGES
 ════════════════════════════════════════ */
 .page{display:none;padding-top:var(--NH);min-height:100vh}
-#page-home.on{overflow:hidden!important;height:100dvh!important;padding-top:0!important;max-height:100dvh}
+#page-home.on{padding-top:0!important}
 .page.on{display:block;animation:pgIn .24s ease}
 @keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .sec{padding:4rem 1.5rem}
@@ -836,6 +836,18 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
 /* ══════════════════════════════════
    HERO v57 — Premium responsive
 ══════════════════════════════════ */
+
+/* Fond hero v57 avec gradients décoratifs */
+#km-hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at 15% 60%, rgba(45,90,27,.28) 0,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 30%, rgba(196,154,60,.12) 0,transparent 55%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(200,97,47,.08) 0,transparent 50%);
+  z-index:0;
+}
+#km-hero > *{position:relative;z-index:1;}
+#km-hero > #hero-particles{position:absolute;z-index:0;}
 
 /* Cartes action — reset bouton */
 #trois-portes button{
@@ -1878,7 +1890,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
      PAGE ACCUEIL
 ═══════════════════════════════════ -->
 <div class="page on" id="page-home">
-<section id="km-hero" style="min-height:100vh;min-height:100dvh;display:grid;place-items:center;position:relative;overflow:hidden;padding:var(--NH) 1rem 0">
+<section id="km-hero" style="min-height:100vh;min-height:100dvh;display:grid;place-items:center;position:relative;overflow:hidden;padding:var(--NH) 1rem 0;background:#060D04">
 
   <!-- Fonds décoratifs -->
   <div class="ho ho1"></div>
@@ -1904,7 +1916,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
     </h1>
 
     <!-- Sous-titre -->
-    <p style="font-family:'Outfit',sans-serif;font-weight:300;font-size:clamp(12px,1.6vw,15px);color:rgba(240,237,230,.4);margin:0 0 clamp(1.2rem,4vh,2.2rem);letter-spacing:.04em">
+    <p style="font-family:'Outfit',sans-serif;font-weight:300;font-size:clamp(12px,1.6vw,15px);color:rgba(240,237,230,.55);margin:0 0 clamp(1.2rem,4vh,2.2rem);letter-spacing:.06em">
       ACHETEZ LOCAL &nbsp;·&nbsp; VENDEZ MONDIAL &nbsp;·&nbsp; EXPORTEZ PARTOUT
     </p>
 
@@ -1917,7 +1929,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
         onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 48px rgba(45,106,79,.3)'"
         onmouseout="this.style.transform='';this.style.boxShadow=''">
         <!-- Fond top -->
-        <div style="padding:clamp(14px,2.5vh,24px) 12px clamp(10px,1.8vh,18px);background:linear-gradient(160deg,rgba(45,106,79,.32),rgba(45,106,79,.06));border:1.5px solid rgba(45,106,79,.38);border-bottom:none;border-radius:18px 18px 0 0">
+        <div style="padding:clamp(14px,2.5vh,24px) 12px clamp(10px,1.8vh,18px);background:linear-gradient(160deg,rgba(45,106,79,.45),rgba(45,106,79,.12));border:1.5px solid rgba(45,106,79,.55);border-bottom:none;border-radius:18px 18px 0 0">
           <!-- Icône SVG panier -->
           <svg width="clamp(32px,5vw,48px)" height="clamp(32px,5vw,48px)" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto clamp(6px,1.2vh,10px)">
             <path d="M6 8h4l5.5 20h17L38 14H14" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1927,8 +1939,8 @@ select.adm-input option{background:#0F1F0A;color:#fff}
           <div style="font-size:clamp(13px,2vw,16px);font-weight:800;color:#fff;letter-spacing:-.01em">Acheter</div>
         </div>
         <!-- Corps -->
-        <div style="padding:clamp(10px,1.8vh,16px) 12px clamp(12px,2vh,18px);background:rgba(255,255,255,.035);border:1.5px solid rgba(45,106,79,.25);border-top:none;border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px);align-items:center">
-          <p style="font-size:clamp(10px,1.1vw,12px);color:rgba(240,237,230,.38);line-height:1.75;margin:0">Produits nigériens<br>alimentaire · artisanat<br>agriculture · transformation</p>
+        <div style="padding:clamp(10px,1.8vh,16px) 12px clamp(12px,2vh,18px);background:rgba(45,106,79,.08);border:1.5px solid rgba(45,106,79,.3);border-top:none;border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px);align-items:center">
+          <p style="font-size:clamp(10px,1.1vw,12px);color:rgba(240,237,230,.55);line-height:1.75;margin:0">Produits nigériens<br>alimentaire · artisanat<br>agriculture · transformation</p>
           <span style="font-size:10px;font-weight:700;color:#4CAF50;background:rgba(45,106,79,.2);padding:5px 14px;border-radius:100px;border:1px solid rgba(45,106,79,.35);letter-spacing:.05em;white-space:nowrap">Explorer →</span>
         </div>
       </button>
@@ -1950,8 +1962,8 @@ select.adm-input option{background:#0F1F0A;color:#fff}
           </svg>
           <div style="font-size:clamp(13px,2vw,16px);font-weight:800;color:#fff;letter-spacing:-.01em">Vendre</div>
         </div>
-        <div style="padding:clamp(10px,1.8vh,16px) 12px clamp(12px,2vh,18px);background:rgba(200,97,47,.06);border:1.5px solid rgba(200,97,47,.35);border-top:none;border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px);align-items:center">
-          <p style="font-size:clamp(10px,1.1vw,12px);color:rgba(240,237,230,.38);line-height:1.75;margin:0">Publiez en quelques<br>minutes · Acheteurs<br>locaux &amp; internationaux</p>
+        <div style="padding:clamp(10px,1.8vh,16px) 12px clamp(12px,2vh,18px);background:rgba(200,97,47,.12);border:1.5px solid rgba(200,97,47,.45);border-top:none;border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px);align-items:center">
+          <p style="font-size:clamp(10px,1.1vw,12px);color:rgba(240,237,230,.55);line-height:1.75;margin:0">Publiez en quelques<br>minutes · Acheteurs<br>locaux &amp; internationaux</p>
           <span style="font-size:10px;font-weight:700;color:#fff;background:linear-gradient(135deg,#C8612F,#D4743F);padding:5px 14px;border-radius:100px;letter-spacing:.05em;white-space:nowrap;box-shadow:0 4px 14px rgba(200,97,47,.45)">Publier →</span>
         </div>
       </button>
@@ -1969,8 +1981,8 @@ select.adm-input option{background:#0F1F0A;color:#fff}
           </svg>
           <div style="font-size:clamp(13px,2vw,16px);font-weight:800;color:#C49A3C;letter-spacing:-.01em">Exporter</div>
         </div>
-        <div style="padding:clamp(10px,1.8vh,16px) 12px clamp(12px,2vh,18px);background:rgba(255,255,255,.03);border:1.5px solid rgba(196,154,60,.22);border-top:none;border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px);align-items:center">
-          <p style="font-size:clamp(10px,1.1vw,12px);color:rgba(240,237,230,.38);line-height:1.75;margin:0">Sésame · Paprika<br>Gomme arabique<br>Inde · Vietnam · Europe</p>
+        <div style="padding:clamp(10px,1.8vh,16px) 12px clamp(12px,2vh,18px);background:rgba(196,154,60,.07);border:1.5px solid rgba(196,154,60,.3);border-top:none;border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px);align-items:center">
+          <p style="font-size:clamp(10px,1.1vw,12px);color:rgba(240,237,230,.55);line-height:1.75;margin:0">Sésame · Paprika<br>Gomme arabique<br>Inde · Vietnam · Europe</p>
           <span style="font-size:10px;font-weight:700;color:#C49A3C;background:rgba(196,154,60,.14);padding:5px 14px;border-radius:100px;border:1px solid rgba(196,154,60,.32);letter-spacing:.05em;white-space:nowrap">Nous contacter →</span>
         </div>
       </button>
