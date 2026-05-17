@@ -833,15 +833,54 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
   .mbox{max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .fg input,.fg select,.fg textarea{font-size:16px!important} /* prevent iOS zoom */
 }
-/* ── km-site-content masqué par défaut (v56) ── */
-#km-site-content{
-  display:none;
-  animation:kmFadeIn .5s ease;
+/* ══════════════════════════════════
+   HERO v57 — Premium responsive
+══════════════════════════════════ */
+
+/* Cartes action — reset bouton */
+#trois-portes button{
+  -webkit-tap-highlight-color:transparent;
+  -webkit-appearance:none;
+  outline:none;
 }
-@keyframes kmFadeIn{
-  from{opacity:0;transform:translateY(10px)}
-  to{opacity:1;transform:translateY(0)}
+
+/* Mobile — 3 colonnes compactes */
+@media(max-width:500px){
+  #trois-portes{
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+  }
+  #trois-portes button > div:first-child{
+    padding:12px 8px 10px !important;
+  }
+  #trois-portes button > div:last-child{
+    padding:10px 8px 12px !important;
+  }
+  #km-hero-inner{
+    padding:0 .5rem;
+  }
 }
+
+/* Très petit écran — compresser encore */
+@media(max-width:360px){
+  #trois-portes button > div:first-child{
+    padding:10px 6px 8px !important;
+  }
+  #trois-portes p{
+    display:none !important;
+  }
+}
+
+/* Desktop — limiter la hauteur des cartes */
+@media(min-width:1024px){
+  #trois-portes{
+    gap:16px;
+  }
+  #km-hero{
+    padding-top:0;
+  }
+}
+
 /* ── v55 Mobile UX améliorations ───────── */
 @media(max-width:768px){
   /* Portes v56 — no hover transform on touch */
@@ -1775,8 +1814,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 #btn-see-mkt:hover{background:linear-gradient(135deg,rgba(45,90,27,.45),rgba(45,90,27,.2)) !important;transform:translateY(-4px);box-shadow:0 16px 48px rgba(45,90,27,.3) !important}
 #btn-export-home:hover{background:linear-gradient(135deg,rgba(196,154,60,.35),rgba(196,154,60,.12)) !important;transform:translateY(-4px);box-shadow:0 16px 48px rgba(196,154,60,.25) !important}
 #btn-b2b-home:hover{background:linear-gradient(135deg,rgba(200,75,47,.32),rgba(200,75,47,.1)) !important;transform:translateY(-4px);box-shadow:0 16px 48px rgba(200,75,47,.2) !important}
-@media(max-width:640px){#trois-portes{grid-template-columns:1fr !important}
-/* v56 — portes touch mobile */
+@media(max-width:640px){/* #trois-portes géré dans le CSS hero v57 */
 #trois-portes button:active{transform:scale(.97)!important;transition:transform .1s!important}}
 @media(min-width:641px) and (max-width:900px){#trois-portes{grid-template-columns:1fr 1fr !important}}
 </style>
@@ -1839,264 +1877,116 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 <!-- ═══════════════════════════════════
      PAGE ACCUEIL
 ═══════════════════════════════════ -->
-<div class="page on" id="page-home" style="overflow:hidden;height:100vh;height:100dvh">
-  <section class="hero" style="height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--NH) 0 0;position:relative;overflow:hidden">
-    <div class="ho ho1"></div><div class="ho ho2"></div>
-    <div class="hero-particles" id="hero-particles"></div>
+<div class="page on" id="page-home">
+<section id="km-hero" style="min-height:100vh;min-height:100dvh;display:grid;place-items:center;position:relative;overflow:hidden;padding:var(--NH) 1rem 0">
 
-    <div style="position:relative;z-index:2;width:100%;max-width:900px;padding:1.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0">
+  <!-- Fonds décoratifs -->
+  <div class="ho ho1"></div>
+  <div class="ho ho2"></div>
+  <div class="hero-particles" id="hero-particles"></div>
 
-      <!-- KASSAN'MOU — bien visible -->
-      <div style="margin-bottom:1.2rem">
-        <div style="display:inline-flex;align-items:center;gap:10px;padding:8px 20px;border-radius:100px;background:rgba(255,255,255,.06);border:1px solid rgba(196,154,60,.3);backdrop-filter:blur(10px)">
-          <span class="ldot"></span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,3vw,1.3rem);font-weight:700;color:#C49A3C;letter-spacing:.06em">KASSAN'MOU</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(196,154,60,.5);letter-spacing:.1em">· NIGER → MONDE</span>
+  <!-- Contenu centré -->
+  <div id="km-hero-inner" style="position:relative;z-index:2;width:100%;max-width:960px;display:flex;flex-direction:column;align-items:center;text-align:center">
+
+    <!-- Identité KASSAN'MOU -->
+    <div style="margin-bottom:clamp(1rem,3vh,1.8rem)">
+      <div style="display:inline-flex;align-items:center;gap:9px;padding:7px 18px;border-radius:100px;border:1px solid rgba(196,154,60,.35);background:rgba(196,154,60,.06)">
+        <span class="ldot"></span>
+        <span style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(.85rem,2.2vw,1.15rem);color:#C49A3C;letter-spacing:.08em">KASSAN'MOU</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(196,154,60,.45);letter-spacing:.12em">NIGER → MONDE</span>
+      </div>
+    </div>
+
+    <!-- Titre -->
+    <h1 style="font-family:'Cormorant Garamond',serif;font-weight:800;font-size:clamp(2rem,6vw,5rem);color:#fff;line-height:1.07;margin:0 0 clamp(.5rem,2vh,1rem);letter-spacing:-.02em">
+      Le Niger a des richesses.<br>
+      <em style="font-style:italic;background:linear-gradient(135deg,#C49A3C,#E8C060,#B8863A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Le monde les attend.</em>
+    </h1>
+
+    <!-- Sous-titre -->
+    <p style="font-family:'Outfit',sans-serif;font-weight:300;font-size:clamp(12px,1.6vw,15px);color:rgba(240,237,230,.4);margin:0 0 clamp(1.2rem,4vh,2.2rem);letter-spacing:.04em">
+      ACHETEZ LOCAL &nbsp;·&nbsp; VENDEZ MONDIAL &nbsp;·&nbsp; EXPORTEZ PARTOUT
+    </p>
+
+    <!-- 3 CARTES D'ACTION -->
+    <div id="trois-portes" style="display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,1.5vw,14px);width:100%;margin-bottom:clamp(1rem,3vh,1.8rem)">
+
+      <!-- ACHETER -->
+      <button id="btn-see-mkt"
+        style="cursor:pointer;border:none;border-radius:18px;overflow:hidden;background:transparent;padding:0;font-family:'Outfit',sans-serif;position:relative;transition:transform .25s,box-shadow .25s"
+        onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 48px rgba(45,106,79,.3)'"
+        onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <!-- Fond top -->
+        <div style="padding:clamp(14px,2.5vh,24px) 12px clamp(10px,1.8vh,18px);background:linear-gradient(160deg,rgba(45,106,79,.32),rgba(45,106,79,.06));border:1.5px solid rgba(45,106,79,.38);border-bottom:none;border-radius:18px 18px 0 0">
+          <!-- Icône SVG panier -->
+          <svg width="clamp(32px,5vw,48px)" height="clamp(32px,5vw,48px)" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto clamp(6px,1.2vh,10px)">
+            <path d="M6 8h4l5.5 20h17L38 14H14" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="19" cy="40" r="2.5" fill="#4CAF50"/>
+            <circle cx="31" cy="40" r="2.5" fill="#4CAF50"/>
+          </svg>
+          <div style="font-size:clamp(13px,2vw,16px);font-weight:800;color:#fff;letter-spacing:-.01em">Acheter</div>
         </div>
-      </div>
+        <!-- Corps -->
+        <div style="padding:clamp(10px,1.8vh,16px) 12px clamp(12px,2vh,18px);background:rgba(255,255,255,.035);border:1.5px solid rgba(45,106,79,.25);border-top:none;border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px);align-items:center">
+          <p style="font-size:clamp(10px,1.1vw,12px);color:rgba(240,237,230,.38);line-height:1.75;margin:0">Produits nigériens<br>alimentaire · artisanat<br>agriculture · transformation</p>
+          <span style="font-size:10px;font-weight:700;color:#4CAF50;background:rgba(45,106,79,.2);padding:5px 14px;border-radius:100px;border:1px solid rgba(45,106,79,.35);letter-spacing:.05em;white-space:nowrap">Explorer →</span>
+        </div>
+      </button>
 
-      <!-- Titre principal -->
-      <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6.5vw,5.2rem);font-weight:800;color:#fff;line-height:1.06;margin:0 0 .6rem;letter-spacing:-.01em">
-        Le Niger a des richesses.<br>
-        <span style="background:linear-gradient(135deg,#C49A3C 0%,#E8C060 55%,#B8863A 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Le monde les attend.</span>
-      </h1>
+      <!-- VENDRE -->
+      <button id="btn-cta-sell"
+        style="cursor:pointer;border:none;border-radius:18px;overflow:hidden;background:transparent;padding:0;font-family:'Outfit',sans-serif;position:relative;transition:transform .25s,box-shadow .25s"
+        onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 48px rgba(200,97,47,.35)'"
+        onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="padding:clamp(14px,2.5vh,24px) 12px clamp(10px,1.8vh,18px);background:linear-gradient(160deg,rgba(200,97,47,.42),rgba(200,97,47,.1));border:1.5px solid rgba(200,97,47,.55);border-bottom:none;border-radius:18px 18px 0 0">
+          <!-- Icône SVG boutique -->
+          <svg width="clamp(32px,5vw,48px)" height="clamp(32px,5vw,48px)" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto clamp(6px,1.2vh,10px)">
+            <rect x="8" y="20" width="32" height="20" rx="2" stroke="#E07040" stroke-width="2.5"/>
+            <path d="M8 20l4-12h24l4 12" stroke="#E07040" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M8 20c0 3.3 2.7 6 6 6s6-2.7 6-6" stroke="#E07040" stroke-width="2.5"/>
+            <path d="M20 20c0 3.3 2.7 6 6 6s6-2.7 6-6" stroke="#E07040" stroke-width="2.5"/>
+            <path d="M32 20c0 3.3 2.7 6 6 6" stroke="#E07040" stroke-width="2.5"/>
+            <rect x="19" y="30" width="10" height="10" rx="1" stroke="#E07040" stroke-width="2"/>
+          </svg>
+          <div style="font-size:clamp(13px,2vw,16px);font-weight:800;color:#fff;letter-spacing:-.01em">Vendre</div>
+        </div>
+        <div style="padding:clamp(10px,1.8vh,16px) 12px clamp(12px,2vh,18px);background:rgba(200,97,47,.06);border:1.5px solid rgba(200,97,47,.35);border-top:none;border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px);align-items:center">
+          <p style="font-size:clamp(10px,1.1vw,12px);color:rgba(240,237,230,.38);line-height:1.75;margin:0">Publiez en quelques<br>minutes · Acheteurs<br>locaux &amp; internationaux</p>
+          <span style="font-size:10px;font-weight:700;color:#fff;background:linear-gradient(135deg,#C8612F,#D4743F);padding:5px 14px;border-radius:100px;letter-spacing:.05em;white-space:nowrap;box-shadow:0 4px 14px rgba(200,97,47,.45)">Publier →</span>
+        </div>
+      </button>
 
-      <p style="font-size:clamp(12px,1.5vw,15px);color:rgba(255,255,255,.42);margin:0 0 1.6rem;line-height:1.7;font-weight:300;max-width:480px">
-        Achetez local · Vendez mondial · Exportez partout
-      </p>
-
-      <!-- 3 BOUTONS PREMIUM — tout tient sur l'écran -->
-      <div id="trois-portes" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:820px;margin-bottom:2rem">
-
-        <!-- ACHETER -->
-        <button id="btn-see-mkt" style="display:flex;flex-direction:column;align-items:center;gap:0;padding:0;border-radius:20px;cursor:pointer;background:rgba(255,255,255,.04);border:1.5px solid rgba(45,106,79,.35);overflow:hidden;font-family:Outfit,sans-serif;transition:all .28s cubic-bezier(.4,0,.2,1)"
-          onmouseover="this.style.background='rgba(45,106,79,.16)';this.style.borderColor='rgba(45,106,79,.6)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 16px 40px rgba(45,106,79,.22)'"
-          onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(45,106,79,.35)';this.style.transform='';this.style.boxShadow=''">
-          <div style="width:100%;padding:clamp(16px,3vw,26px) 16px clamp(12px,2vw,20px);background:linear-gradient(160deg,rgba(45,106,79,.28) 0%,rgba(45,106,79,.05) 100%);border-bottom:1px solid rgba(45,106,79,.18)">
-            <div style="font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:8px;line-height:1">🛒</div>
-            <div style="font-size:clamp(14px,2vw,17px);font-weight:800;color:#fff;letter-spacing:-.01em">Acheter</div>
-          </div>
-          <div style="padding:clamp(10px,2vw,16px);display:flex;flex-direction:column;gap:10px;align-items:center;width:100%">
-            <div style="font-size:clamp(10px,1.2vw,12px);color:rgba(255,255,255,.4);line-height:1.7;text-align:center">Produits nigériens<br>alimentaire · artisanat<br>agriculture · transformation</div>
-            <div style="font-size:10px;font-weight:700;color:#4CAF50;background:rgba(45,106,79,.18);padding:5px 12px;border-radius:20px;border:1px solid rgba(45,106,79,.3);letter-spacing:.04em;white-space:nowrap">Explorer →</div>
-          </div>
-        </button>
-
-        <!-- VENDRE — carte centrale mise en avant -->
-        <button id="btn-cta-sell" style="display:flex;flex-direction:column;align-items:center;gap:0;padding:0;border-radius:20px;cursor:pointer;background:rgba(200,97,47,.08);border:1.5px solid rgba(200,97,47,.5);overflow:hidden;font-family:Outfit,sans-serif;transition:all .28s cubic-bezier(.4,0,.2,1);box-shadow:0 0 30px rgba(200,97,47,.12)"
-          onmouseover="this.style.background='rgba(200,97,47,.18)';this.style.borderColor='rgba(200,97,47,.8)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 16px 40px rgba(200,97,47,.3)'"
-          onmouseout="this.style.background='rgba(200,97,47,.08)';this.style.borderColor='rgba(200,97,47,.5)';this.style.transform='';this.style.boxShadow='0 0 30px rgba(200,97,47,.12)'">
-          <div style="width:100%;padding:clamp(16px,3vw,26px) 16px clamp(12px,2vw,20px);background:linear-gradient(160deg,rgba(200,97,47,.38) 0%,rgba(200,97,47,.08) 100%);border-bottom:1px solid rgba(200,97,47,.3)">
-            <div style="font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:8px;line-height:1">🏪</div>
-            <div style="font-size:clamp(14px,2vw,17px);font-weight:800;color:#fff;letter-spacing:-.01em">Vendre</div>
-          </div>
-          <div style="padding:clamp(10px,2vw,16px);display:flex;flex-direction:column;gap:10px;align-items:center;width:100%">
-            <div style="font-size:clamp(10px,1.2vw,12px);color:rgba(255,255,255,.4);line-height:1.7;text-align:center">Publiez en quelques<br>minutes · Touchez des<br>acheteurs locaux & intl.</div>
-            <div style="font-size:10px;font-weight:700;color:#fff;background:linear-gradient(135deg,#C8612F,#D4743F);padding:5px 12px;border-radius:20px;letter-spacing:.04em;white-space:nowrap;box-shadow:0 3px 12px rgba(200,97,47,.4)">Publier →</div>
-          </div>
-        </button>
-
-        <!-- EXPORTER -->
-        <button id="btn-export-home" style="display:flex;flex-direction:column;align-items:center;gap:0;padding:0;border-radius:20px;cursor:pointer;background:rgba(255,255,255,.04);border:1.5px solid rgba(196,154,60,.28);overflow:hidden;font-family:Outfit,sans-serif;transition:all .28s cubic-bezier(.4,0,.2,1)"
-          onmouseover="this.style.background='rgba(196,154,60,.12)';this.style.borderColor='rgba(196,154,60,.55)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 16px 40px rgba(196,154,60,.18)'"
-          onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(196,154,60,.28)';this.style.transform='';this.style.boxShadow=''">
-          <div style="width:100%;padding:clamp(16px,3vw,26px) 16px clamp(12px,2vw,20px);background:linear-gradient(160deg,rgba(196,154,60,.24) 0%,rgba(196,154,60,.04) 100%);border-bottom:1px solid rgba(196,154,60,.16)">
-            <div style="font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:8px;line-height:1">🌍</div>
-            <div style="font-size:clamp(14px,2vw,17px);font-weight:800;color:#C49A3C;letter-spacing:-.01em">Exporter</div>
-          </div>
-          <div style="padding:clamp(10px,2vw,16px);display:flex;flex-direction:column;gap:10px;align-items:center;width:100%">
-            <div style="font-size:clamp(10px,1.2vw,12px);color:rgba(255,255,255,.4);line-height:1.7;text-align:center">Sésame · Paprika<br>Gomme arabique<br>Inde · Vietnam · Europe</div>
-            <div style="font-size:10px;font-weight:700;color:#C49A3C;background:rgba(196,154,60,.12);padding:5px 12px;border-radius:20px;border:1px solid rgba(196,154,60,.28);letter-spacing:.04em;white-space:nowrap">Nous contacter →</div>
-          </div>
-        </button>
-
-      </div>
-
-      <!-- Lien discret "Visiter le site complet" -->
-      <button id="btn-visit-site" style="background:none;border:none;color:rgba(255,255,255,.25);font-size:12px;font-family:Outfit,sans-serif;cursor:pointer;padding:8px 16px;border-radius:8px;letter-spacing:.04em;transition:color .2s;display:flex;align-items:center;gap:6px"
-        onmouseover="this.style.color='rgba(255,255,255,.55)'"
-        onmouseout="this.style.color='rgba(255,255,255,.25)'">
-        ↓ Visiter le site complet
+      <!-- EXPORTER -->
+      <button id="btn-export-home"
+        style="cursor:pointer;border:none;border-radius:18px;overflow:hidden;background:transparent;padding:0;font-family:'Outfit',sans-serif;position:relative;transition:transform .25s,box-shadow .25s"
+        onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 48px rgba(196,154,60,.25)'"
+        onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <div style="padding:clamp(14px,2.5vh,24px) 12px clamp(10px,1.8vh,18px);background:linear-gradient(160deg,rgba(196,154,60,.28),rgba(196,154,60,.05));border:1.5px solid rgba(196,154,60,.35);border-bottom:none;border-radius:18px 18px 0 0">
+          <!-- Icône SVG globe -->
+          <svg width="clamp(32px,5vw,48px)" height="clamp(32px,5vw,48px)" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto clamp(6px,1.2vh,10px)">
+            <circle cx="24" cy="24" r="17" stroke="#C49A3C" stroke-width="2.5"/>
+            <path d="M7 24h34M24 7c-4 5-6 10-6 17s2 12 6 17M24 7c4 5 6 10 6 17s-2 12-6 17" stroke="#C49A3C" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div style="font-size:clamp(13px,2vw,16px);font-weight:800;color:#C49A3C;letter-spacing:-.01em">Exporter</div>
+        </div>
+        <div style="padding:clamp(10px,1.8vh,16px) 12px clamp(12px,2vh,18px);background:rgba(255,255,255,.03);border:1.5px solid rgba(196,154,60,.22);border-top:none;border-radius:0 0 18px 18px;display:flex;flex-direction:column;gap:clamp(8px,1.5vh,12px);align-items:center">
+          <p style="font-size:clamp(10px,1.1vw,12px);color:rgba(240,237,230,.38);line-height:1.75;margin:0">Sésame · Paprika<br>Gomme arabique<br>Inde · Vietnam · Europe</p>
+          <span style="font-size:10px;font-weight:700;color:#C49A3C;background:rgba(196,154,60,.14);padding:5px 14px;border-radius:100px;border:1px solid rgba(196,154,60,.32);letter-spacing:.05em;white-space:nowrap">Nous contacter →</span>
+        </div>
       </button>
 
     </div>
-  </section>
 
+    <!-- Lien "Visiter le site" -->
+    <button id="btn-visit-site"
+      style="background:none;border:1px solid rgba(255,255,255,.1);color:rgba(240,237,230,.3);font-size:11px;font-family:'JetBrains Mono',monospace;cursor:pointer;padding:8px 20px;border-radius:100px;letter-spacing:.08em;transition:all .22s;text-transform:uppercase"
+      onmouseover="this.style.borderColor='rgba(255,255,255,.3)';this.style.color='rgba(240,237,230,.6)'"
+      onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='rgba(240,237,230,.3)'">
+      ↓ &nbsp; Explorer le site
+    </button>
 
-  <!-- CONTENU SITE — masqué au départ -->
-  <div id="km-site-content">
-  <!-- ACHETER EN GROS / EXPORT -->
-  <section class="sec ss" id="section-gros">
-    <div class="sin">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center">
-        <div>
-          <div class="stag">🌍 Gros & Export international</div>
-          <h2 class="sh2">Acheteurs en gros et exportateurs</h2>
-          <p class="sp" style="margin-bottom:1.5rem">Vous cherchez des volumes importants ? Tomates (25kg+), mil (5t+), karité (500kg+), sésame (1t+) — nos producteurs traitent directement avec vous.</p>
-          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem">
-            <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--Sm)"><span style="font-size:1.3rem">🌾</span><span><strong>Producteurs</strong> — vente en gros directement depuis les exploitations</span></div>
-            <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--Sm)"><span style="font-size:1.3rem">🚢</span><span><strong>Export</strong> — vers l'Europe, le Moyen-Orient, l'Asie</span></div>
-            <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--Sm)"><span style="font-size:1.3rem">📋</span><span><strong>Contrats</strong> — certifications Bio EU, Fair Trade, ISO 22000 disponibles</span></div>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="bp" id="btn-request-product">📩 Demander un produit</button>
-            <button class="bs" onclick="goTo('contact')">Nous contacter</button>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div style="background:var(--W);border-radius:var(--rl);border:1px solid var(--B);padding:18px;text-align:center">
-            <div style="font-size:2rem;margin-bottom:8px">🌾</div>
-            <div style="font-size:13px;font-weight:700;color:var(--S)">Mil · Sorgho</div>
-            <div style="font-size:11px;color:var(--Mu);margin-top:3px">Min. 5 tonnes</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--T);margin-top:6px">340 EUR/t</div>
-          </div>
-          <div style="background:var(--W);border-radius:var(--rl);border:1px solid var(--B);padding:18px;text-align:center">
-            <div style="font-size:2rem;margin-bottom:8px">🧈</div>
-            <div style="font-size:13px;font-weight:700;color:var(--S)">Beurre Karité</div>
-            <div style="font-size:11px;color:var(--Mu);margin-top:3px">Min. 500 kg</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--T);margin-top:6px">1200 EUR/t</div>
-          </div>
-          <div style="background:var(--W);border-radius:var(--rl);border:1px solid var(--B);padding:18px;text-align:center">
-            <div style="font-size:2rem;margin-bottom:8px">🌻</div>
-            <div style="font-size:13px;font-weight:700;color:var(--S)">Sésame</div>
-            <div style="font-size:11px;color:var(--Mu);margin-top:3px">Min. 1 tonne</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--T);margin-top:6px">890 EUR/t</div>
-          </div>
-          <div style="background:var(--Ok);border-radius:var(--rl);border:1px solid var(--B);padding:18px;text-align:center;cursor:pointer" onclick="openModal('request-product')">
-            <div style="font-size:2rem;margin-bottom:8px">➕</div>
-            <div style="font-size:13px;font-weight:700;color:#fff">Autre produit ?</div>
-            <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:3px">Faites une demande</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION EXPORTER AVEC KASSANMOU -->
-  <section class="export-section" id="section-export">
-    <div class="export-in">
-      <div class="stag">Exporter avec KassanMou · Partenariat international</div>
-      <h2 class="sh2">Deux portes d'entrée.<br>Un seul objectif : connecter.</h2>
-      <p class="sp" style="margin-bottom:0">Pour les producteurs qui veulent exporter. Pour les acheteurs qui veulent sourcer.</p>
-      <div class="export-grid">
-        <div class="export-card dark">
-          <span class="export-ico">🚢</span>
-          <div class="export-title">Exporter depuis le Niger</div>
-          <div class="export-desc">Vous êtes producteur, coopérative ou transformateur ? KassanMou vous accompagne pour accéder aux marchés internationaux.</div>
-          <div class="export-items">
-            <div class="export-item">Accompagnement export complet (documents, certifications)</div>
-            <div class="export-item">Mise en relation directe avec acheteurs Inde, Vietnam, Europe, Afrique</div>
-            <div class="export-item">Validation de votre capacité de production et volumes</div>
-            <div class="export-item">Opportunités Europe / Asie / Afrique de l'Ouest</div>
-            <div class="export-item">Normes et certifications : Bio EU, Fair Trade, ISO 22000</div>
-          </div>
-          <button class="bgold" onclick="openModal('export-b2b')">🌍 Soumettre ma demande d'export →</button>
-        </div>
-        <div class="export-card light">
-          <span class="export-ico">🤝</span>
-          <div class="export-title">Partenariat international</div>
-          <div class="export-desc">Vous êtes importateur, entreprise ou structure ? Nous identifions les bons fournisseurs au Niger et facilisons la mise en relation.</div>
-          <div class="export-items">
-            <div class="export-item">Sourcing direct auprès des producteurs vérifiés</div>
-            <div class="export-item">Filtrage export : produits certifiés et volumes disponibles</div>
-            <div class="export-item">Accompagnement logistique et administratif</div>
-            <div class="export-item">Partenariats durables et contrats transparents</div>
-            <div class="export-item">Potentiel minier disponible pour partenaires intéressés</div>
-          </div>
-          <button class="bp" onclick="openModal('request-product')">Soumettre une demande d'achat →</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION PARCOURS UTILISATEURS -->
-  <section class="flux-section" id="section-flux">
-    <div class="flux-in">
-      <div class="stag">Parcours utilisateurs · Comment ça marche</div>
-      <h2 class="sh2">Qui fait quoi sur KassanMou ?</h2>
-      <p class="sp" style="margin-bottom:0">Quatre profils, quatre parcours clairs.</p>
-      <div class="flux-grid">
-        <div class="flux-card">
-          <div class="flux-num">01</div>
-          <span class="flux-ico">🌾</span>
-          <div class="flux-role">Vendeur local</div>
-          <div class="flux-title">Publier un produit</div>
-          <div class="flux-steps">
-            <div class="flux-step">Photo depuis le téléphone</div>
-            <div class="flux-step">Remplir le formulaire (nom, prix, quantité)</div>
-            <div class="flux-step">Indiquer si produit destiné à l'export</div>
-            <div class="flux-step">Validation par l'équipe KassanMou (48h)</div>
-            <div class="flux-step">Recevoir le code, payer, être en ligne</div>
-          </div>
-        </div>
-        <div class="flux-card">
-          <div class="flux-num">02</div>
-          <span class="flux-ico">🛒</span>
-          <div class="flux-role">Acheteur local</div>
-          <div class="flux-title">Consulter / Contacter</div>
-          <div class="flux-steps">
-            <div class="flux-step">Parcourir la marketplace</div>
-            <div class="flux-step">Filtrer par catégorie, prix, type</div>
-            <div class="flux-step">Contacter le vendeur directement</div>
-            <div class="flux-step">Commander en détail ou en gros</div>
-          </div>
-        </div>
-        <div class="flux-card">
-          <div class="flux-num">03</div>
-          <span class="flux-ico">🌍</span>
-          <div class="flux-role">Exportateur</div>
-          <div class="flux-title">Trouver des fournisseurs</div>
-          <div class="flux-steps">
-            <div class="flux-step">Filtrer les produits "Export disponible"</div>
-            <div class="flux-step">Voir capacités, volumes, certifications</div>
-            <div class="flux-step">Soumettre une demande d'achat en gros</div>
-            <div class="flux-step">KassanMou facilite la mise en relation</div>
-            <div class="flux-step">Suivi du partenariat et logistique</div>
-          </div>
-        </div>
-        <div class="flux-card" style="border-color:rgba(196,154,60,.25);background:linear-gradient(135deg,#FFFDF5,#fff)">
-          <div class="flux-num" style="color:var(--Gd)">04</div>
-          <span class="flux-ico">🤝</span>
-          <div class="flux-role" style="color:var(--Gd)">Partenaire stratégique</div>
-          <div class="flux-title">Connecter les acteurs</div>
-          <div class="flux-steps">
-            <div class="flux-step">Identifier les producteurs capables d'exporter</div>
-            <div class="flux-step">Mettre en relation avec acheteurs ciblés</div>
-            <div class="flux-step">Gérer la logistique et les certifications</div>
-            <div class="flux-step">Devenir Point Focal KassanMou</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- BOUTON WHATSAPP FLOTTANT -->
-  <a id="wa-float" href="#" target="_blank" rel="noopener"
-     style="position:fixed;bottom:calc(var(--bnav) + 16px);right:16px;width:56px;height:56px;border-radius:50%;
-            background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;
-            box-shadow:0 4px 20px rgba(37,211,102,.4);z-index:800;transition:all .2s;text-decoration:none"
-     title="Nous contacter sur WhatsApp">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.553 4.122 1.522 5.858L0 24l6.335-1.498A11.96 11.96 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-4.964-1.347l-.355-.212-3.761.889.952-3.664-.233-.374A9.818 9.818 0 1112 21.818z"/></svg>
-  </a>
-
-  <!-- CTA FINAL -->
-  <section class="sec sdk">
-    <div class="sin" style="text-align:center">
-      <div class="stag">Commencez maintenant</div>
-      <h2 class="sh2" style="max-width:600px;margin:0 auto 1rem">Niger → Monde.<br>Votre produit mérite un marché international.</h2>
-      <p class="sp" style="max-width:520px;margin:0 auto 1.8rem;color:rgba(255,255,255,.6)">Producteur local ou acheteur international — KassanMou est votre pont. Inscrivez-vous, publiez, exportez.</p>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button style="padding:14px 30px;border-radius:var(--rm);font-size:15px;font-weight:700;background:var(--gold);background:linear-gradient(135deg,#C49A3C,#E8C060,#B8863A);color:#1E1200;border:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;box-shadow:0 4px 18px rgba(184,150,62,.3)" id="btn-cta-sell">Vendre / Exporter mes produits</button>
-        <button style="padding:14px 28px;border-radius:var(--rm);font-size:15px;font-weight:600;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35);cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s" id="btn-cta-buy">Explorer le marché →</button>
-      </div>
-      <div style="margin-top:1.6rem;display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;font-size:12px;color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;letter-spacing:.06em">
-        <span>SÉSAME → INDE ✓</span>
-        <span>CORNES DE BŒUFS → VIETNAM ✓</span>
-        <span>BIO EU · FAIR TRADE · ISO 22000</span>
-      </div>
-    </div>
-  </section>
-  </div><!-- /km-site-content -->
+  </div>
+</section>
 </div>
 
 <!-- ═══════════════════════════════════
@@ -3089,9 +2979,6 @@ function goTo(page){
   var bnb=g('bn-'+page);if(bnb)bnb.classList.add('on');
   if(page==='home'){
     if(g('bn-home'))g('bn-home').classList.add('on');
-    /* v56 — masquer contenu site au retour home */
-    var _sc=document.getElementById('km-site-content');
-    if(_sc) _sc.style.display='none';
   }
   if(page==='marketplace'){
     g('bn-marketplace')&&g('bn-marketplace').classList.add('on');
@@ -6801,7 +6688,6 @@ function wire(){
     openWhatsApp(msg);
   });
   /* Section gros */
-  var bsg=g('btn-gros-section');if(bsg)bsg.addEventListener('click',function(){document.getElementById('section-gros').scrollIntoView({behavior:'smooth'});});
 
   // Nav desktop
   g('logo-svg').addEventListener('click',function(){goTo('home');});
@@ -6841,18 +6727,11 @@ function wire(){
   var bsm=g('btn-see-mkt');if(bsm)bsm.addEventListener('click',function(){goTo('marketplace');});
   var bex=g('btn-export-home');if(bex)bex.addEventListener('click',function(){openModal('export-b2b');});
   /* v56 — lien visiter site complet */
+  /* v57 — btn-visit-site navigue vers la marketplace */
   var bvs=g('btn-visit-site');if(bvs)bvs.addEventListener('click',function(){
-    var sc=document.getElementById('km-site-content');
-    if(sc){
-      sc.style.display='block';
-      setTimeout(function(){
-        var sg=document.getElementById('section-gros');
-        if(sg)sg.scrollIntoView({behavior:'smooth'});
-      },50);
-    }
+    goTo('marketplace');
   });
   var bb2b=g('btn-b2b-home');if(bb2b)bb2b.addEventListener('click',function(){goTo('how');});
-  var bph=g('btn-post-home');if(bph)bph.addEventListener('click',function(){var se=document.getElementById('section-export');if(se)se.scrollIntoView({behavior:'smooth'});});
   /* v56 — btn-cta-sell est dans les portes hero, sécuriser le câblage */
   var bcs=g('btn-cta-sell');if(bcs)bcs.addEventListener('click',function(){openModal('sell');});
   var bcb=g('btn-cta-buy');if(bcb)bcb.addEventListener('click',function(){goTo('marketplace');});
@@ -8622,7 +8501,7 @@ document.addEventListener('DOMContentLoaded', function(){
     else mnav.appendChild(miLivr);
   }
 
-  /* v56 — nl-livraison est fixe dans le HTML, câblé via boucle générique — patch supprimé */
+
 
   /* ── 8. LIVRAISON : géré directement dans les eventListeners ci-dessus ── */
 
