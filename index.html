@@ -4,13 +4,13 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v56-kassanmou-2026">
+<meta name="km-version" content="v57-kassanmou-2026">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <meta name="theme-color" content="#0F1F0A">
-<title>Kassan\'Mou v56 — Marketplace Niger · Export B2B International</title>
+<title>Kassan\'Mou v57 — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
 <link rel="manifest" href="/kassanmou/manifest.json">
@@ -145,6 +145,7 @@ img{max-width:100%}
    PAGES
 ════════════════════════════════════════ */
 .page{display:none;padding-top:var(--NH);min-height:100vh}
+#page-home.on{overflow:hidden!important;height:100dvh!important;padding-top:0!important;max-height:100dvh}
 .page.on{display:block;animation:pgIn .24s ease}
 @keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .sec{padding:4rem 1.5rem}
@@ -832,12 +833,43 @@ footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2re
   .mbox{max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .fg input,.fg select,.fg textarea{font-size:16px!important} /* prevent iOS zoom */
 }
+/* ── km-site-content masqué par défaut (v56) ── */
+#km-site-content{
+  display:none;
+  animation:kmFadeIn .5s ease;
+}
+@keyframes kmFadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
 /* ── v55 Mobile UX améliorations ───────── */
 @media(max-width:768px){
   /* Portes v56 — no hover transform on touch */
   #trois-portes button:hover{
     transform:none!important;
     box-shadow:none!important;
+  }
+  /* Page home mobile — compenser bottom nav */
+  #page-home.on{
+    height:calc(100dvh)!important;
+    max-height:calc(100dvh)!important;
+  }
+  #page-home .hero{
+    padding-bottom:calc(var(--BNH,60px) + 8px)!important;
+  }
+  /* Réduire taille portes sur mobile pour tout faire tenir */
+  #trois-portes{
+    gap:8px!important;
+  }
+  #trois-portes button > div:first-child{
+    padding:14px 10px 10px!important;
+  }
+  #trois-portes button > div:last-child{
+    padding:8px 10px 12px!important;
+  }
+  #trois-portes button > div:first-child > div:first-child{
+    font-size:1.6rem!important;
+    margin-bottom:5px!important;
   }
   /* Barre de recherche marketplace */
   .mkt-search-wrap-premium{gap:6px}
@@ -1800,15 +1832,15 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   <button class="bni" id="bn-marketplace"><span class="bni-ico">🛒</span><span class="bni-lbl">Marché</span></button>
   <button class="bni bni-post" id="bn-post"><span class="bni-ico">＋</span><span class="bni-lbl">Vendre</span></button>
   <button class="bni" id="bn-tracking"><span class="bni-ico">📦</span><span class="bni-lbl">Suivi</span></button>
-  <button class="bni" id="bn-livraison"><span class="bni-ico">🛵</span><span class="bni-lbl">Livraison</span></button>
   <button class="bni" id="bn-account"><span class="bni-ico">🏪</span><span class="bni-lbl">Espace</span></button>
+  <button class="bni" id="bn-menu"><span class="bni-ico">☰</span><span class="bni-lbl">Menu</span></button>
 </nav>
 
 <!-- ═══════════════════════════════════
      PAGE ACCUEIL
 ═══════════════════════════════════ -->
-<div class="page on" id="page-home">
-  <section class="hero" style="min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;position:relative;overflow:hidden">
+<div class="page on" id="page-home" style="overflow:hidden;height:100vh;height:100dvh">
+  <section class="hero" style="height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--NH) 0 0;position:relative;overflow:hidden">
     <div class="ho ho1"></div><div class="ho ho2"></div>
     <div class="hero-particles" id="hero-particles"></div>
 
@@ -1824,12 +1856,12 @@ select.adm-input option{background:#0F1F0A;color:#fff}
       </div>
 
       <!-- Titre principal -->
-      <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,7vw,5.2rem);font-weight:800;color:#fff;line-height:1.06;margin:0 0 .8rem;letter-spacing:-.01em">
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6.5vw,5.2rem);font-weight:800;color:#fff;line-height:1.06;margin:0 0 .6rem;letter-spacing:-.01em">
         Le Niger a des richesses.<br>
         <span style="background:linear-gradient(135deg,#C49A3C 0%,#E8C060 55%,#B8863A 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Le monde les attend.</span>
       </h1>
 
-      <p style="font-size:clamp(13px,1.6vw,16px);color:rgba(255,255,255,.42);margin:0 0 2.4rem;line-height:1.7;font-weight:300;max-width:480px">
+      <p style="font-size:clamp(12px,1.5vw,15px);color:rgba(255,255,255,.42);margin:0 0 1.6rem;line-height:1.7;font-weight:300;max-width:480px">
         Achetez local · Vendez mondial · Exportez partout
       </p>
 
@@ -1891,6 +1923,8 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   </section>
 
 
+  <!-- CONTENU SITE — masqué au départ -->
+  <div id="km-site-content">
   <!-- ACHETER EN GROS / EXPORT -->
   <section class="sec ss" id="section-gros">
     <div class="sin">
@@ -2062,6 +2096,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
       </div>
     </div>
   </section>
+  </div><!-- /km-site-content -->
 </div>
 
 <!-- ═══════════════════════════════════
@@ -3052,7 +3087,12 @@ function goTo(page){
   document.querySelectorAll('.nl,.bni').forEach(function(b){b.classList.remove('on');});
   var nb=g('nl-'+page);if(nb)nb.classList.add('on');
   var bnb=g('bn-'+page);if(bnb)bnb.classList.add('on');
-  if(page==='home'){g('bn-home').classList.add('on');}
+  if(page==='home'){
+    if(g('bn-home'))g('bn-home').classList.add('on');
+    /* v56 — masquer contenu site au retour home */
+    var _sc=document.getElementById('km-site-content');
+    if(_sc) _sc.style.display='none';
+  }
   if(page==='marketplace'){
     g('bn-marketplace')&&g('bn-marketplace').classList.add('on');
     kmLoadLivreurs();
@@ -6789,8 +6829,9 @@ function wire(){
   var bnp=g('bn-post');if(bnp)bnp.addEventListener('click',function(){openModal('sell');});
   if(g('bn-tracking'))g('bn-tracking').addEventListener('click',function(){goTo('tracking');});
   /* v43: doublon supprimé */
-  /* v55 — câbler bn-livraison (manquait dans wire) */
-  if(g('bn-livraison')) g('bn-livraison').addEventListener('click',function(){goTo('livraison');});
+  /* v56 — bn-menu ouvre le burger menu (toutes pages accessibles) */
+  var bnMenu=g('bn-menu');
+  if(bnMenu) bnMenu.addEventListener('click',function(){toggleMN();});
   var bna=g('bn-account');if(bna)bna.addEventListener('click',function(){
     if(kmIsAdmin){ goTo('dashboard'); }
     else if(kmVendeurSession){ goTo('vendeur'); }
@@ -6801,9 +6842,14 @@ function wire(){
   var bex=g('btn-export-home');if(bex)bex.addEventListener('click',function(){openModal('export-b2b');});
   /* v56 — lien visiter site complet */
   var bvs=g('btn-visit-site');if(bvs)bvs.addEventListener('click',function(){
-    var sg=document.getElementById('section-gros');
-    if(sg)sg.scrollIntoView({behavior:'smooth'});
-    else goTo('marketplace');
+    var sc=document.getElementById('km-site-content');
+    if(sc){
+      sc.style.display='block';
+      setTimeout(function(){
+        var sg=document.getElementById('section-gros');
+        if(sg)sg.scrollIntoView({behavior:'smooth'});
+      },50);
+    }
   });
   var bb2b=g('btn-b2b-home');if(bb2b)bb2b.addEventListener('click',function(){goTo('how');});
   var bph=g('btn-post-home');if(bph)bph.addEventListener('click',function(){var se=document.getElementById('section-export');if(se)se.scrollIntoView({behavior:'smooth'});});
@@ -8576,19 +8622,7 @@ document.addEventListener('DOMContentLoaded', function(){
     else mnav.appendChild(miLivr);
   }
 
-  /* v56 — nav desktop livraison : câblage via attribut data déjà dans HTML */
-  var nlLivrFixed = document.querySelector('.nl[data-nav="livraison"]');
-  if(nlLivrFixed) nlLivrFixed.addEventListener('click', function(){ goTo('livraison'); });
-  /* Fallback patch si absent */
-  var nlinks = document.querySelector('.nlinks');
-  if(nlinks && !document.querySelector('.nl[data-nav="livraison"]')){
-    var nlLivr = document.createElement('button');
-    nlLivr.className = 'nl';
-    nlLivr.setAttribute('data-nav','livraison');
-    nlLivr.textContent = 'Logistique';
-    nlLivr.addEventListener('click', function(){ goTo('livraison'); });
-    nlinks.appendChild(nlLivr);
-  }
+  /* v56 — nl-livraison est fixe dans le HTML, câblé via boucle générique — patch supprimé */
 
   /* ── 8. LIVRAISON : géré directement dans les eventListeners ci-dessus ── */
 
@@ -8718,7 +8752,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v56 — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v57 — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {

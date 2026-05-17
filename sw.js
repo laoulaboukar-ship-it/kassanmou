@@ -1,5 +1,5 @@
-/* Kassan'Mou SW v53 */
-var CACHE_NAME = 'kassanmou-v53';
+/* Kassan'Mou SW v56b */
+var CACHE_NAME = 'kassanmou-v56b';
 var OFFLINE_URL = '/kassanmou/';
 var PRECACHE_URLS = ['/kassanmou/', '/kassanmou/index.html', '/kassanmou/manifest.json'];
 
@@ -24,8 +24,8 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   var req = e.request;
-  var url = new URL(req.url);
   if (req.method !== 'GET') return;
+  var url = new URL(req.url);
   if (url.hostname.includes('supabase.co') ||
       url.hostname.includes('emailjs.com') ||
       url.hostname.includes('jsdelivr.net') ||
@@ -45,4 +45,4 @@ self.addEventListener('fetch', function(e) {
     })
   );
 });
-console.log("[KM-SW] v53 actif");
+console.log("[KM-SW] v56b actif — cache kassanmou-v56b");
