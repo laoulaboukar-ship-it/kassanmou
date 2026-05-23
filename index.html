@@ -4,19 +4,20 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v59-kassanmou-2026">
+<meta name="km-version" content="v60-kassanmou-2026">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
+<link rel="canonical" href="https://www.kassanmou.net">
 <meta name="theme-color" content="#0F1F0A">
 <title>Kassan\'Mou v55 — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
-<link rel="manifest" href="/kassanmou/manifest.json">
-<link rel="apple-touch-icon" href="/kassanmou/icon-192.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/kassanmou/icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/kassanmou/icon-512.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
 
 <!-- ═══ PWA — iOS Splash & Status Bar ═══ -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -27,9 +28,10 @@
 
 <!-- ═══ PWA — Open Graph (partage WhatsApp / réseaux) ═══ -->
 <meta property="og:title" content="Kassan\'Mou — Marketplace Niger">
+<meta property="og:url" content="https://www.kassanmou.net">
 <meta property="og:description" content="Achetez et vendez facilement. Produits locaux nigériens. Export sésame, paprika vers l'international.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="/kassanmou/icon-512.png">
+<meta property="og:image" content="/icon-512.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;0,800;1,600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -695,8 +697,9 @@ img{max-width:100%}
 footer{background:var(--Ok);color:rgba(255,255,255,.6);padding:3.5rem 1.5rem 2rem}
 .ftgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;max-width:1160px;margin:0 auto}
 .ftcolh{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--G);font-family:'JetBrains Mono',monospace;margin-bottom:14px}
-.ftlnk{display:block;font-size:13px;color:rgba(255,255,255,.5);cursor:pointer;padding:3px 0;transition:color .14s}
+.ftlnk{display:block;font-size:13px;color:rgba(255,255,255,.5);cursor:pointer;padding:3px 0;transition:color .14s;background:none!important;border:none!important;font-family:'Outfit',sans-serif;text-align:left;text-decoration:none;width:100%;-webkit-appearance:none;outline:none}
 .ftlnk:hover{color:#fff}
+footer button{background:none!important;border:none!important;-webkit-appearance:none;cursor:pointer;font-family:'Outfit',sans-serif;outline:none}
 .ftbtm{max-width:1160px;margin:1.8rem auto 0;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:rgba(255,255,255,.28);flex-wrap:wrap;gap:6px}
 .logo-ft{width:130px;height:auto}
 
@@ -2760,7 +2763,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
       <div class="mkt-search-premium">
         <div class="mkt-search-wrap-premium">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="mkt-sinp-premium" id="search-inp-premium" placeholder="Rechercher un produit, boutique, ville…" oninput="renderProdsPremium()">
+          <input class="mkt-sinp-premium" id="search-inp-premium" placeholder="Rechercher un produit, boutique, ville…" oninput="renderProdsPremium()"><button id="km-voice-btn" onclick="kmVoiceSearch()" title="Recherche vocale" style="background:none;border:none;cursor:pointer;padding:8px;color:var(--Sm);font-size:18px;flex-shrink:0" aria-label="Recherche vocale">&#127908;</button>
         </div>
         <button class="mkt-sbtn-premium" onclick="renderProdsPremium()">Chercher</button>
         <button class="bgold" id="btn-publish" style="padding:11px 16px;font-size:13px;flex-shrink:0" onclick="openModal('sell')">+ Publier</button>
@@ -3393,7 +3396,7 @@ var _wap = KM_PHONE_RAW;
 function sendEmailAuto(data, type){
   try{
     var _dest = atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==');
-    var _base = 'https://laoulaboukar-ship-it.github.io/kassanmou';
+    var _base = 'https://www.kassanmou.net';
     var _code = data.code || data.refCommande || '';
     var _photos = '';
     if(data.photosUrls && data.photosUrls.length > 0){
@@ -3430,7 +3433,7 @@ function sendEmailAuto(data, type){
 }
 
 function buildEmailProduit(d){
-  var baseUrl = 'https://laoulaboukar-ship-it.github.io/kassanmou';
+  var baseUrl = 'https://www.kassanmou.net';
   var validationUrl = baseUrl + '/?valider=' + (d.code||'') + '&action=valider';
   var refusUrl      = baseUrl + '/?valider=' + (d.code||'') + '&action=refuser';
   
@@ -3513,7 +3516,7 @@ function buildWhatsAppMsg(data){
   } else {
     photosTxt = '📸 *Photos :* ' + (data.photos||0) + ' soumise(s)';
   }
-  var baseUrl = 'https://laoulaboukar-ship-it.github.io/kassanmou';
+  var baseUrl = 'https://www.kassanmou.net';
   var validerUrl = baseUrl + '/?valider=' + (data.code||'') + '&action=valider';
   var refuserUrl = baseUrl + '/?valider=' + (data.code||'') + '&action=refuser';
   var lines=[
@@ -5798,7 +5801,7 @@ async function kmCreerCompteVendeur(vendeur, produit){
           role:       'vendeur',
           vendeur_id: vendeur.id
         },
-        emailRedirectTo: 'https://laoulaboukar-ship-it.github.io/kassanmou/?page=vendeur'
+        emailRedirectTo: 'https://www.kassanmou.net/?page=vendeur'
       }
     });
 
@@ -5868,7 +5871,7 @@ async function kmEnvoyerEmailCompteVendeur(vendeur, produit, tmpPwd, email){
       "",
       "=== VOTRE ESPACE VENDEUR ===",
       "Un compte a été créé automatiquement pour vous.",
-      "Accédez à votre espace sur : https://laoulaboukar-ship-it.github.io/kassanmou",
+      "Accédez à votre espace sur : https://www.kassanmou.net",
       "",
       "Email     : "+email,
       "Mot de passe temporaire : "+tmpPwd,
@@ -5921,7 +5924,7 @@ function kmAfficherBanniereCompteVendeur(vendeur, produit, tmpPwd){
   var waMsg = '🎉 Bonjour *'+nomVend+'* !\n\n'
     +'Votre produit *"'+nomProd+'"* est maintenant EN LIGNE sur Kassan\'Mou !\n\n'
     +'=== VOTRE ESPACE VENDEUR ===\n'
-    +'🌐 Site : https://laoulaboukar-ship-it.github.io/kassanmou\n'
+    +'🌐 Site : https://www.kassanmou.net\n'
     +'📧 Email : '+vendeur.email+'\n'
     +'🔑 Mot de passe temporaire : *'+tmpPwd+'*\n\n'
     +'⚠️ Changez votre mot de passe à la première connexion.\n\n'
@@ -7119,7 +7122,7 @@ async function kmEnvoyerNotifValidation(prod,vendeur){
         "- Mise en relation directe avec des acheteurs internationaux",
         "",
         "=== VOTRE ESPACE VENDEUR ===",
-        "Connectez-vous sur : https://laoulaboukar-ship-it.github.io/kassanmou",
+        "Connectez-vous sur : https://www.kassanmou.net",
         "Onglet 'Mon espace' pour suivre vos ventes et commissions.",
         "",
         "Contact : WhatsApp +227 99 85 15 32",
@@ -7160,7 +7163,7 @@ async function kmEnvoyerNotifValidation(prod,vendeur){
             + "• 2% sur chaque vente réalisée via la plateforme\n"
             + "• Exemple : 100 000 FCFA de ventes = 2 000 FCFA\n\n"
             + "🌐 *Votre espace vendeur :*\n"
-            + "https://laoulaboukar-ship-it.github.io/kassanmou\n"
+            + "https://www.kassanmou.net\n"
             + "→ Onglet 'Mon espace' pour suivre vos ventes\n\n"
             + "Merci de faire confiance à Kassan'Mou.\n"
             + "Ensemble, faisons rayonner les produits du Niger ! 🇳🇪\n\n"
@@ -7468,6 +7471,11 @@ function wire(){
   // Home
   var bsm=g('btn-see-mkt');if(bsm)bsm.addEventListener('click',function(){goTo('marketplace');});
   var bex=g('btn-export-home');if(bex)bex.addEventListener('click',function(){openModal('export-b2b');});
+  ['btn-see-mkt-2','btn-see-mkt-3','btn-see-mkt-4'].forEach(function(id){var b=g(id);if(b)b.addEventListener('click',function(){goTo('marketplace');});});
+  ['btn-cta-sell-2','btn-cta-sell-3'].forEach(function(id){var b=g(id);if(b)b.addEventListener('click',function(){openModal('sell');});});
+  var bex2=g('btn-export-2');if(bex2)bex2.addEventListener('click',function(){openModal('export-b2b');});
+  var bfc2=g('btn-focal-2');if(bfc2)bfc2.addEventListener('click',function(){openModal('focal');});
+  var bvs=g('btn-visit-site');if(bvs)bvs.addEventListener('click',function(){var mc=document.getElementById('km-main-content');if(mc)mc.scrollIntoView({behavior:'smooth',block:'start'});});
   /* v58 — boutons supplémentaires landing page */
   var bvsm2=g('btn-see-mkt-2');if(bvsm2)bvsm2.addEventListener('click',function(){goTo('marketplace');});
   var bvsm3=g('btn-see-mkt-3');if(bvsm3)bvsm3.addEventListener('click',function(){goTo('marketplace');});
@@ -7567,7 +7575,8 @@ function badgePremiumHtml(key, small){
 }
 
 function waMsgPremium(p){
-  return 'Bonjour ! Je suis intéressé(e) par votre produit sur Kassan\'Mou :\n\n🛍️ *'+p.nom+'*\n💰 '+p.prix.toLocaleString('fr-FR')+' FCFA\n🏪 '+p.vendeur+'\n\nPouvez-vous me donner plus d\'infos ?';
+  var nl='\n';
+  return 'Bonjour Kassan\'Mou,'+nl+nl+'Je suis interesse(e) par ce produit :'+nl+nl+'Produit : *'+p.nom+'*'+nl+'Prix : '+p.prix.toLocaleString('fr-FR')+' FCFA / '+(p.unite||'unite')+nl+'Region : '+p.zone+nl+nl+'Merci de m\'informer et d\'organiser la livraison.'+nl+nl+'_Kassan\'Mou_';
 }
 function waLinkPremium(p){return 'https://wa.me/'+_wap+'?text='+encodeURIComponent(waMsgPremium(p));}
 
@@ -7592,6 +7601,22 @@ function renderFeaturedStrip(){
       '</div>' +
     '</div>';
   }).join('');
+}
+
+function kmVoiceSearch(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast("Recherche vocale non disponible sur ce navigateur.",true);return;}
+  var btn=g("km-voice-btn");
+  var r=new SR();r.lang="fr-FR";r.continuous=false;r.interimResults=false;
+  if(btn){btn.innerHTML="&#9679;";btn.style.color="var(--O)";}
+  r.start();
+  r.onresult=function(e){
+    var t=e.results[0][0].transcript;
+    var inp=g("search-inp-premium");
+    if(inp){inp.value=t;renderProdsPremium();toast("Recherche : "+t);}
+  };
+  r.onerror=function(e){toast("Erreur microphone: "+e.error,true);};
+  r.onend=function(){if(btn){btn.innerHTML="&#127908;";btn.style.color="var(--Sm)";}}
 }
 
 function kmToggleFiltresMkt(){
@@ -8393,7 +8418,7 @@ function kmInitCinetPay(produit, client, transId, montant){
   CinetPay.setConfig({
     apikey:      KM_CINETPAY_APIKEY,
     site_id:     KM_CINETPAY_SITE_ID,
-    notify_url:  'https://laoulaboukar-ship-it.github.io/kassanmou/notify',
+    notify_url:  'https://www.kassanmou.net/notify',
     mode:        'PRODUCTION',
     close_after_response: true
   });
@@ -9387,12 +9412,12 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v59 — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v60 — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/kassanmou/sw.js?v=44c')
+      navigator.serviceWorker.register('/sw.js?v=60')
         .then(function(reg) {
           console.log('[KM-PWA] SW enregistré. Scope:', reg.scope);
           reg.addEventListener('updatefound', function() {
@@ -9446,5 +9471,8 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 </script>
+
+<div id="detail-overlay" class="detail-overlay" role="dialog" aria-modal="true"><div class="detail-sheet"><div class="detail-handle"></div><div id="detail-content" class="detail-content"></div></div></div>
+<div id="km-toast" class="toast" role="alert" aria-live="polite"></div>
 </body>
 </html>
