@@ -3246,6 +3246,25 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 .ban-modal-btns{display:flex;gap:10px}
 .ban-modal-order{flex:1;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:14px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif}
 .ban-modal-site{flex:0 0 auto;background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.3);color:var(--G);padding:14px 18px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;display:flex;align-items:center;gap:6px}
+.ban-prix-badge{position:absolute;bottom:10px;right:10px;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px;font-family:'Outfit',sans-serif}
+.ban-stats-bar{display:flex;gap:0;margin-bottom:28px;background:linear-gradient(135deg,#0e1e0b,#131f0f);border:1px solid rgba(196,154,60,.15);border-radius:16px;overflow:hidden}
+.ban-stat{flex:1;text-align:center;padding:16px 8px;border-right:1px solid rgba(196,154,60,.1)}
+.ban-stat:last-child{border-right:none}
+.ban-stat-n{display:block;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:800;color:var(--G)}
+.ban-stat-l{display:block;font-size:10px;color:rgba(240,237,230,.4);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.ban-card-actions{display:flex;gap:8px;align-items:center}
+.ban-card-detail{flex:1;background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.2);color:var(--G);padding:9px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif}
+.ban-qte-ctrl{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:4px 8px}
+.ban-qte-btn{background:none;border:none;color:var(--S);font-size:18px;font-weight:700;cursor:pointer;padding:0 4px;line-height:1;font-family:'Outfit',sans-serif}
+.ban-qte-plus{color:var(--G)}
+.ban-qte-val{font-size:14px;font-weight:700;color:var(--S);min-width:20px;text-align:center}
+.ban-panier-bar{display:none;position:sticky;bottom:80px;margin:0 20px 20px;background:linear-gradient(135deg,#1a3a10,#2d6a1f);border:1px solid rgba(196,154,60,.3);border-radius:16px;padding:14px 18px;align-items:center;gap:12px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.ban-panier-info{flex:1;font-size:13px;color:var(--S)}
+.ban-panier-btn{background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
+.ban-panier-clear{background:rgba(255,255,255,.08);border:none;color:rgba(240,237,230,.5);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;flex-shrink:0}
+.ban-modal-prix{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(200,97,47,.12),rgba(200,97,47,.06));border:1px solid rgba(200,97,47,.25);border-radius:12px;padding:14px 18px;margin-bottom:16px}
+.ban-modal-prix-lbl{font-size:12px;color:rgba(240,237,230,.5);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+.ban-modal-prix-val{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:800;color:var(--O)}
 @media(max-width:600px){.ban-grid{grid-template-columns:1fr 1fr;gap:12px;padding:20px 12px}.ban-card-body{padding:12px}.ban-modal-specs{grid-template-columns:1fr}}
 </style>
 
@@ -3262,6 +3281,36 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 </div>
 
 <div class="ban-grid" id="ban-catalogue"></div>
+<div class="ban-panier-bar" id="ban-panier-bar"></div>
+
+<!-- Section autres boutiques (extensible) -->
+<div style="max-width:1100px;margin:0 auto;padding:0 20px 60px">
+  <div style="text-align:center;margin-bottom:24px">
+    <div style="display:inline-block;background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.2);border-radius:20px;padding:5px 16px;font-size:11px;font-weight:700;color:var(--G);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px">Réseau de boutiques</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:800;color:var(--S);margin-bottom:8px">Boutiques Partenaires</h2>
+    <p style="font-size:13px;color:rgba(240,237,230,.5)">D'autres boutiques rejoindront bientôt la plateforme Kassan'Mou.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px" id="ban-boutiques-grid">
+    <!-- Banituri (actif) -->
+    <div style="background:linear-gradient(145deg,#0e1e0b,#131f0f);border:2px solid rgba(196,154,60,.3);border-radius:16px;padding:20px;text-align:center;cursor:pointer" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <div style="font-size:36px;margin-bottom:10px">🌿</div>
+      <div style="font-size:15px;font-weight:800;color:var(--G);margin-bottom:4px">Banituri</div>
+      <div style="font-size:11px;color:rgba(240,237,230,.5);margin-bottom:10px">Herboristerie · 9 produits</div>
+      <div style="display:inline-block;background:linear-gradient(135deg,#2d6a4f,#1a5a3f);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:20px">EN LIGNE</div>
+    </div>
+    <!-- Slots à venir -->
+    <div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);border-radius:16px;padding:20px;text-align:center;opacity:.5">
+      <div style="font-size:36px;margin-bottom:10px">🏪</div>
+      <div style="font-size:14px;font-weight:700;color:rgba(240,237,230,.4);margin-bottom:4px">Prochaine boutique</div>
+      <div style="font-size:11px;color:rgba(240,237,230,.3)">Rejoignez le réseau</div>
+    </div>
+    <div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);border-radius:16px;padding:20px;text-align:center;opacity:.5">
+      <div style="font-size:36px;margin-bottom:10px">🏪</div>
+      <div style="font-size:14px;font-weight:700;color:rgba(240,237,230,.4);margin-bottom:4px">Prochaine boutique</div>
+      <div style="font-size:11px;color:rgba(240,237,230,.3)">Rejoignez le réseau</div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal produit Banituri -->
 <div class="ban-modal-overlay" id="ban-modal-overlay">
@@ -7600,6 +7649,11 @@ function kmValidateTel(tel){
   return clean.length >= 8 && /^[0-9]+$/.test(clean);
 }
 
+function kmCloseBanituri() {
+  var ov = document.getElementById('ban-modal-overlay');
+  if (ov) ov.classList.remove('show');
+}
+
 function wire(){
   /* Nouveaux boutons home */
   var brp=g('btn-request-product');if(brp)brp.addEventListener('click',function(){openModal('request-product');});
@@ -9735,10 +9789,26 @@ document.addEventListener('DOMContentLoaded', function(){
 /* ══════════════════════════════════════════
    BANITURI — Catalogue statique v61
 ══════════════════════════════════════════ */
+/* Structure boutique — extensible pour d'autres partenaires */
+var KM_BOUTIQUES = [
+  {
+    id: 'banituri',
+    nom: 'Banituri',
+    slogan: 'Coopérative d\'Herboristerie du Niger',
+    emoji: '🌿',
+    couleur: '#2d6a4f',
+    site: 'https://businessbridge227-lab.github.io/banituri/',
+    badge: 'Partenaire Exclusif',
+    actif: true
+  }
+  /* Ajouter d'autres boutiques ici */
+];
+
 var KM_BANITURI_PRODUITS = [
   {
     id: 'ban-1',
     nom: 'BAN-GASTRYL',
+    prix: 2000,
     categorie: 'Anti-Gastrite et Ulcère',
     description: 'Poudre de Feuilles d\'une plante médicinale qui traite les problèmes Gastriques. Soulage gastrites et ulcères gastroduodénaux.',
     posologie: 'Une cuillère à soupe de poudre mélangée dans le lait, la boule ou la bouillie à prendre 10 à 15 minutes avant le repas du matin, de midi et du soir (3 fois par jour).',
@@ -9751,6 +9821,7 @@ var KM_BANITURI_PRODUITS = [
   {
     id: 'ban-2',
     nom: 'BAN-CICATRYL',
+    prix: 2000,
     categorie: 'Anti-Dermatoses et Brûlures',
     description: 'Poudre de Feuilles d\'une plante médicinale testée qui traite les maladies de Peau. Efficace sur plaies, brûlures et dermatoses.',
     posologie: 'Appliquer en grande quantité la poudre après lavage avec l\'eau et du savon une fois par jour. Ne jamais mettre de pansement. Bien nettoyer entre chaque application et enlever la croûte noire s\'il y a lieu. Mélanger avec de la vaseline ou du beurre de karité pour les dermatoses.\n\nPour les plaies infectées, il est conseillé de boire en même temps la poudre : une cuillère à soupe de poudre mélangée dans le lait caillé, la bouillie matin, midi et soir (3 fois par jour).',
@@ -9763,6 +9834,7 @@ var KM_BANITURI_PRODUITS = [
   {
     id: 'ban-3',
     nom: 'BAN-CARENCYL',
+    prix: 2000,
     categorie: 'Traitement d\'Avitaminose',
     description: 'Complément alimentaire très riche en vitamines, en protéines et en sels minéraux (Vit.C, Fer, Cal) à base de poudre de Moringa.',
     posologie: 'Une cuillère à café de poudre mélangée dans le lait caillé, la bouillie matin et soir (2 fois par jour). Même dose pour les enfants. À ne pas donner aux nourrissons.',
@@ -9775,6 +9847,7 @@ var KM_BANITURI_PRODUITS = [
   {
     id: 'ban-4',
     nom: 'BAN-HEPATYL',
+    prix: 2000,
     categorie: 'Anti-Hépatites',
     description: 'Poudre de rhizome d\'une plante médicinale testée dans le traitement des hépatites. Action naturelle sur le foie.',
     posologie: 'Une cuillère à café de poudre dans un aliment 3 fois par jour : matin, midi et soir pendant 4 jours puis arrêter une semaine et reprendre pour finir le sachet.\n\nEnfant : 1/2 dose.',
@@ -9787,6 +9860,7 @@ var KM_BANITURI_PRODUITS = [
   {
     id: 'ban-5',
     nom: 'BAN-PALUDRYL',
+    prix: 2000,
     categorie: 'Anti-Paludisme',
     description: 'Poudre de rhizome d\'une plante médicinale testée dans le traitement du paludisme. Traitement 100% naturel.',
     posologie: 'Une cuillère à café de poudre dans un aliment 3 fois par jour : matin, midi et soir pendant 4 jours puis arrêter une semaine et reprendre pour finir le sachet.\n\nEnfant : 1/2 dose.',
@@ -9799,6 +9873,7 @@ var KM_BANITURI_PRODUITS = [
   {
     id: 'ban-6',
     nom: 'BAN-PRESSYL',
+    prix: 2000,
     categorie: 'Anti-Hypertension Artérielle',
     description: 'Poudre de Feuilles d\'une plante médicinale qui traite les problèmes d\'Hypertension. Régulation naturelle de la pression artérielle.',
     posologie: 'Une cuillère à soupe de poudre mélangée dans le lait, la boule ou la bouillie 3 fois par jour. Matin, midi et soir.',
@@ -9811,6 +9886,7 @@ var KM_BANITURI_PRODUITS = [
   {
     id: 'ban-7',
     nom: 'BAN-DIABENYL',
+    prix: 2000,
     categorie: 'Anti-Diabète',
     description: 'Poudre de feuilles d\'une plante médicinale testée et expérimentée dans le traitement du Diabète. Peut avoir une action laxative au début. Vérifier régulièrement la glycémie.',
     posologie: 'Une cuillère à café de poudre à jeûn dans l\'eau ou dans un aliment liquide.',
@@ -9823,6 +9899,7 @@ var KM_BANITURI_PRODUITS = [
   {
     id: 'ban-8',
     nom: 'BAN-HEMORYL',
+    prix: 2000,
     categorie: 'Anti-Hémorroïde',
     description: 'Poudre de Feuilles d\'une plante médicinale qui traite les problèmes d\'hémorroïdes. Usage interne et externe.',
     posologie: 'Une cuillère à soupe de poudre mélangée dans le lait, la boule ou la bouillie 3 fois par jour. Matin, midi et soir. Faire des suppositoires ou de la pommade en mélangeant sa poudre avec le beurre de karité. Appliquer 2 fois par jour.',
@@ -9835,6 +9912,7 @@ var KM_BANITURI_PRODUITS = [
   {
     id: 'ban-9',
     nom: 'BAN-ARTHRYL',
+    prix: 2000,
     categorie: 'Anti-Rhumatisme, Lumbago et Sciatique',
     description: 'Poudre de Feuilles d\'une plante médicinale qui traite les problèmes Rhumatisme, Lumbago et Sciatique. Soulagement des douleurs articulaires.',
     posologie: 'Une cuillère à soupe de poudre mélangée dans le lait, la boule ou la bouillie matin, midi et soir (3 fois par jour).',
@@ -9848,31 +9926,92 @@ var KM_BANITURI_PRODUITS = [
 
 var _banActiveId = null;
 
+/* ── Panier Banituri (session) ── */
+var _banPanier = {}; /* { id: quantite } */
+
+function kmPrixFormat(p){ return p.toLocaleString('fr-FR') + ' FCFA'; }
+
 function kmRenderBanituri() {
   var grid = document.getElementById('ban-catalogue');
   if (!grid) return;
+  /* Stats header */
+  var statsH = '<div class="ban-stats-bar">' +
+    '<div class="ban-stat"><span class="ban-stat-n">9</span><span class="ban-stat-l">Produits</span></div>' +
+    '<div class="ban-stat"><span class="ban-stat-n">100%</span><span class="ban-stat-l">Naturels</span></div>' +
+    '<div class="ban-stat"><span class="ban-stat-n">2 000</span><span class="ban-stat-l">FCFA / sachet</span></div>' +
+    '<div class="ban-stat"><span class="ban-stat-n">3 ans</span><span class="ban-stat-l">Conservation</span></div>' +
+    '</div>';
   var h = '';
   KM_BANITURI_PRODUITS.forEach(function(p) {
+    var qte = _banPanier[p.id] || 0;
     h += '<div class="ban-card" data-banid="' + p.id + '">';
     h += '<div class="ban-card-img" style="background:linear-gradient(135deg,' + p.couleur + ',#0a1206)">';
     h += '<span style="font-size:56px">' + p.emoji + '</span>';
-    h += '<div class="ban-card-badge">\u2b50 Produit Phare</div>';
+    h += '<div class="ban-card-badge">⭐ Exclusif</div>';
+    h += '<div class="ban-prix-badge">' + kmPrixFormat(p.prix) + '</div>';
     h += '</div>';
     h += '<div class="ban-card-body">';
     h += '<div class="ban-card-name">' + p.nom + '</div>';
     h += '<div class="ban-card-cat">' + p.categorie + '</div>';
-    h += '<div class="ban-card-desc">' + p.description.substring(0, 110) + (p.description.length > 110 ? '\u2026' : '') + '</div>';
+    h += '<div class="ban-card-desc">' + p.description.substring(0, 100) + (p.description.length > 100 ? '…' : '') + '</div>';
     h += '<div class="ban-card-info">';
     h += '<span class="ban-tag">' + p.presentation + '</span>';
-    h += '<span class="ban-tag">\u23f3 ' + p.duree + '</span>';
+    h += '<span class="ban-tag">⏳ ' + p.duree + '</span>';
     h += '</div>';
-    h += '<button class="ban-card-btn" data-banid="' + p.id + '">\U0001f4cb Voir posologie & commander</button>';
+    h += '<div class="ban-card-actions">';
+    h += '<button class="ban-card-detail" data-banid="' + p.id + '">📋 Posologie</button>';
+    h += '<div class="ban-qte-ctrl">';
+    h += '<button class="ban-qte-btn" data-banid="' + p.id + '" data-action="minus">-</button>';
+    h += '<span class="ban-qte-val" id="ban-qte-' + p.id + '">' + (qte || 0) + '</span>';
+    h += '<button class="ban-qte-btn ban-qte-plus" data-banid="' + p.id + '" data-action="plus">+</button>';
+    h += '</div>';
+    h += '</div>';
     h += '</div></div>';
   });
-  grid.innerHTML = h;
+  grid.innerHTML = statsH + h;
+  kmRenderBanPanier();
+
   grid.addEventListener('click', function(e) {
-    var btn = e.target.closest('[data-banid]');
-    if (btn) kmOpenBanituri(btn.dataset.banid);
+    var detail = e.target.closest('.ban-card-detail');
+    if (detail) { kmOpenBanituri(detail.dataset.banid); return; }
+    var qteBtn = e.target.closest('.ban-qte-btn');
+    if (qteBtn) {
+      var id = qteBtn.dataset.banid;
+      var action = qteBtn.dataset.action;
+      _banPanier[id] = Math.max(0, (_banPanier[id] || 0) + (action === 'plus' ? 1 : -1));
+      var el = document.getElementById('ban-qte-' + id);
+      if (el) el.textContent = _banPanier[id];
+      kmRenderBanPanier();
+    }
+  });
+}
+
+function kmRenderBanPanier() {
+  var bar = document.getElementById('ban-panier-bar');
+  if (!bar) return;
+  var total = 0, items = [];
+  KM_BANITURI_PRODUITS.forEach(function(p) {
+    var q = _banPanier[p.id] || 0;
+    if (q > 0) { total += q * p.prix; items.push(q + 'x ' + p.nom); }
+  });
+  if (total === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+  bar.style.display = 'flex';
+  bar.innerHTML =
+    '<div class="ban-panier-info">🛒 <strong>' + items.length + ' produit(s)</strong> — ' + kmPrixFormat(total) + '</div>' +
+    '<button class="ban-panier-btn" id="ban-panier-order">Commander sur WhatsApp</button>' +
+    '<button class="ban-panier-clear" id="ban-panier-clear">✕</button>';
+  var ob = document.getElementById('ban-panier-order');
+  if (ob) ob.addEventListener('click', function() {
+    var msg = 'Bonjour KassanMou \U0001F33F Commande Banituri:\n' + items.join('\n') + '\nTotal : ' + kmPrixFormat(total) + '\nMerci !';
+    window.open('https://wa.me/' + KM_PHONE_RAW + '?text=' + encodeURIComponent(msg), '_blank');
+  });
+  var cb = document.getElementById('ban-panier-clear');
+  if (cb) cb.addEventListener('click', function() {
+    _banPanier = {};
+    kmRenderBanituri();
   });
 }
 
@@ -9897,23 +10036,23 @@ function kmOpenBanituri(id) {
     '<div class="ban-spec"><div class="ban-spec-lbl">Dur\u00e9e de conservation</div><div class="ban-spec-val">' + p.duree + '</div></div>' +
     '<div class="ban-spec"><div class="ban-spec-lbl">Naturalit\u00e9</div><div class="ban-spec-val">100% naturel</div></div>' +
     '</div>' +
+    '<div class="ban-modal-prix">' +
+    '<span class="ban-modal-prix-lbl">Prix</span>' +
+    '<span class="ban-modal-prix-val">' + kmPrixFormat(p.prix) + '</span>' +
+    '</div>' +
     '<div class="ban-modal-btns">' +
-    '<button class="ban-modal-order" id="ban-btn-order">Commandez sur WhatsApp \u2192</button>' +
+    '<button class="ban-modal-order" id="ban-btn-order">🛒 Commander — ' + kmPrixFormat(p.prix) + '</button>' +
     '<a href="https://businessbridge227-lab.github.io/banituri/" target="_blank" rel="noopener" class="ban-modal-site">\U0001f310 Site</a>' +
     '</div>';
   var ov = document.getElementById('ban-modal-overlay');
   if (ov) ov.classList.add('show');
   var ob = document.getElementById('ban-btn-order');
   if (ob) ob.addEventListener('click', function() {
-    var msg = 'Bonjour Kassan\'Mou, je souhaite commander le produit Banituri : ' + p.nom + ' (' + p.categorie + '), ' + p.presentation + '. Merci.';
+    var msg = 'Bonjour KassanMou 🌿\nJe souhaite commander :\n- ' + p.nom + ' (' + p.categorie + ')\n- ' + p.presentation + '\n- Prix : ' + kmPrixFormat(p.prix) + '\nMerci !';
     window.open('https://wa.me/' + KM_PHONE_RAW + '?text=' + encodeURIComponent(msg), '_blank');
   });
 }
 
-function kmCloseBanituri() {
-  var ov = document.getElementById('ban-modal-overlay');
-  if (ov) ov.classList.remove('show');
-}
 
 /* ══════════════════════════════════════════
    MARCHÉ DE LA SEMAINE — v61
