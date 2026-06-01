@@ -4,9 +4,11 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="km-version" content="v60-kassanmou-2026">
+<meta name="km-version" content="v61-kassanmou-2026">
 
 <meta charset="UTF-8">
+<!-- Force HTTPS en production -->
+<script>if(location.protocol==="http:"&&location.hostname!=="localhost"&&!location.hostname.includes("127.0.0.1")){location.replace("https://"+location.href.substring(7));}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <link rel="canonical" href="https://www.kassanmou.net">
@@ -2439,6 +2441,8 @@ select.adm-input option{background:#0F1F0A;color:#fff}
     <button class="nl" id="nl-tracking">Suivi</button>
     <button class="nl" id="nl-livraison">Logistique</button>
     <button class="nl" id="nl-how">Comment ça marche</button>
+    <button class="nl" id="nl-banituri">🌿 Banituri</button>
+    <button class="nl" id="nl-marche">Marché de la Semaine</button>
     <button class="nl" id="nl-about">À propos · Export</button>
     <button class="nl" id="nl-contact">Contact</button>
   </div>
@@ -2457,6 +2461,8 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   <button class="mi" id="mn-tracking"><span class="mi-ico">📦</span><span>Suivi commande</span></button>
   <button class="mi" id="mn-livraison"><span class="mi-ico">🛵</span><span>Logistique</span></button>
   <button class="mi" id="mn-how"><span class="mi-ico">📋</span><span>Comment ça marche</span></button>
+  <button class="mi" id="mn-banituri"><span class="mi-ico">🌿</span><span>Banituri</span></button>
+  <button class="mi" id="mn-marche"><span class="mi-ico">🛒</span><span>Marché de la Semaine</span></button>
   <button class="mi" id="mn-about"><span class="mi-ico">🌍</span><span>À propos · Export</span></button>
   <button class="mi" id="mn-contact"><span class="mi-ico">✉️</span><span>Contact</span></button>
   <button class="mi" id="mn-focal"><span class="mi-ico">🤝</span><span>Points Focaux</span></button>
@@ -2728,6 +2734,35 @@ select.adm-input option{background:#0F1F0A;color:#fff}
       </div>
     </div>
   </section>
+
+  <!-- ── SECTION BANITURI TEASER ── -->
+  <section class="km-s" id="section-banituri-home" style="background:linear-gradient(135deg,#060D04 0%,#0e1c0a 50%,#060D04 100%)">
+    <div class="km-s-in">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch" class="ban-home-grid">
+        <!-- Banituri card -->
+        <div style="background:linear-gradient(145deg,#0e1e0b,#131f0f);border:1px solid rgba(196,154,60,.25);border-radius:20px;padding:28px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2d6a4f,#C49A3C,#2d6a4f)"></div>
+          <div style="display:inline-block;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">⭐ Partenaire exclusif</div>
+          <div style="font-size:36px;margin-bottom:10px">🌿</div>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:800;color:var(--G);margin-bottom:8px">Banituri</h3>
+          <p style="font-size:13px;color:rgba(240,237,230,.65);line-height:1.7;margin-bottom:18px">Coopérative d'Herboristerie du Niger. 9 produits médicinaux 100% naturels — gastrite, diabète, paludisme, hypertension et plus.</p>
+          <button id="btn-home-banituri" style="background:linear-gradient(135deg,#2d6a4f,#1a4a35);color:#fff;border:none;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;width:100%">Voir le catalogue Banituri →</button>
+        </div>
+        <!-- Marché de la semaine card -->
+        <div style="background:linear-gradient(145deg,#1a0e06,#200f06);border:1px solid rgba(200,97,47,.25);border-radius:20px;padding:28px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C8612F,#E8A060,#C8612F)"></div>
+          <div style="display:inline-block;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">🔥 Chaque semaine</div>
+          <div style="font-size:36px;margin-bottom:10px">🛒</div>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:800;color:var(--S);margin-bottom:8px">Marché de la Semaine</h3>
+          <p style="font-size:13px;color:rgba(240,237,230,.65);line-height:1.7;margin-bottom:18px">Chaque lundi, des vendeuses transformatrices du Niger proposent leurs meilleurs produits à prix groupés. Stock et durée limités.</p>
+          <button id="btn-home-marche" style="background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;width:100%">Voir le marché de la semaine →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <style>
+  @media(max-width:640px){.ban-home-grid{grid-template-columns:1fr!important}}
+  </style>
 
   <!-- ── SECTION CTA FINAL ── -->
   <section class="km-s km-s-final-cta" id="section-final-cta">
@@ -3166,6 +3201,147 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 </div>
 </div>
 
+<!-- ═══════════════════════════════════
+     PAGE BANITURI — Catalogue Herboristerie
+═══════════════════════════════════ -->
+<div class="page" id="page-banituri">
+<style>
+#page-banituri{background:linear-gradient(180deg,#060D04 0%,#0A1206 100%);min-height:100vh}
+.ban-hero{background:linear-gradient(135deg,#0A1206 0%,#1a2e10 50%,#0d1a09 100%);padding:60px 20px 40px;text-align:center;border-bottom:1px solid rgba(196,154,60,.18)}
+.ban-hero-logo{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px}
+.ban-hero-badge{background:linear-gradient(135deg,#1a3a10,#2d6a1f);border:2px solid var(--G);border-radius:50px;padding:6px 18px;font-size:11px;font-weight:700;color:var(--G);letter-spacing:1.5px;text-transform:uppercase}
+.ban-hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,7vw,62px);font-weight:800;color:var(--S);line-height:1.1;margin-bottom:12px}
+.ban-hero-sub{font-size:15px;color:rgba(240,237,230,.65);max-width:560px;margin:0 auto 28px;line-height:1.7}
+.ban-hero-cta{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#2d6a4f,#1a4a35);color:#fff;border:none;padding:14px 28px;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(45,106,79,.35)}
+.ban-hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,106,79,.5)}
+.ban-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;padding:40px 20px;max-width:1100px;margin:0 auto}
+.ban-card{background:linear-gradient(145deg,#0e1e0b,#131f0f);border:1px solid rgba(196,154,60,.15);border-radius:16px;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:pointer}
+.ban-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.5);border-color:rgba(196,154,60,.35)}
+.ban-card-img{width:100%;height:200px;object-fit:cover;background:#0a1206;display:flex;align-items:center;justify-content:center;font-size:60px;color:rgba(196,154,60,.3);position:relative}
+.ban-card-img img{width:100%;height:100%;object-fit:cover}
+.ban-card-badge{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px}
+.ban-card-body{padding:18px}
+.ban-card-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:800;color:var(--G);margin-bottom:4px}
+.ban-card-cat{font-size:11px;font-weight:700;color:var(--O);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.ban-card-desc{font-size:13px;color:rgba(240,237,230,.7);line-height:1.65;margin-bottom:14px}
+.ban-card-info{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.ban-tag{background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.2);color:var(--G);font-size:11px;padding:3px 10px;border-radius:20px}
+.ban-card-btn{width:100%;background:linear-gradient(135deg,#2d6a4f,#1a5a3f);color:#fff;border:none;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s}
+.ban-card-btn:hover{background:linear-gradient(135deg,#3d8a5f,#2a7a4f)}
+.ban-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;display:none;align-items:flex-end;justify-content:center}
+.ban-modal-overlay.show{display:flex}
+.ban-modal{background:linear-gradient(180deg,#0e1e0b,#0a1206);border-radius:24px 24px 0 0;width:100%;max-width:620px;max-height:88vh;overflow-y:auto;padding:28px 24px 40px;position:relative}
+.ban-modal-handle{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 20px}
+.ban-modal-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.08);border:none;color:var(--S);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.ban-modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:800;color:var(--G);margin-bottom:4px}
+.ban-modal-cat{font-size:12px;font-weight:700;color:var(--O);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.ban-modal-desc{font-size:14px;color:rgba(240,237,230,.8);line-height:1.75;margin-bottom:20px}
+.ban-posologie{background:rgba(45,106,79,.12);border:1px solid rgba(45,106,79,.3);border-radius:12px;padding:16px;margin-bottom:20px}
+.ban-posologie-title{font-size:13px;font-weight:800;color:#5aaa7a;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.ban-posologie-text{font-size:13px;color:rgba(240,237,230,.8);line-height:1.75}
+.ban-modal-specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.ban-spec{background:rgba(196,154,60,.07);border-radius:8px;padding:10px 12px}
+.ban-spec-lbl{font-size:10px;color:rgba(240,237,230,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.ban-spec-val{font-size:13px;color:var(--G);font-weight:600}
+.ban-modal-btns{display:flex;gap:10px}
+.ban-modal-order{flex:1;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:14px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif}
+.ban-modal-site{flex:0 0 auto;background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.3);color:var(--G);padding:14px 18px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;display:flex;align-items:center;gap:6px}
+@media(max-width:600px){.ban-grid{grid-template-columns:1fr 1fr;gap:12px;padding:20px 12px}.ban-card-body{padding:12px}.ban-modal-specs{grid-template-columns:1fr}}
+</style>
+
+<div class="ban-hero">
+  <div class="ban-hero-logo">
+    <div class="ban-hero-badge">⭐ Partenaire Exclusif Kassan'Mou</div>
+  </div>
+  <h1 class="ban-hero-title">🌿 Banituri</h1>
+  <p class="ban-hero-sub">Coopérative d'Herboristerie du Niger. Plantes médicinales 100% naturelles, testées et expérimentées. Disponibles exclusivement sur Kassan'Mou.</p>
+  <a href="https://businessbridge227-lab.github.io/banituri/" target="_blank" rel="noopener" class="ban-hero-cta">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    Visiter le site Banituri
+  </a>
+</div>
+
+<div class="ban-grid" id="ban-catalogue"></div>
+
+<!-- Modal produit Banituri -->
+<div class="ban-modal-overlay" id="ban-modal-overlay">
+  <div class="ban-modal" id="ban-modal">
+    <div class="ban-modal-handle"></div>
+    <button class="ban-modal-close" id="ban-modal-close">✕</button>
+    <div id="ban-modal-content"></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PAGE MARCHÉ DE LA SEMAINE
+═══════════════════════════════════ -->
+<div class="page" id="page-marche">
+<style>
+#page-marche{background:linear-gradient(180deg,#080D04 0%,#0C1408 100%);min-height:100vh}
+.ms-hero{padding:60px 20px 36px;text-align:center;background:linear-gradient(135deg,#0a0f06,#1a2610 50%,#0a0f06);border-bottom:1px solid rgba(200,97,47,.18)}
+.ms-hero-tag{display:inline-block;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:11px;font-weight:800;padding:5px 16px;border-radius:20px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+.ms-hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,7vw,60px);font-weight:800;color:var(--S);line-height:1.1;margin-bottom:12px}
+.ms-hero-sub{font-size:15px;color:rgba(240,237,230,.6);max-width:520px;margin:0 auto 24px;line-height:1.7}
+.ms-timer{display:inline-flex;align-items:center;gap:12px;background:rgba(200,97,47,.1);border:1px solid rgba(200,97,47,.3);border-radius:50px;padding:10px 24px;font-size:13px;color:var(--O);font-weight:700}
+.ms-timer-dot{width:8px;height:8px;background:var(--O);border-radius:50%;animation:ms-blink 1s infinite}
+@keyframes ms-blink{0%,100%{opacity:1}50%{opacity:.3}}
+.ms-body{max-width:900px;margin:0 auto;padding:36px 20px}
+.ms-week-card{background:linear-gradient(145deg,#0e1800,#121e06);border:1px solid rgba(200,97,47,.25);border-radius:20px;padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
+.ms-week-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C8612F,#E8A060,#C8612F)}
+.ms-week-label{display:inline-block;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:10px;font-weight:800;padding:4px 14px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
+.ms-week-title{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,5vw,38px);font-weight:800;color:var(--S);margin-bottom:8px}
+.ms-week-desc{font-size:14px;color:rgba(240,237,230,.7);line-height:1.75;margin-bottom:20px}
+.ms-vendeurs-title{font-size:11px;font-weight:800;color:rgba(240,237,230,.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+.ms-vendeurs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:20px}
+.ms-vendeur-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px}
+.ms-vendeur-ico{width:44px;height:44px;background:linear-gradient(135deg,#1a2e10,#2d4a1a);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ms-vendeur-name{font-size:14px;font-weight:700;color:var(--S);margin-bottom:2px}
+.ms-vendeur-prod{font-size:12px;color:rgba(240,237,230,.5)}
+.ms-cta-row{display:flex;gap:12px;flex-wrap:wrap}
+.ms-cta-btn{flex:1;min-width:180px;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:transform .2s,box-shadow .2s}
+.ms-cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,97,47,.4)}
+.ms-cta-btn-sec{flex:1;min-width:180px;background:transparent;border:1px solid rgba(200,97,47,.4);color:var(--O);padding:14px 20px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:border-color .2s,color .2s}
+.ms-cta-btn-sec:hover{border-color:var(--O);color:#f0a070}
+.ms-info-box{background:rgba(196,154,60,.07);border:1px solid rgba(196,154,60,.2);border-radius:14px;padding:20px;margin-top:24px}
+.ms-info-title{font-size:13px;font-weight:800;color:var(--G);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.ms-info-text{font-size:13px;color:rgba(240,237,230,.7);line-height:1.75}
+.ms-empty{text-align:center;padding:60px 20px;color:rgba(240,237,230,.4)}
+.ms-empty-ico{font-size:52px;margin-bottom:16px}
+.ms-empty-txt{font-size:16px;font-weight:600;color:rgba(240,237,230,.5);margin-bottom:8px}
+.ms-empty-sub{font-size:13px;color:rgba(240,237,230,.3);line-height:1.6}
+@media(max-width:600px){.ms-cta-row{flex-direction:column}}
+</style>
+
+<div class="ms-hero">
+  <div class="ms-hero-tag">🔥 Chaque Semaine</div>
+  <h1 class="ms-hero-title">Marché de la Semaine</h1>
+  <p class="ms-hero-sub">Chaque semaine, des vendeuses transformatrices du Niger proposent leurs meilleurs produits à prix groupés. Durée limitée — stock limité.</p>
+  <div class="ms-timer"><span class="ms-timer-dot"></span><span id="ms-countdown">Prochain marché bientôt</span></div>
+</div>
+
+<div class="ms-body">
+  <div id="ms-content">
+    <!-- Contenu chargé dynamiquement -->
+    <div class="ms-empty">
+      <div class="ms-empty-ico">🛒</div>
+      <div class="ms-empty-txt">Aucun marché actif cette semaine</div>
+      <div class="ms-empty-sub">Le prochain marché hebdomadaire sera annoncé bientôt.<br>Revenez chaque lundi !</div>
+    </div>
+  </div>
+
+  <div class="ms-info-box">
+    <div class="ms-info-title">🌸 Comment fonctionne le Marché de la Semaine ?</div>
+    <div class="ms-info-text">
+      Chaque lundi, Kassan'Mou sélectionne des vendeuses transformatrices locales (transformateurs de céréales, huiles, savons, épices…) qui proposent leurs produits pendant 7 jours à tarif groupé. Pour participer en tant que vendeuse, contactez-nous sur WhatsApp.<br><br>
+      <strong style="color:var(--G)">Commande :</strong> Sélectionnez les produits et commandez via WhatsApp ou le formulaire habituel.<br>
+      <strong style="color:var(--G)">Livraison :</strong> Niamey — 1 000 FCFA. Inter-villes — via compagnies de transport.
+    </div>
+  </div>
+</div>
+</div>
+
+
 <div class="page" id="page-about">
   <div class="abhero" style="background:linear-gradient(135deg,#0A0A06 0%,#0F1F0A 60%,#0A1206 100%);min-height:42vh">
     <div class="abin">
@@ -3296,6 +3472,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   <button class="adm-tab" data-atab="abonnements">🗓️ Abonnements</button>
   <button class="adm-tab" data-atab="livreurs">🛵 Livreurs</button>
   <button class="adm-tab" data-atab="commandes_admin">📦 Commandes</button>
+  <button class="adm-tab" data-atab="marche_admin">🛒 Marché Semaine</button>
 </div>
 <div class="adm-body" id="dash-body"></div>
 </div>
@@ -7436,7 +7613,7 @@ function wire(){
 
   // Nav desktop
   g('logo-svg').addEventListener('click',function(){goTo('home');});
-  ['home','marketplace','focal','tracking','livraison','how','about','contact'].forEach(function(p){
+  ['home','marketplace','focal','tracking','livraison','how','about','contact','banituri','marche'].forEach(function(p){
     var b=g('nl-'+p);if(b)b.addEventListener('click',function(){goTo(p);});
     var bm=g('mn-'+p);if(bm)bm.addEventListener('click',function(){goTo(p);});
   });
@@ -7480,6 +7657,9 @@ function wire(){
   var bvsm2=g('btn-see-mkt-2');if(bvsm2)bvsm2.addEventListener('click',function(){goTo('marketplace');});
   var bvsm3=g('btn-see-mkt-3');if(bvsm3)bvsm3.addEventListener('click',function(){goTo('marketplace');});
   var bvsm4=g('btn-see-mkt-4');if(bvsm4)bvsm4.addEventListener('click',function(){goTo('marketplace');});
+  // Banituri & Marche links from home
+  var bban=g('btn-home-banituri');if(bban)bban.addEventListener('click',function(){goTo('banituri');});
+  var bms=g('btn-home-marche');if(bms)bms.addEventListener('click',function(){goTo('marche');});
   var bcs2=g('btn-cta-sell-2');if(bcs2)bcs2.addEventListener('click',function(){openModal('sell');});
   var bcs3=g('btn-cta-sell-3');if(bcs3)bcs3.addEventListener('click',function(){openModal('sell');});
   var bex2=g('btn-export-2');if(bex2)bex2.addEventListener('click',function(){openModal('export-b2b');});
@@ -7543,9 +7723,74 @@ function wire(){
   Object.keys(ftLinks).forEach(function(id){
     var b=g(id);if(b)b.addEventListener('click',function(){goTo(ftLinks[id]);});
   });
+  // Banituri modal close
+  var bmc=document.getElementById('ban-modal-close');
+  if(bmc) bmc.addEventListener('click', kmCloseBanituri);
+  var bmo=document.getElementById('ban-modal-overlay');
+  if(bmo) bmo.addEventListener('click', function(e){ if(e.target===bmo) kmCloseBanituri(); });
   // Scroll nav shadow
   window.addEventListener('scroll',function(){g('nav').classList.toggle('sh',window.scrollY>8);if(mOpen)closeMN();},{passive:true});
   document.addEventListener('click',function(e){if(mOpen&&!g('mnav').contains(e.target)&&!g('burger-btn').contains(e.target))closeMN();});
+}
+
+/* ══════════════════════════════════════════
+
+/* ── MARCHE SEMAINE ADMIN ──────────────────────────── */
+function dashMarcheAdmin(){
+  var body=g('dash-body');
+  if(!body) return;
+  var m=KM_MARCHE_ACTIF;
+  var titre=m?m.titre:'';
+  var desc=m?m.description:'';
+  var dateDebut=m?m.dateDebut:'';
+  var dateFin=m?m.dateFin:'';
+  var vendeursJson=m&&m.vendeurs?JSON.stringify(m.vendeurs,null,2):'[\n  {"nom":"Nom vendeuse","produit":"Produit","emoji":"\u{1F6D2}"}\n]';
+  body.innerHTML=
+    '<div style="padding:20px;max-width:700px;margin:0 auto">'+
+    '<h2 style="font-family:\'Cormorant Garamond\',serif;font-size:26px;font-weight:800;color:var(--G);margin-bottom:20px">\u{1F6D2} March\u00e9 de la Semaine</h2>'+
+    '<div style="background:rgba(200,97,47,.08);border:1px solid rgba(200,97,47,.2);border-radius:14px;padding:20px;margin-bottom:20px">'+
+    '<div style="font-size:12px;font-weight:700;color:var(--O);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">March\u00e9 actif : '+(m?'<span style=\"color:#5aaa7a\">OUI</span>':'<span style=\"color:#e05050\">NON</span>')+'</div>'+
+    '<div style="display:grid;gap:12px">'+
+    '<div><label style="font-size:12px;color:rgba(240,237,230,.5);display:block;margin-bottom:4px">Titre</label>'+
+    '<input id="ms-adm-titre" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;color:var(--S);font-size:14px;font-family:Outfit,sans-serif" value="'+titre.replace(/"/g,'&quot;')+'"></div>'+
+    '<div><label style="font-size:12px;color:rgba(240,237,230,.5);display:block;margin-bottom:4px">Description</label>'+
+    '<textarea id="ms-adm-desc" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;color:var(--S);font-size:14px;font-family:Outfit,sans-serif;min-height:80px;resize:vertical">'+desc+'</textarea></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'+
+    '<div><label style="font-size:12px;color:rgba(240,237,230,.5);display:block;margin-bottom:4px">Date d\u00e9but</label>'+
+    '<input type="date" id="ms-adm-debut" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;color:var(--S);font-size:14px;font-family:Outfit,sans-serif" value="'+dateDebut+'"></div>'+
+    '<div><label style="font-size:12px;color:rgba(240,237,230,.5);display:block;margin-bottom:4px">Date fin</label>'+
+    '<input type="date" id="ms-adm-fin" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;color:var(--S);font-size:14px;font-family:Outfit,sans-serif" value="'+dateFin+'"></div>'+
+    '</div>'+
+    '<div><label style="font-size:12px;color:rgba(240,237,230,.5);display:block;margin-bottom:4px">Vendeuses (JSON)</label>'+
+    '<textarea id="ms-adm-vendeurs" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px 12px;color:var(--S);font-size:12px;font-family:\'JetBrains Mono\',monospace;min-height:120px;resize:vertical">'+vendeursJson+'</textarea></div>'+
+    '</div></div>'+
+    '<div style="display:flex;gap:12px;margin-bottom:12px">'+
+    '<button id="ms-adm-btn-activer" style="flex:1;background:linear-gradient(135deg,#2d6a4f,#1a5a3f);color:#fff;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Activer ce march\u00e9</button>'+
+    '<button id="ms-adm-btn-stopper" style="flex:0 0 auto;background:rgba(220,50,50,.15);border:1px solid rgba(220,50,50,.3);color:#e05050;padding:13px 20px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">Stopper</button>'+
+    '</div>'+
+    '<div id="ms-adm-msg" style="text-align:center;font-size:13px;color:#5aaa7a;min-height:20px"></div>'+
+    '</div>';
+  var btnActiver=g('ms-adm-btn-activer');
+  if(btnActiver) btnActiver.addEventListener('click',function(){
+    var t=g('ms-adm-titre')&&g('ms-adm-titre').value.trim();
+    var d=g('ms-adm-desc')&&g('ms-adm-desc').value.trim();
+    var db=g('ms-adm-debut')&&g('ms-adm-debut').value;
+    var df=g('ms-adm-fin')&&g('ms-adm-fin').value;
+    var vs=g('ms-adm-vendeurs')&&g('ms-adm-vendeurs').value.trim();
+    if(!t||!d||!db||!df){g('ms-adm-msg').textContent='Veuillez remplir tous les champs.';g('ms-adm-msg').style.color='#e05050';return;}
+    var vendeurs=[];
+    try{vendeurs=JSON.parse(vs);}catch(e){g('ms-adm-msg').textContent='JSON vendeuses invalide.';g('ms-adm-msg').style.color='#e05050';return;}
+    KM_MARCHE_ACTIF={titre:t,description:d,dateDebut:db,dateFin:df,vendeurs:vendeurs};
+    g('ms-adm-msg').textContent='\u2705 March\u00e9 activ\u00e9 ! Visible sur la page March\u00e9 de la Semaine.';
+    g('ms-adm-msg').style.color='#5aaa7a';
+  });
+  var btnStop=g('ms-adm-btn-stopper');
+  if(btnStop) btnStop.addEventListener('click',function(){
+    KM_MARCHE_ACTIF=null;
+    g('ms-adm-msg').textContent='March\u00e9 stopp\u00e9.';
+    g('ms-adm-msg').style.color='#e09050';
+    setTimeout(function(){renderDash('marche_admin');},800);
+  });
 }
 
 /* ══════════════════════════════════════════
@@ -8460,6 +8705,11 @@ function renderDetailStep3(p, client){
   var isOnline = client.pay === 'cinetpay';
   var needBankInfo = client.pay === 'amana' || client.pay === 'nita';
 
+  /* v60 FIX — Calculer les variables de livraison manquantes */
+  var _livraisonInfo = kmGetFraisLivraison(p.zone||'Niamey', client.ville||'Niamey');
+  var _typeLivr = _livraisonInfo ? _livraisonInfo.type : 'local';
+  var _fraisLivr = _livraisonInfo ? (_livraisonInfo.prix||1000) : 1000;
+
   /* Choisir un livreur disponible automatiquement */
   var livreursDispos = DB_PREMIUM.livreurs.filter(function(l){ return l.statut === 'dispo'; });
   var livreur = livreursDispos.length > 0
@@ -8519,7 +8769,7 @@ function renderDetailStep3(p, client){
     '',
     '📦 *' + p.nom + '*',
     '💰 ' + p.prix.toLocaleString('fr-FR') + ' FCFA / ' + p.unite,
-    '🏪 Vendeur : ' + p.vendeur,
+    '🏪 Via : Kassan\'Mou Marketplace',
     (photoUrl ? '🖼️ Photo : ' + photoUrl : ''),
     '',
     '👤 Mon nom : ' + client.nom,
@@ -8746,6 +8996,18 @@ function renderLivreursPage(){
 /* Patch goTo : render premium + livraison au changement de page */
 var _origGoTo = goTo;
 goTo = function(page){
+  if(page==='banituri'){ 
+    document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+    var pg=document.getElementById('page-banituri');if(pg){pg.classList.add('on');window.scrollTo(0,0);}
+    kmRenderBanituri();
+    return;
+  }
+  if(page==='marche'){
+    document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+    var pgm=document.getElementById('page-marche');if(pgm){pgm.classList.add('on');window.scrollTo(0,0);}
+    kmRenderMarche();
+    return;
+  }
   _origGoTo(page);
   if(page === 'marketplace'){ renderFeaturedStrip(); renderProdsPremium(); }
 };
@@ -9467,6 +9729,275 @@ document.addEventListener('DOMContentLoaded', function(){
     document.body.classList.add('pwa-standalone');
     console.log('[KM-PWA] Lancé en mode application installée.');
   }
+
+
+
+/* ══════════════════════════════════════════
+   BANITURI — Catalogue statique v61
+══════════════════════════════════════════ */
+var KM_BANITURI_PRODUITS = [
+  {
+    id: 'ban-1',
+    nom: 'BAN-GASTRYL',
+    categorie: 'Anti-Gastrite et Ulcère',
+    description: 'Poudre de Feuilles d\'une plante médicinale qui traite les problèmes Gastriques. Soulage gastrites et ulcères gastroduodénaux.',
+    posologie: 'Une cuillère à soupe de poudre mélangée dans le lait, la boule ou la bouillie à prendre 10 à 15 minutes avant le repas du matin, de midi et du soir (3 fois par jour).',
+    presentation: 'Sachet de 80 g',
+    conservation: 'Conserver sec',
+    duree: '3 ans',
+    emoji: '\U0001f7e4',
+    couleur: '#3a1a08'
+  },
+  {
+    id: 'ban-2',
+    nom: 'BAN-CICATRYL',
+    categorie: 'Anti-Dermatoses et Brûlures',
+    description: 'Poudre de Feuilles d\'une plante médicinale testée qui traite les maladies de Peau. Efficace sur plaies, brûlures et dermatoses.',
+    posologie: 'Appliquer en grande quantité la poudre après lavage avec l\'eau et du savon une fois par jour. Ne jamais mettre de pansement. Bien nettoyer entre chaque application et enlever la croûte noire s\'il y a lieu. Mélanger avec de la vaseline ou du beurre de karité pour les dermatoses.\n\nPour les plaies infectées, il est conseillé de boire en même temps la poudre : une cuillère à soupe de poudre mélangée dans le lait caillé, la bouillie matin, midi et soir (3 fois par jour).',
+    presentation: 'Sachet de 80 g',
+    conservation: 'Conserver sec',
+    duree: '3 ans',
+    emoji: '\U0001f33a',
+    couleur: '#1a2e10'
+  },
+  {
+    id: 'ban-3',
+    nom: 'BAN-CARENCYL',
+    categorie: 'Traitement d\'Avitaminose',
+    description: 'Complément alimentaire très riche en vitamines, en protéines et en sels minéraux (Vit.C, Fer, Cal) à base de poudre de Moringa.',
+    posologie: 'Une cuillère à café de poudre mélangée dans le lait caillé, la bouillie matin et soir (2 fois par jour). Même dose pour les enfants. À ne pas donner aux nourrissons.',
+    presentation: 'Sachet de 100 g',
+    conservation: 'Conserver sec',
+    duree: '3 ans',
+    emoji: '\U0001f331',
+    couleur: '#1a3010'
+  },
+  {
+    id: 'ban-4',
+    nom: 'BAN-HEPATYL',
+    categorie: 'Anti-Hépatites',
+    description: 'Poudre de rhizome d\'une plante médicinale testée dans le traitement des hépatites. Action naturelle sur le foie.',
+    posologie: 'Une cuillère à café de poudre dans un aliment 3 fois par jour : matin, midi et soir pendant 4 jours puis arrêter une semaine et reprendre pour finir le sachet.\n\nEnfant : 1/2 dose.',
+    presentation: 'Sachet de 50 g',
+    conservation: 'Conserver sec',
+    duree: '3 ans',
+    emoji: '\U0001f7e2',
+    couleur: '#1a2e10'
+  },
+  {
+    id: 'ban-5',
+    nom: 'BAN-PALUDRYL',
+    categorie: 'Anti-Paludisme',
+    description: 'Poudre de rhizome d\'une plante médicinale testée dans le traitement du paludisme. Traitement 100% naturel.',
+    posologie: 'Une cuillère à café de poudre dans un aliment 3 fois par jour : matin, midi et soir pendant 4 jours puis arrêter une semaine et reprendre pour finir le sachet.\n\nEnfant : 1/2 dose.',
+    presentation: 'Sachet de 50 g',
+    conservation: 'Conserver sec',
+    duree: '3 ans',
+    emoji: '\U0001f99f',
+    couleur: '#1a2a08'
+  },
+  {
+    id: 'ban-6',
+    nom: 'BAN-PRESSYL',
+    categorie: 'Anti-Hypertension Artérielle',
+    description: 'Poudre de Feuilles d\'une plante médicinale qui traite les problèmes d\'Hypertension. Régulation naturelle de la pression artérielle.',
+    posologie: 'Une cuillère à soupe de poudre mélangée dans le lait, la boule ou la bouillie 3 fois par jour. Matin, midi et soir.',
+    presentation: 'Sachet de 80 g',
+    conservation: 'Conserver sec',
+    duree: '2 ans',
+    emoji: '\U0001f49a',
+    couleur: '#0a2010'
+  },
+  {
+    id: 'ban-7',
+    nom: 'BAN-DIABENYL',
+    categorie: 'Anti-Diabète',
+    description: 'Poudre de feuilles d\'une plante médicinale testée et expérimentée dans le traitement du Diabète. Peut avoir une action laxative au début. Vérifier régulièrement la glycémie.',
+    posologie: 'Une cuillère à café de poudre à jeûn dans l\'eau ou dans un aliment liquide.',
+    presentation: 'Sachet de 100 g',
+    conservation: 'Conserver sec',
+    duree: '3 ans',
+    emoji: '\U0001f489',
+    couleur: '#08201a'
+  },
+  {
+    id: 'ban-8',
+    nom: 'BAN-HEMORYL',
+    categorie: 'Anti-Hémorroïde',
+    description: 'Poudre de Feuilles d\'une plante médicinale qui traite les problèmes d\'hémorroïdes. Usage interne et externe.',
+    posologie: 'Une cuillère à soupe de poudre mélangée dans le lait, la boule ou la bouillie 3 fois par jour. Matin, midi et soir. Faire des suppositoires ou de la pommade en mélangeant sa poudre avec le beurre de karité. Appliquer 2 fois par jour.',
+    presentation: 'Sachet de 80 g',
+    conservation: 'Conserver sec',
+    duree: '2 ans',
+    emoji: '\U0001f33f',
+    couleur: '#1a0e08'
+  },
+  {
+    id: 'ban-9',
+    nom: 'BAN-ARTHRYL',
+    categorie: 'Anti-Rhumatisme, Lumbago et Sciatique',
+    description: 'Poudre de Feuilles d\'une plante médicinale qui traite les problèmes Rhumatisme, Lumbago et Sciatique. Soulagement des douleurs articulaires.',
+    posologie: 'Une cuillère à soupe de poudre mélangée dans le lait, la boule ou la bouillie matin, midi et soir (3 fois par jour).',
+    presentation: 'Sachet de 80 g',
+    conservation: 'Conserver sec',
+    duree: '3 ans',
+    emoji: '\U0001f9b4',
+    couleur: '#0e1a10'
+  }
+];
+
+var _banActiveId = null;
+
+function kmRenderBanituri() {
+  var grid = document.getElementById('ban-catalogue');
+  if (!grid) return;
+  var h = '';
+  KM_BANITURI_PRODUITS.forEach(function(p) {
+    h += '<div class="ban-card" data-banid="' + p.id + '">';
+    h += '<div class="ban-card-img" style="background:linear-gradient(135deg,' + p.couleur + ',#0a1206)">';
+    h += '<span style="font-size:56px">' + p.emoji + '</span>';
+    h += '<div class="ban-card-badge">\u2b50 Produit Phare</div>';
+    h += '</div>';
+    h += '<div class="ban-card-body">';
+    h += '<div class="ban-card-name">' + p.nom + '</div>';
+    h += '<div class="ban-card-cat">' + p.categorie + '</div>';
+    h += '<div class="ban-card-desc">' + p.description.substring(0, 110) + (p.description.length > 110 ? '\u2026' : '') + '</div>';
+    h += '<div class="ban-card-info">';
+    h += '<span class="ban-tag">' + p.presentation + '</span>';
+    h += '<span class="ban-tag">\u23f3 ' + p.duree + '</span>';
+    h += '</div>';
+    h += '<button class="ban-card-btn" data-banid="' + p.id + '">\U0001f4cb Voir posologie & commander</button>';
+    h += '</div></div>';
+  });
+  grid.innerHTML = h;
+  grid.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-banid]');
+    if (btn) kmOpenBanituri(btn.dataset.banid);
+  });
+}
+
+function kmOpenBanituri(id) {
+  var p = KM_BANITURI_PRODUITS.filter(function(x) { return x.id === id; })[0];
+  if (!p) return;
+  _banActiveId = id;
+  var c = document.getElementById('ban-modal-content');
+  if (!c) return;
+  var posLines = p.posologie.replace(/\n/g, '<br>');
+  c.innerHTML =
+    '<div class="ban-modal-title">' + p.nom + '</div>' +
+    '<div class="ban-modal-cat">' + p.categorie + '</div>' +
+    '<div class="ban-modal-desc">' + p.description + '</div>' +
+    '<div class="ban-posologie">' +
+    '<div class="ban-posologie-title">\U0001f9ea Posologie</div>' +
+    '<div class="ban-posologie-text">' + posLines + '</div>' +
+    '</div>' +
+    '<div class="ban-modal-specs">' +
+    '<div class="ban-spec"><div class="ban-spec-lbl">Pr\u00e9sentation</div><div class="ban-spec-val">' + p.presentation + '</div></div>' +
+    '<div class="ban-spec"><div class="ban-spec-lbl">Conservation</div><div class="ban-spec-val">' + p.conservation + '</div></div>' +
+    '<div class="ban-spec"><div class="ban-spec-lbl">Dur\u00e9e de conservation</div><div class="ban-spec-val">' + p.duree + '</div></div>' +
+    '<div class="ban-spec"><div class="ban-spec-lbl">Naturalit\u00e9</div><div class="ban-spec-val">100% naturel</div></div>' +
+    '</div>' +
+    '<div class="ban-modal-btns">' +
+    '<button class="ban-modal-order" id="ban-btn-order">Commandez sur WhatsApp \u2192</button>' +
+    '<a href="https://businessbridge227-lab.github.io/banituri/" target="_blank" rel="noopener" class="ban-modal-site">\U0001f310 Site</a>' +
+    '</div>';
+  var ov = document.getElementById('ban-modal-overlay');
+  if (ov) ov.classList.add('show');
+  var ob = document.getElementById('ban-btn-order');
+  if (ob) ob.addEventListener('click', function() {
+    var msg = 'Bonjour Kassan\'Mou, je souhaite commander le produit Banituri : ' + p.nom + ' (' + p.categorie + '), ' + p.presentation + '. Merci.';
+    window.open('https://wa.me/' + KM_PHONE_RAW + '?text=' + encodeURIComponent(msg), '_blank');
+  });
+}
+
+function kmCloseBanituri() {
+  var ov = document.getElementById('ban-modal-overlay');
+  if (ov) ov.classList.remove('show');
+}
+
+/* ══════════════════════════════════════════
+   MARCHÉ DE LA SEMAINE — v61
+══════════════════════════════════════════ */
+var KM_MARCHE_ACTIF = null; /* null = aucun marché actif. Admin peut définir en dur ici. */
+/* Exemple de structure :
+KM_MARCHE_ACTIF = {
+  titre: 'Marché de la Semaine #1',
+  description: 'Cette semaine : huile de sésame pressée à froid, savon de karité artisanal et couscous de mil traditionnel.',
+  dateDebut: '2026-06-02',
+  dateFin: '2026-06-08',
+  vendeurs: [
+    { nom: 'Aïssata Maïga', produit: 'Huile de sésame pressée à froid', emoji: '🫙' },
+    { nom: 'Fatouma Moussa', produit: 'Savon de karité artisanal', emoji: '🧼' },
+    { nom: 'Hadiza Ibrahim', produit: 'Couscous de mil traditionnel', emoji: '🌾' }
+  ]
+};
+*/
+
+function kmRenderMarche() {
+  var body = document.getElementById('ms-content');
+  var countdown = document.getElementById('ms-countdown');
+  if (!body) return;
+
+  if (!KM_MARCHE_ACTIF) {
+    body.innerHTML =
+      '<div class="ms-empty">' +
+      '<div class="ms-empty-ico">\U0001f6d2</div>' +
+      '<div class="ms-empty-txt">Aucun march\u00e9 actif cette semaine</div>' +
+      '<div class="ms-empty-sub">Le prochain march\u00e9 hebdomadaire sera annonc\u00e9 bient\u00f4t.<br>Revenez chaque lundi !</div>' +
+      '</div>';
+    if (countdown) countdown.textContent = 'Prochain march\u00e9 bient\u00f4t';
+    return;
+  }
+
+  var m = KM_MARCHE_ACTIF;
+  var now = new Date();
+  var fin = new Date(m.dateFin + 'T23:59:59');
+  var diff = fin - now;
+
+  var countdownTxt = '';
+  if (diff > 0) {
+    var jours = Math.floor(diff / 86400000);
+    var heures = Math.floor((diff % 86400000) / 3600000);
+    countdownTxt = 'Se termine dans ' + jours + 'j ' + heures + 'h';
+  } else {
+    countdownTxt = 'March\u00e9 termin\u00e9';
+  }
+  if (countdown) countdown.textContent = countdownTxt;
+
+  var vendeursHtml = '';
+  if (m.vendeurs && m.vendeurs.length) {
+    vendeursHtml = '<div class="ms-vendeurs-title">Vendeuses participantes</div><div class="ms-vendeurs-grid">';
+    m.vendeurs.forEach(function(v) {
+      vendeursHtml +=
+        '<div class="ms-vendeur-card">' +
+        '<div class="ms-vendeur-ico">' + (v.emoji || '\U0001f6d2') + '</div>' +
+        '<div><div class="ms-vendeur-name">' + v.nom + '</div><div class="ms-vendeur-prod">' + v.produit + '</div></div>' +
+        '</div>';
+    });
+    vendeursHtml += '</div>';
+  }
+
+  var waMsg = 'Bonjour Kassan\'Mou, je suis int\u00e9ress\u00e9(e) par le march\u00e9 de la semaine : ' + m.titre + '. Merci de me donner plus d\'informations.';
+
+  body.innerHTML =
+    '<div class="ms-week-card">' +
+    '<div class="ms-week-label">\U0001f525 En cours</div>' +
+    '<div class="ms-week-title">' + m.titre + '</div>' +
+    '<div class="ms-week-desc">' + m.description + '</div>' +
+    vendeursHtml +
+    '<div class="ms-cta-row">' +
+    '<button class="ms-cta-btn" id="ms-btn-order">Commander sur WhatsApp \u2192</button>' +
+    '<button class="ms-cta-btn-sec" id="ms-btn-mkt">Voir toute la marketplace</button>' +
+    '</div>' +
+    '</div>';
+
+  var msob = document.getElementById('ms-btn-order');
+  if (msob) msob.addEventListener('click', function() {
+    window.open('https://wa.me/' + KM_PHONE_RAW + '?text=' + encodeURIComponent(waMsg), '_blank');
+  });
+  var msmkt = document.getElementById('ms-btn-mkt');
+  if (msmkt) msmkt.addEventListener('click', function() { goTo('marketplace'); });
+}
 
 });
 

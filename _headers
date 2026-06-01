@@ -3,16 +3,3 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(self), geolocation=(self)
-  Content-Security-Policy: default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'
-
-/*.js
-  Cache-Control: public, max-age=86400
-
-/*.css
-  Cache-Control: public, max-age=86400
-
-/*.png
-  Cache-Control: public, max-age=604800
-
-/*.ico
-  Cache-Control: public, max-age=604800
