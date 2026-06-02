@@ -2441,8 +2441,6 @@ select.adm-input option{background:#0F1F0A;color:#fff}
     <button class="nl" id="nl-tracking">Suivi</button>
     <button class="nl" id="nl-livraison">Logistique</button>
     <button class="nl" id="nl-how">Comment ça marche</button>
-    <button class="nl" id="nl-banituri">🌿 Banituri</button>
-    <button class="nl" id="nl-marche">Marché de la Semaine</button>
     <button class="nl" id="nl-about">À propos · Export</button>
     <button class="nl" id="nl-contact">Contact</button>
   </div>
@@ -2461,8 +2459,6 @@ select.adm-input option{background:#0F1F0A;color:#fff}
   <button class="mi" id="mn-tracking"><span class="mi-ico">📦</span><span>Suivi commande</span></button>
   <button class="mi" id="mn-livraison"><span class="mi-ico">🛵</span><span>Logistique</span></button>
   <button class="mi" id="mn-how"><span class="mi-ico">📋</span><span>Comment ça marche</span></button>
-  <button class="mi" id="mn-banituri"><span class="mi-ico">🌿</span><span>Banituri</span></button>
-  <button class="mi" id="mn-marche"><span class="mi-ico">🛒</span><span>Marché de la Semaine</span></button>
   <button class="mi" id="mn-about"><span class="mi-ico">🌍</span><span>À propos · Export</span></button>
   <button class="mi" id="mn-contact"><span class="mi-ico">✉️</span><span>Contact</span></button>
   <button class="mi" id="mn-focal"><span class="mi-ico">🤝</span><span>Points Focaux</span></button>
@@ -2735,35 +2731,6 @@ select.adm-input option{background:#0F1F0A;color:#fff}
     </div>
   </section>
 
-  <!-- ── SECTION BANITURI TEASER ── -->
-  <section class="km-s" id="section-banituri-home" style="background:linear-gradient(135deg,#060D04 0%,#0e1c0a 50%,#060D04 100%)">
-    <div class="km-s-in">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch" class="ban-home-grid">
-        <!-- Banituri card -->
-        <div style="background:linear-gradient(145deg,#0e1e0b,#131f0f);border:1px solid rgba(196,154,60,.25);border-radius:20px;padding:28px;position:relative;overflow:hidden">
-          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2d6a4f,#C49A3C,#2d6a4f)"></div>
-          <div style="display:inline-block;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">⭐ Partenaire exclusif</div>
-          <div style="font-size:36px;margin-bottom:10px">🌿</div>
-          <h3 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:800;color:var(--G);margin-bottom:8px">Banituri</h3>
-          <p style="font-size:13px;color:rgba(240,237,230,.65);line-height:1.7;margin-bottom:18px">Coopérative d'Herboristerie du Niger. 9 produits médicinaux 100% naturels — gastrite, diabète, paludisme, hypertension et plus.</p>
-          <button id="btn-home-banituri" style="background:linear-gradient(135deg,#2d6a4f,#1a4a35);color:#fff;border:none;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;width:100%">Voir le catalogue Banituri →</button>
-        </div>
-        <!-- Marché de la semaine card -->
-        <div style="background:linear-gradient(145deg,#1a0e06,#200f06);border:1px solid rgba(200,97,47,.25);border-radius:20px;padding:28px;position:relative;overflow:hidden">
-          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C8612F,#E8A060,#C8612F)"></div>
-          <div style="display:inline-block;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">🔥 Chaque semaine</div>
-          <div style="font-size:36px;margin-bottom:10px">🛒</div>
-          <h3 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:800;color:var(--S);margin-bottom:8px">Marché de la Semaine</h3>
-          <p style="font-size:13px;color:rgba(240,237,230,.65);line-height:1.7;margin-bottom:18px">Chaque lundi, des vendeuses transformatrices du Niger proposent leurs meilleurs produits à prix groupés. Stock et durée limités.</p>
-          <button id="btn-home-marche" style="background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;width:100%">Voir le marché de la semaine →</button>
-        </div>
-      </div>
-    </div>
-  </section>
-  <style>
-  @media(max-width:640px){.ban-home-grid{grid-template-columns:1fr!important}}
-  </style>
-
   <!-- ── SECTION CTA FINAL ── -->
   <section class="km-s km-s-final-cta" id="section-final-cta">
     <div class="km-s-in km-s-in-center">
@@ -2814,6 +2781,172 @@ select.adm-input option{background:#0F1F0A;color:#fff}
       <div class="fp-chip" data-fcat="maison">🏠 Maison</div>
     </div>
     <div style="height:10px"></div>
+  </div>
+
+
+<style>
+/* ════════════════════════════════════════
+   BANITURI BOUTIQUE — inside Marketplace
+════════════════════════════════════════ */
+.ban-mkt-section{background:linear-gradient(180deg,#060D04 0%,#0C1608 100%);margin:0;padding:0 0 32px}
+.ban-mkt-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#060D04 0%,#0e1e0b 40%,#0a1206 100%);padding:28px 20px 24px;border-bottom:1px solid rgba(196,154,60,.12)}
+.ban-mkt-hero-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.ban-mkt-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:10px;font-weight:800;padding:4px 14px;border-radius:20px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
+.ban-mkt-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,44px);font-weight:800;color:#F0EDE6;line-height:1.1;margin-bottom:6px}
+.ban-mkt-sub{font-size:13px;color:rgba(240,237,230,.55);line-height:1.65;max-width:420px}
+.ban-mkt-cta-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+.ban-mkt-enter{background:linear-gradient(135deg,#2d6a4f,#1a5a3f);color:#fff;border:none;padding:13px 24px;border-radius:50px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(45,106,79,.35)}
+.ban-mkt-enter:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,106,79,.5)}
+.ban-mkt-site{color:rgba(196,154,60,.8);font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px;border:1px solid rgba(196,154,60,.2);padding:8px 14px;border-radius:20px}
+.ban-mkt-site:hover{color:#C49A3C;border-color:rgba(196,154,60,.4)}
+/* Carrousel */
+.ban-carousel-wrap{position:relative;padding:24px 0 8px;overflow:hidden}
+.ban-carousel-track{display:flex;gap:16px;padding:0 20px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;cursor:grab}
+.ban-carousel-track::-webkit-scrollbar{display:none}
+.ban-carousel-track.grabbing{cursor:grabbing}
+.ban-carousel-card{flex:0 0 200px;scroll-snap-align:start;background:linear-gradient(145deg,#0e1e0b,#131f0f);border:1px solid rgba(196,154,60,.15);border-radius:16px;overflow:hidden;transition:transform .2s,border-color .2s;cursor:pointer;position:relative}
+.ban-carousel-card:hover{transform:translateY(-4px);border-color:rgba(196,154,60,.4)}
+.ban-carousel-img{height:140px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative}
+.ban-carousel-prix{position:absolute;bottom:6px;right:8px;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:12px}
+.ban-carousel-body{padding:12px}
+.ban-carousel-name{font-size:13px;font-weight:800;color:#C49A3C;margin-bottom:3px;font-family:'Outfit',sans-serif}
+.ban-carousel-cat{font-size:10px;color:rgba(240,237,230,.4);text-transform:uppercase;letter-spacing:.8px}
+/* Marché de la semaine dans marketplace */
+.ms-mkt-section{background:linear-gradient(135deg,#0a0906,#140e08);border-top:1px solid rgba(200,97,47,.12);border-bottom:1px solid rgba(200,97,47,.12);padding:24px 20px}
+.ms-mkt-inner{max-width:1160px;margin:0 auto}
+.ms-mkt-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.ms-mkt-label{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:10px;font-weight:800;padding:4px 14px;border-radius:20px;letter-spacing:1px;text-transform:uppercase}
+.ms-mkt-title{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,32px);font-weight:800;color:#F0EDE6;margin:6px 0}
+.ms-mkt-desc{font-size:13px;color:rgba(240,237,230,.6);line-height:1.7;margin-bottom:16px;max-width:560px}
+.ms-mkt-empty{text-align:center;padding:28px;background:rgba(255,255,255,.02);border:1px dashed rgba(200,97,47,.2);border-radius:16px}
+.ms-mkt-empty-ico{font-size:40px;margin-bottom:10px}
+.ms-mkt-empty-txt{font-size:14px;font-weight:700;color:rgba(240,237,230,.4);margin-bottom:4px}
+.ms-mkt-empty-sub{font-size:12px;color:rgba(240,237,230,.25);line-height:1.6}
+.ms-mkt-active{background:rgba(200,97,47,.06);border:1px solid rgba(200,97,47,.2);border-radius:16px;padding:20px}
+.ms-mkt-active-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:800;color:#F0EDE6;margin-bottom:8px}
+.ms-mkt-active-desc{font-size:13px;color:rgba(240,237,230,.7);line-height:1.75;margin-bottom:14px}
+.ms-mkt-vendeurs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.ms-mkt-vendeur{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.ms-mkt-vendeur-ico{font-size:20px}
+.ms-mkt-vendeur-name{font-size:12px;font-weight:700;color:#F0EDE6}
+.ms-mkt-vendeur-prod{font-size:11px;color:rgba(240,237,230,.45)}
+.ms-mkt-btn{background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif}
+/* Boutique Banituri Overlay */
+.ban-boutique-overlay{position:fixed;inset:0;background:#050B03;z-index:2000;display:none;flex-direction:column;overflow:hidden}
+.ban-boutique-overlay.show{display:flex}
+.ban-boutique-topbar{background:linear-gradient(135deg,#060D04,#0e1e0b);border-bottom:1px solid rgba(196,154,60,.12);padding:16px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+.ban-boutique-back{background:rgba(255,255,255,.06);border:none;color:#F0EDE6;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ban-boutique-topbar-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:800;color:#C49A3C;flex:1}
+.ban-boutique-topbar-badge{background:linear-gradient(135deg,#2d6a4f,#1a5a3f);color:#fff;font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px}
+.ban-boutique-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ban-boutique-scroll::-webkit-scrollbar{width:4px}
+.ban-boutique-scroll::-webkit-scrollbar-thumb{background:rgba(196,154,60,.2);border-radius:2px}
+/* Boutique hero */
+.ban-bq-hero{background:linear-gradient(135deg,#060D04,#0e2010,#060D04);padding:32px 20px;text-align:center;border-bottom:1px solid rgba(196,154,60,.1)}
+.ban-bq-logo{font-size:56px;margin-bottom:12px}
+.ban-bq-name{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:800;color:#C49A3C;margin-bottom:6px}
+.ban-bq-slogan{font-size:14px;color:rgba(240,237,230,.55);margin-bottom:16px;line-height:1.6}
+.ban-bq-stats{display:flex;justify-content:center;gap:0;max-width:480px;margin:0 auto;background:rgba(255,255,255,.03);border:1px solid rgba(196,154,60,.1);border-radius:14px;overflow:hidden}
+.ban-bq-stat{flex:1;text-align:center;padding:14px 8px;border-right:1px solid rgba(196,154,60,.08)}
+.ban-bq-stat:last-child{border-right:none}
+.ban-bq-stat-n{display:block;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:800;color:#C49A3C}
+.ban-bq-stat-l{display:block;font-size:9px;color:rgba(240,237,230,.35);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+/* Grille produits boutique */
+.ban-bq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:28px 20px;max-width:1160px;margin:0 auto}
+.ban-bq-card{background:linear-gradient(145deg,#0e1e0b,#131f0f);border:1px solid rgba(196,154,60,.12);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s}
+.ban-bq-card:hover{transform:translateY(-3px);border-color:rgba(196,154,60,.3);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.ban-bq-card-top{height:160px;display:flex;align-items:center;justify-content:center;font-size:60px;position:relative}
+.ban-bq-card-badge-excl{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:9px;font-weight:800;padding:3px 10px;border-radius:12px;letter-spacing:.8px}
+.ban-bq-card-prix{position:absolute;bottom:10px;right:10px;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;font-size:12px;font-weight:800;padding:4px 12px;border-radius:12px}
+.ban-bq-card-body{padding:16px}
+.ban-bq-card-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:800;color:#C49A3C;margin-bottom:3px}
+.ban-bq-card-cat{font-size:10px;font-weight:700;color:#C8612F;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.ban-bq-card-desc{font-size:12px;color:rgba(240,237,230,.6);line-height:1.6;margin-bottom:12px}
+.ban-bq-card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.ban-bq-tag{background:rgba(196,154,60,.08);border:1px solid rgba(196,154,60,.15);color:rgba(196,154,60,.7);font-size:10px;padding:2px 9px;border-radius:12px}
+.ban-bq-card-btn{width:100%;background:linear-gradient(135deg,#2d6a4f,#1a5a3f);color:#fff;border:none;padding:11px;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s}
+.ban-bq-card-btn:hover{background:linear-gradient(135deg,#3d8a5f,#2a7a4f)}
+/* Détail produit overlay */
+.ban-prod-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2500;display:none;align-items:flex-end;justify-content:center}
+.ban-prod-overlay.show{display:flex}
+.ban-prod-sheet{background:linear-gradient(180deg,#0e1e0b,#090f07);border-radius:24px 24px 0 0;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;padding:0 0 40px}
+.ban-prod-handle{width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:14px auto 20px}
+.ban-prod-head{padding:0 24px 20px;border-bottom:1px solid rgba(196,154,60,.1)}
+.ban-prod-emoji{font-size:52px;margin-bottom:12px}
+.ban-prod-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:800;color:#C49A3C;margin-bottom:4px}
+.ban-prod-cat{font-size:11px;font-weight:700;color:#C8612F;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.ban-prod-desc{font-size:14px;color:rgba(240,237,230,.75);line-height:1.75}
+.ban-prod-prix-row{display:flex;align-items:center;justify-content:space-between;background:rgba(200,97,47,.08);border:1px solid rgba(200,97,47,.2);border-radius:12px;padding:14px 18px;margin:20px 24px}
+.ban-prod-prix-lbl{font-size:12px;color:rgba(240,237,230,.45);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+.ban-prod-prix-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:800;color:#C8612F}
+.ban-prod-posologie{background:rgba(45,106,79,.1);border:1px solid rgba(45,106,79,.25);border-radius:14px;padding:18px;margin:0 24px 16px}
+.ban-prod-poso-title{font-size:11px;font-weight:800;color:#5aaa7a;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ban-prod-poso-text{font-size:13px;color:rgba(240,237,230,.75);line-height:1.8}
+.ban-prod-specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 24px 20px}
+.ban-prod-spec{background:rgba(255,255,255,.03);border-radius:10px;padding:10px 12px}
+.ban-prod-spec-lbl{font-size:9px;color:rgba(240,237,230,.35);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.ban-prod-spec-val{font-size:13px;color:#F0EDE6;font-weight:600}
+.ban-prod-actions{display:flex;gap:10px;padding:0 24px}
+.ban-prod-order{flex:1;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:15px;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif}
+.ban-prod-site{flex:0 0 auto;background:rgba(196,154,60,.08);border:1px solid rgba(196,154,60,.2);color:#C49A3C;padding:15px 18px;border-radius:14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;display:flex;align-items:center;gap:5px}
+.ban-prod-close{position:absolute;top:16px;right:20px;background:rgba(255,255,255,.08);border:none;color:#F0EDE6;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+@media(max-width:600px){
+  .ban-bq-grid{grid-template-columns:1fr 1fr;gap:10px;padding:16px 12px}
+  .ban-bq-card-top{height:120px;font-size:44px}
+  .ban-bq-card-body{padding:10px}
+  .ban-bq-card-name{font-size:16px}
+  .ban-bq-card-desc{display:none}
+}
+</style>
+
+  <!-- ════════════════════════════════════
+       BOUTIQUE BANITURI — section marketplace
+  ════════════════════════════════════ -->
+  <div class="ban-mkt-section" id="ban-mkt-section">
+    <div class="ban-mkt-hero">
+      <div class="ban-mkt-hero-inner">
+        <div>
+          <div class="ban-mkt-badge">⭐ Partenaire Exclusif Kassan'Mou</div>
+          <div class="ban-mkt-title">🌿 Banituri</div>
+          <div class="ban-mkt-sub">Coopérative d'Herboristerie du Niger. 9 remèdes 100% naturels, testés et expérimentés. Disponibles en exclusivité sur Kassan'Mou.</div>
+          <div class="ban-mkt-cta-row">
+            <button class="ban-mkt-enter" id="btn-entrer-boutique-ban">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Entrer dans la boutique
+            </button>
+            <a href="https://businessbridge227-lab.github.io/banituri/" target="_blank" rel="noopener" class="ban-mkt-site">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Site officiel
+            </a>
+          </div>
+        </div>
+        <div style="font-size:80px;opacity:.15;flex-shrink:0;display:none" class="ban-mkt-deco" aria-hidden="true">🌿</div>
+      </div>
+    </div>
+    <!-- Carrousel aperçu produits -->
+    <div class="ban-carousel-wrap">
+      <div class="ban-carousel-track" id="ban-carousel-track">
+        <!-- Généré par JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       MARCHÉ DE LA SEMAINE — section marketplace
+  ════════════════════════════════════ -->
+  <div class="ms-mkt-section" id="ms-mkt-section">
+    <div class="ms-mkt-inner">
+      <div class="ms-mkt-head">
+        <div>
+          <div class="ms-mkt-label">🔥 Chaque Lundi</div>
+          <div class="ms-mkt-title">Marché de la Semaine</div>
+        </div>
+        <div id="ms-mkt-countdown" style="font-size:12px;font-weight:700;color:rgba(200,97,47,.7);background:rgba(200,97,47,.08);border:1px solid rgba(200,97,47,.2);padding:6px 14px;border-radius:20px"></div>
+      </div>
+      <div id="ms-mkt-body">
+        <!-- Généré par JS -->
+      </div>
+    </div>
   </div>
 
   <!-- FEATURED STRIP -->
@@ -3201,256 +3334,308 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 </div>
 </div>
 
-<!-- ═══════════════════════════════════
-     PAGE BANITURI — Catalogue Herboristerie
-═══════════════════════════════════ -->
-<div class="page" id="page-banituri">
-<style>
-#page-banituri{background:linear-gradient(180deg,#060D04 0%,#0A1206 100%);min-height:100vh}
-.ban-hero{background:linear-gradient(135deg,#0A1206 0%,#1a2e10 50%,#0d1a09 100%);padding:60px 20px 40px;text-align:center;border-bottom:1px solid rgba(196,154,60,.18)}
-.ban-hero-logo{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px}
-.ban-hero-badge{background:linear-gradient(135deg,#1a3a10,#2d6a1f);border:2px solid var(--G);border-radius:50px;padding:6px 18px;font-size:11px;font-weight:700;color:var(--G);letter-spacing:1.5px;text-transform:uppercase}
-.ban-hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,7vw,62px);font-weight:800;color:var(--S);line-height:1.1;margin-bottom:12px}
-.ban-hero-sub{font-size:15px;color:rgba(240,237,230,.65);max-width:560px;margin:0 auto 28px;line-height:1.7}
-.ban-hero-cta{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#2d6a4f,#1a4a35);color:#fff;border:none;padding:14px 28px;border-radius:50px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(45,106,79,.35)}
-.ban-hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,106,79,.5)}
-.ban-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;padding:40px 20px;max-width:1100px;margin:0 auto}
-.ban-card{background:linear-gradient(145deg,#0e1e0b,#131f0f);border:1px solid rgba(196,154,60,.15);border-radius:16px;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:pointer}
-.ban-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.5);border-color:rgba(196,154,60,.35)}
-.ban-card-img{width:100%;height:200px;object-fit:cover;background:#0a1206;display:flex;align-items:center;justify-content:center;font-size:60px;color:rgba(196,154,60,.3);position:relative}
-.ban-card-img img{width:100%;height:100%;object-fit:cover}
-.ban-card-badge{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px}
-.ban-card-body{padding:18px}
-.ban-card-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:800;color:var(--G);margin-bottom:4px}
-.ban-card-cat{font-size:11px;font-weight:700;color:var(--O);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.ban-card-desc{font-size:13px;color:rgba(240,237,230,.7);line-height:1.65;margin-bottom:14px}
-.ban-card-info{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.ban-tag{background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.2);color:var(--G);font-size:11px;padding:3px 10px;border-radius:20px}
-.ban-card-btn{width:100%;background:linear-gradient(135deg,#2d6a4f,#1a5a3f);color:#fff;border:none;padding:11px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s}
-.ban-card-btn:hover{background:linear-gradient(135deg,#3d8a5f,#2a7a4f)}
-.ban-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;display:none;align-items:flex-end;justify-content:center}
-.ban-modal-overlay.show{display:flex}
-.ban-modal{background:linear-gradient(180deg,#0e1e0b,#0a1206);border-radius:24px 24px 0 0;width:100%;max-width:620px;max-height:88vh;overflow-y:auto;padding:28px 24px 40px;position:relative}
-.ban-modal-handle{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 20px}
-.ban-modal-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.08);border:none;color:var(--S);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
-.ban-modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:800;color:var(--G);margin-bottom:4px}
-.ban-modal-cat{font-size:12px;font-weight:700;color:var(--O);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
-.ban-modal-desc{font-size:14px;color:rgba(240,237,230,.8);line-height:1.75;margin-bottom:20px}
-.ban-posologie{background:rgba(45,106,79,.12);border:1px solid rgba(45,106,79,.3);border-radius:12px;padding:16px;margin-bottom:20px}
-.ban-posologie-title{font-size:13px;font-weight:800;color:#5aaa7a;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.ban-posologie-text{font-size:13px;color:rgba(240,237,230,.8);line-height:1.75}
-.ban-modal-specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-.ban-spec{background:rgba(196,154,60,.07);border-radius:8px;padding:10px 12px}
-.ban-spec-lbl{font-size:10px;color:rgba(240,237,230,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
-.ban-spec-val{font-size:13px;color:var(--G);font-weight:600}
-.ban-modal-btns{display:flex;gap:10px}
-.ban-modal-order{flex:1;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:14px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif}
-.ban-modal-site{flex:0 0 auto;background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.3);color:var(--G);padding:14px 18px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;display:flex;align-items:center;gap:6px}
-.ban-prix-badge{position:absolute;bottom:10px;right:10px;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px;font-family:'Outfit',sans-serif}
-.ban-stats-bar{display:flex;gap:0;margin-bottom:28px;background:linear-gradient(135deg,#0e1e0b,#131f0f);border:1px solid rgba(196,154,60,.15);border-radius:16px;overflow:hidden}
-.ban-stat{flex:1;text-align:center;padding:16px 8px;border-right:1px solid rgba(196,154,60,.1)}
-.ban-stat:last-child{border-right:none}
-.ban-stat-n{display:block;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:800;color:var(--G)}
-.ban-stat-l{display:block;font-size:10px;color:rgba(240,237,230,.4);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
-.ban-card-actions{display:flex;gap:8px;align-items:center}
-.ban-card-detail{flex:1;background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.2);color:var(--G);padding:9px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif}
-.ban-qte-ctrl{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:4px 8px}
-.ban-qte-btn{background:none;border:none;color:var(--S);font-size:18px;font-weight:700;cursor:pointer;padding:0 4px;line-height:1;font-family:'Outfit',sans-serif}
-.ban-qte-plus{color:var(--G)}
-.ban-qte-val{font-size:14px;font-weight:700;color:var(--S);min-width:20px;text-align:center}
-.ban-panier-bar{display:none;position:sticky;bottom:80px;margin:0 20px 20px;background:linear-gradient(135deg,#1a3a10,#2d6a1f);border:1px solid rgba(196,154,60,.3);border-radius:16px;padding:14px 18px;align-items:center;gap:12px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,.4)}
-.ban-panier-info{flex:1;font-size:13px;color:var(--S)}
-.ban-panier-btn{background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap}
-.ban-panier-clear{background:rgba(255,255,255,.08);border:none;color:rgba(240,237,230,.5);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;flex-shrink:0}
-.ban-modal-prix{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(200,97,47,.12),rgba(200,97,47,.06));border:1px solid rgba(200,97,47,.25);border-radius:12px;padding:14px 18px;margin-bottom:16px}
-.ban-modal-prix-lbl{font-size:12px;color:rgba(240,237,230,.5);text-transform:uppercase;letter-spacing:1px;font-weight:700}
-.ban-modal-prix-val{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:800;color:var(--O)}
-@media(max-width:600px){.ban-grid{grid-template-columns:1fr 1fr;gap:12px;padding:20px 12px}.ban-card-body{padding:12px}.ban-modal-specs{grid-template-columns:1fr}}
-</style>
-
-<div class="ban-hero">
-  <div class="ban-hero-logo">
-    <div class="ban-hero-badge">⭐ Partenaire Exclusif Kassan'Mou</div>
-  </div>
-  <h1 class="ban-hero-title">🌿 Banituri</h1>
-  <p class="ban-hero-sub">Coopérative d'Herboristerie du Niger. Plantes médicinales 100% naturelles, testées et expérimentées. Disponibles exclusivement sur Kassan'Mou.</p>
-  <a href="https://businessbridge227-lab.github.io/banituri/" target="_blank" rel="noopener" class="ban-hero-cta">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-    Visiter le site Banituri
-  </a>
-</div>
-
-<div class="ban-grid" id="ban-catalogue"></div>
-<div class="ban-panier-bar" id="ban-panier-bar"></div>
-
-<!-- Section autres boutiques (extensible) -->
-<div style="max-width:1100px;margin:0 auto;padding:0 20px 60px">
-  <div style="text-align:center;margin-bottom:24px">
-    <div style="display:inline-block;background:rgba(196,154,60,.1);border:1px solid rgba(196,154,60,.2);border-radius:20px;padding:5px 16px;font-size:11px;font-weight:700;color:var(--G);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px">Réseau de boutiques</div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:800;color:var(--S);margin-bottom:8px">Boutiques Partenaires</h2>
-    <p style="font-size:13px;color:rgba(240,237,230,.5)">D'autres boutiques rejoindront bientôt la plateforme Kassan'Mou.</p>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px" id="ban-boutiques-grid">
-    <!-- Banituri (actif) -->
-    <div style="background:linear-gradient(145deg,#0e1e0b,#131f0f);border:2px solid rgba(196,154,60,.3);border-radius:16px;padding:20px;text-align:center;cursor:pointer" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <div style="font-size:36px;margin-bottom:10px">🌿</div>
-      <div style="font-size:15px;font-weight:800;color:var(--G);margin-bottom:4px">Banituri</div>
-      <div style="font-size:11px;color:rgba(240,237,230,.5);margin-bottom:10px">Herboristerie · 9 produits</div>
-      <div style="display:inline-block;background:linear-gradient(135deg,#2d6a4f,#1a5a3f);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:20px">EN LIGNE</div>
-    </div>
-    <!-- Slots à venir -->
-    <div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);border-radius:16px;padding:20px;text-align:center;opacity:.5">
-      <div style="font-size:36px;margin-bottom:10px">🏪</div>
-      <div style="font-size:14px;font-weight:700;color:rgba(240,237,230,.4);margin-bottom:4px">Prochaine boutique</div>
-      <div style="font-size:11px;color:rgba(240,237,230,.3)">Rejoignez le réseau</div>
-    </div>
-    <div style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);border-radius:16px;padding:20px;text-align:center;opacity:.5">
-      <div style="font-size:36px;margin-bottom:10px">🏪</div>
-      <div style="font-size:14px;font-weight:700;color:rgba(240,237,230,.4);margin-bottom:4px">Prochaine boutique</div>
-      <div style="font-size:11px;color:rgba(240,237,230,.3)">Rejoignez le réseau</div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal produit Banituri -->
-<div class="ban-modal-overlay" id="ban-modal-overlay">
-  <div class="ban-modal" id="ban-modal">
-    <div class="ban-modal-handle"></div>
-    <button class="ban-modal-close" id="ban-modal-close">✕</button>
-    <div id="ban-modal-content"></div>
-  </div>
-</div>
-</div>
 
 <!-- ═══════════════════════════════════
-     PAGE MARCHÉ DE LA SEMAINE
+     PAGE LIVRAISON
 ═══════════════════════════════════ -->
-<div class="page" id="page-marche">
-<style>
-#page-marche{background:linear-gradient(180deg,#080D04 0%,#0C1408 100%);min-height:100vh}
-.ms-hero{padding:60px 20px 36px;text-align:center;background:linear-gradient(135deg,#0a0f06,#1a2610 50%,#0a0f06);border-bottom:1px solid rgba(200,97,47,.18)}
-.ms-hero-tag{display:inline-block;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:11px;font-weight:800;padding:5px 16px;border-radius:20px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
-.ms-hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,7vw,60px);font-weight:800;color:var(--S);line-height:1.1;margin-bottom:12px}
-.ms-hero-sub{font-size:15px;color:rgba(240,237,230,.6);max-width:520px;margin:0 auto 24px;line-height:1.7}
-.ms-timer{display:inline-flex;align-items:center;gap:12px;background:rgba(200,97,47,.1);border:1px solid rgba(200,97,47,.3);border-radius:50px;padding:10px 24px;font-size:13px;color:var(--O);font-weight:700}
-.ms-timer-dot{width:8px;height:8px;background:var(--O);border-radius:50%;animation:ms-blink 1s infinite}
-@keyframes ms-blink{0%,100%{opacity:1}50%{opacity:.3}}
-.ms-body{max-width:900px;margin:0 auto;padding:36px 20px}
-.ms-week-card{background:linear-gradient(145deg,#0e1800,#121e06);border:1px solid rgba(200,97,47,.25);border-radius:20px;padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
-.ms-week-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C8612F,#E8A060,#C8612F)}
-.ms-week-label{display:inline-block;background:linear-gradient(135deg,#5C1E08,#C8612F);color:#fff;font-size:10px;font-weight:800;padding:4px 14px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
-.ms-week-title{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,5vw,38px);font-weight:800;color:var(--S);margin-bottom:8px}
-.ms-week-desc{font-size:14px;color:rgba(240,237,230,.7);line-height:1.75;margin-bottom:20px}
-.ms-vendeurs-title{font-size:11px;font-weight:800;color:rgba(240,237,230,.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
-.ms-vendeurs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:20px}
-.ms-vendeur-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px}
-.ms-vendeur-ico{width:44px;height:44px;background:linear-gradient(135deg,#1a2e10,#2d4a1a);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.ms-vendeur-name{font-size:14px;font-weight:700;color:var(--S);margin-bottom:2px}
-.ms-vendeur-prod{font-size:12px;color:rgba(240,237,230,.5)}
-.ms-cta-row{display:flex;gap:12px;flex-wrap:wrap}
-.ms-cta-btn{flex:1;min-width:180px;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;border:none;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:transform .2s,box-shadow .2s}
-.ms-cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,97,47,.4)}
-.ms-cta-btn-sec{flex:1;min-width:180px;background:transparent;border:1px solid rgba(200,97,47,.4);color:var(--O);padding:14px 20px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:border-color .2s,color .2s}
-.ms-cta-btn-sec:hover{border-color:var(--O);color:#f0a070}
-.ms-info-box{background:rgba(196,154,60,.07);border:1px solid rgba(196,154,60,.2);border-radius:14px;padding:20px;margin-top:24px}
-.ms-info-title{font-size:13px;font-weight:800;color:var(--G);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.ms-info-text{font-size:13px;color:rgba(240,237,230,.7);line-height:1.75}
-.ms-empty{text-align:center;padding:60px 20px;color:rgba(240,237,230,.4)}
-.ms-empty-ico{font-size:52px;margin-bottom:16px}
-.ms-empty-txt{font-size:16px;font-weight:600;color:rgba(240,237,230,.5);margin-bottom:8px}
-.ms-empty-sub{font-size:13px;color:rgba(240,237,230,.3);line-height:1.6}
-@media(max-width:600px){.ms-cta-row{flex-direction:column}}
-</style>
+<div class="page" id="page-livraison">
+  <div class="livraison-page">
 
-<div class="ms-hero">
-  <div class="ms-hero-tag">🔥 Chaque Semaine</div>
-  <h1 class="ms-hero-title">Marché de la Semaine</h1>
-  <p class="ms-hero-sub">Chaque semaine, des vendeuses transformatrices du Niger proposent leurs meilleurs produits à prix groupés. Durée limitée — stock limité.</p>
-  <div class="ms-timer"><span class="ms-timer-dot"></span><span id="ms-countdown">Prochain marché bientôt</span></div>
+    <!-- Hero logistique -->
+    <div class="livraison-hero">
+      <div class="lh-icon">📦</div>
+      <div class="lh-title">Service de Livraison</div>
+      <span class="lh-price" style="font-size:1.3rem;letter-spacing:.02em">Kassan'Mou Logistics</span>
+      <div class="lh-zone" style="margin-top:8px">
+        <span style="margin-right:12px">📍 Niamey &amp; agglomération</span>
+        <span>🚌 Inter-villes sur demande</span>
+      </div>
+    </div>
+
+    <!-- Process client -->
+    <div class="livraison-how" style="background:#fff;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 16px rgba(0,0,0,.06)">
+      <div style="font-weight:800;font-size:15px;color:#1a2a1a;margin-bottom:16px">
+        🔄 Comment fonctionne la livraison ?
+      </div>
+      <div class="lhow-steps">
+        <div class="lhow-step">
+          <div class="lhow-num">1</div>
+          <div class="lhow-text">Choisissez votre produit sur le <strong>Marché</strong> et passez commande</div>
+        </div>
+        <div class="lhow-step">
+          <div class="lhow-num">2</div>
+          <div class="lhow-text">Sélectionnez votre <strong>mode de paiement</strong> — en ligne ou à la livraison</div>
+        </div>
+        <div class="lhow-step">
+          <div class="lhow-num">3</div>
+          <div class="lhow-text">Notre système vous <strong>attribue automatiquement</strong> un livreur disponible dans votre zone</div>
+        </div>
+        <div class="lhow-step">
+          <div class="lhow-num">4</div>
+          <div class="lhow-text">Vous recevez le <strong>nom et le numéro direct</strong> de votre livreur — contactez-le à tout moment</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarifs -->
+    <div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 16px rgba(0,0,0,.06)">
+      <div style="font-weight:800;font-size:14px;color:#1a2a1a;margin-bottom:14px">💰 Tarifs de livraison</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:linear-gradient(135deg,#0F1F0A,#1a3a1a);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:1.4rem;font-weight:800;color:#C49A3C;font-family:'Cormorant Garamond',serif">1 000 FCFA</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px">Livraison locale</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px">Niamey &amp; agglomération</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#1a1400,#2a2000);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:1.1rem;font-weight:800;color:#C49A3C;font-family:'Cormorant Garamond',serif">Sur devis</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px">Inter-villes</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px">Via compagnies de transport</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(45,106,79,.08);border-radius:10px;border-left:3px solid #2d6a4f;font-size:12px;color:#1a3a2a;line-height:1.7">
+        💳 <strong>Paiement en ligne :</strong> le règlement s'effectue avant la prise en charge.<br>
+        💵 <strong>Cash à la livraison :</strong> vous réglez directement le livreur à réception.
+      </div>
+    </div>
+
+    <!-- Nos livreurs -->
+    <div style="font-weight:800;font-size:16px;color:#1a2a1a;margin:20px 0 12px">Nos livreurs partenaires</div>
+    <div id="livraison-list" style="display:flex;flex-direction:column;gap:10px"></div>
+
+    <!-- Inter-villes -->
+    <div style="background:#fff;border-radius:16px;padding:20px;margin-top:16px;box-shadow:0 2px 16px rgba(0,0,0,.06)">
+      <div style="font-weight:800;font-size:14px;color:#1a2a1a;margin-bottom:10px">🚌 Expédition inter-villes</div>
+      <div style="font-size:13px;color:#555;line-height:1.8;margin-bottom:14px">
+        Pour les expéditions hors Niamey, Kassan'Mou coordonne l'acheminement via les compagnies de transport partenaires. Les frais sont à la charge de l'acheteur et confirmés au moment de la commande.
+      </div>
+      <a href="https://wa.me/22799851532?text=Bonjour%20Kassan'Mou%2C%20je%20souhaite%20organiser%20une%20exp%C3%A9dition%20inter-villes"
+         target="_blank"
+         style="display:inline-flex;align-items:center;gap:8px;padding:11px 20px;background:#25D366;color:#fff;border-radius:100px;font-size:13px;font-weight:700;text-decoration:none">
+        📱 Organiser une expédition
+      </a>
+    </div>
+
+  </div>
 </div>
 
-<div class="ms-body">
-  <div id="ms-content">
-    <!-- Contenu chargé dynamiquement -->
-    <div class="ms-empty">
-      <div class="ms-empty-ico">🛒</div>
-      <div class="ms-empty-txt">Aucun marché actif cette semaine</div>
-      <div class="ms-empty-sub">Le prochain marché hebdomadaire sera annoncé bientôt.<br>Revenez chaque lundi !</div>
-    </div>
-  </div>
-
-  <div class="ms-info-box">
-    <div class="ms-info-title">🌸 Comment fonctionne le Marché de la Semaine ?</div>
-    <div class="ms-info-text">
-      Chaque lundi, Kassan'Mou sélectionne des vendeuses transformatrices locales (transformateurs de céréales, huiles, savons, épices…) qui proposent leurs produits pendant 7 jours à tarif groupé. Pour participer en tant que vendeuse, contactez-nous sur WhatsApp.<br><br>
-      <strong style="color:var(--G)">Commande :</strong> Sélectionnez les produits et commandez via WhatsApp ou le formulaire habituel.<br>
-      <strong style="color:var(--G)">Livraison :</strong> Niamey — 1 000 FCFA. Inter-villes — via compagnies de transport.
-    </div>
-  </div>
-</div>
-</div>
-
-
-<div class="page" id="page-about">
-  <div class="abhero" style="background:linear-gradient(135deg,#0A0A06 0%,#0F1F0A 60%,#0A1206 100%);min-height:42vh">
-    <div class="abin">
-      <div class="stag" style="color:var(--G)">Business Bridge · Niger → Monde</div>
-      <h1 class="abtitle">Un pont commercial.<br>Une mission d'impact.</h1>
-      <p class="absub">KassanMou est une plateforme de mise en relation B2B entre producteurs locaux du Niger et acheteurs internationaux. Nous facilitons l'export agricole, accompagnons les partenariats commerciaux et rendons les marchés accessibles à tous.</p>
-    </div>
-  </div>
+<div class="page" id="page-focal">
   <section class="sec">
     <div class="sin">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3rem;align-items:start">
-        <div>
-          <div class="stag">Mission</div>
-          <h2 class="sh2" style="font-size:clamp(1.5rem,2.5vw,2.2rem)">Connecter les producteurs locaux aux marchés du monde</h2>
-          <p style="font-size:14px;line-height:1.85;color:var(--Sm)">KassanMou est né d'un constat simple : les producteurs du Niger ont des produits de qualité mais n'ont pas accès aux acheteurs internationaux. Nous construisons ce pont numérique — en combinant marketplace locale, accompagnement export et mise en relation B2B.</p>
+      <div class="focal-hero">
+        <div style="position:relative;z-index:1">
+          <div class="stag" style="color:rgba(255,255,255,.5)">Représentants officiels</div>
+          <div class="focal-title">Devenez <em>Point Focal</em><br>Kassan'Mou</div>
+          <p class="focal-desc">Un Point Focal est un intermédiaire officiel lié à Kassan'Mou par contrat. Vous n'êtes pas vendeur — vous facilitez les mises en relation entre producteurs/transformateurs et acheteurs (locaux ou internationaux), et vous percevez une commission sur chaque transaction réalisée grâce à vous.</p>
+          <div class="focal-gains">
+            <div class="focal-gi"><span>💰</span><span>Commission 5–15% sur chaque vente facilitée</span></div>
+            <div class="focal-gi"><span>🗺️</span><span>Exclusivité territoriale dans votre zone</span></div>
+            <div class="focal-gi"><span>📋</span><span>Contrat clair signé avec Kassan'Mou</span></div>
+            <div class="focal-gi"><span>🎓</span><span>Formation gratuite · Outils fournis</span></div>
+          </div>
+          <div class="focal-clarif">
+            <div class="focal-clarif-title">⚠️ Point Focal ≠ Vendeur</div>
+            <div class="focal-clarif-txt">Le Point Focal ne publie pas de produits à vendre. Son rôle est de <strong>trouver des vendeurs et des acheteurs</strong>, de faciliter les transactions, d'être présent sur le terrain dans sa région ou son pays. Nous cherchons notamment des Points Focaux à l'extérieur du Niger (Burkina, France, Finlande…) pour développer notre réseau acheteurs.</div>
+          </div>
         </div>
-        <div>
-          <div class="stag">Vision</div>
-          <h2 class="sh2" style="font-size:clamp(1.5rem,2.5vw,2.2rem)">Faire du Niger une référence agricole mondiale</h2>
-          <p style="font-size:14px;line-height:1.85;color:var(--Sm)">Le Niger a des ressources agricoles exceptionnelles — sésame, karité, mil bio, niébé. Notre vision : positionner ces produits sur les marchés mondiaux, créer de la valeur localement et construire des partenariats durables entre l'Afrique et l'Asie, l'Europe, le Moyen-Orient.</p>
+        <div class="focal-box">
+          <div><div class="focal-num">15%</div><div class="focal-numl">Commission max</div></div>
+          <button class="focal-cta" id="btn-focal-apply">Postuler Point Focal</button>
+          <div class="focal-note">Contrat signé · Pas d'investissement · Formation incluse</div>
         </div>
       </div>
 
-      <div class="vgrid">
-        <div class="vc" style="border-top:3px solid var(--G)"><div class="vico">🌉</div><div class="vttl">Mise en relation internationale</div><div class="vdsc">Notre activité principale : identifier les producteurs capables d'exporter et les connecter directement aux acheteurs internationaux qualifiés. Export sésame → Inde, cornes de bœufs → Vietnam.</div></div>
-        <div class="vc" style="border-top:3px solid var(--O)"><div class="vico">📱</div><div class="vttl">Marketplace comme outil de visibilité</div><div class="vdsc">La marketplace est notre vitrine digitale. Elle génère des flux réguliers, crée de la visibilité pour les producteurs et permet aux acheteurs internationaux d'identifier les produits exportables.</div></div>
-        <div class="vc" style="border-top:3px solid var(--T)"><div class="vico">🤝</div><div class="vttl">Partenariats structurés et transparents</div><div class="vdsc">Contrats clairs, commissions annoncées avant, suivi complet. Chaque partenariat est documenté. Nous travaillons avec des certifications reconnues : Bio EU, Fair Trade, ISO 22000.</div></div>
-      </div>
-
-      <div class="sgrow" style="margin-top:2.5rem">
-        <div class="sgcell"><div class="sgv" style="color:var(--G)">🌻</div><div class="sgl">Sésame exporté → Inde</div></div>
-        <div class="sgcell"><div class="sgv" style="color:var(--G)">🐂</div><div class="sgl">Cornes de bœufs → Vietnam</div></div>
-        <div class="sgcell"><div class="sgv">B2B</div><div class="sgl">Plateforme mise en relation</div></div>
-        <div class="sgcell"><div class="sgv">ODD</div><div class="sgl">Aligné 2 · 8 · 17</div></div>
-      </div>
-
-      <div style="margin-top:2.5rem;background:linear-gradient(135deg,var(--Ok),#0A1206);border-radius:var(--rl);padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center">
-        <div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--G);text-transform:uppercase;margin-bottom:.8rem">Activité principale</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:800;color:#fff;line-height:1.2;margin-bottom:.8rem">KassanMou connecte :<br><span style="color:var(--G)">producteurs · acheteurs · partenaires</span></div>
-          <p style="font-size:13.5px;color:rgba(255,255,255,.5);line-height:1.75">La marketplace est un outil complémentaire puissant. L'export agricole et la mise en relation internationale sont au cœur de ce que nous faisons.</p>
+      <!-- Qui est Point Focal idéal -->
+      <div class="stag">Profil recherché</div>
+      <h2 class="sh2" style="margin-bottom:1.5rem">Qui peut être Point Focal ?</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:3rem">
+        <div style="background:var(--W);border-radius:var(--rl);border:1px solid var(--B);padding:22px">
+          <div style="font-size:2rem;margin-bottom:10px">🇧🇫</div>
+          <div style="font-size:15px;font-weight:700;color:var(--S);margin-bottom:6px">Point Focal Pays</div>
+          <div style="font-size:13px;color:var(--Mu);line-height:1.7">Représentez Kassan'Mou au Burkina, Mali, Sénégal, Ghana... Développez le réseau de producteurs et acheteurs dans votre pays.</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.05);border-radius:var(--rm);border:1px solid rgba(255,255,255,.08)">
-            <span style="font-size:1.5rem">🌾</span>
-            <div><div style="font-size:13px;font-weight:700;color:#fff">Export agricole</div><div style="font-size:11.5px;color:rgba(255,255,255,.45)">Sésame · Karité · Mil · Niébé · Moringa</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.05);border-radius:var(--rm);border:1px solid rgba(255,255,255,.08)">
-            <span style="font-size:1.5rem">⛏️</span>
-            <div><div style="font-size:13px;font-weight:700;color:#fff">Potentiel minier</div><div style="font-size:11.5px;color:rgba(255,255,255,.45)">Pour partenaires stratégiques intéressés</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(255,255,255,.05);border-radius:var(--rm);border:1px solid rgba(255,255,255,.08)">
-            <span style="font-size:1.5rem">🌍</span>
-            <div><div style="font-size:13px;font-weight:700;color:#fff">Marchés cibles</div><div style="font-size:11.5px;color:rgba(255,255,255,.45)">Inde · Vietnam · Europe · Afrique · Moyen-Orient</div></div>
-          </div>
+        <div style="background:var(--W);border-radius:var(--rl);border:1px solid var(--B);padding:22px">
+          <div style="font-size:2rem;margin-bottom:10px">🌍</div>
+          <div style="font-size:15px;font-weight:700;color:var(--S);margin-bottom:6px">Point Focal Europe</div>
+          <div style="font-size:13px;color:var(--Mu);line-height:1.7">Basé en France, Finlande, Allemagne… Identifiez les acheteurs européens, facilitez les négociations et touchez une commission à chaque importation.</div>
+        </div>
+        <div style="background:var(--W);border-radius:var(--rl);border:1px solid var(--B);padding:22px">
+          <div style="font-size:2rem;margin-bottom:10px">📱</div>
+          <div style="font-size:15px;font-weight:700;color:var(--S);margin-bottom:6px">Point Focal Local</div>
+          <div style="font-size:13px;color:var(--Mu);line-height:1.7">Dans une ville du Niger. Aide les producteurs locaux à s'inscrire sur la plateforme, à photographier leurs produits et à finaliser leurs ventes. Commission sur adhésion ET sur ventes.</div>
         </div>
       </div>
     </div>
   </section>
 </div>
+
+<!-- ═══════════════════════════════════
+     PAGE SUIVI
+═══════════════════════════════════ -->
+<div class="page" id="page-tracking">
+  <section class="sec">
+    <div class="sin">
+      <div class="stag">Logistique</div>
+      <h2 class="sh2">Suivi de Commande</h2>
+      <p class="sp" style="margin-bottom:1.5rem">Entrez votre référence de commande pour voir le statut en temps réel.</p>
+      <div style="max-width:640px;margin:0 auto">
+        <!-- Recherche par référence -->
+        <div style="display:flex;gap:10px;margin-bottom:12px">
+          <input id="track-inp" placeholder="Ex: KM-ABC123" maxlength="20"
+            style="flex:1;padding:14px 16px;border-radius:var(--rl);border:1.5px solid var(--B);background:rgba(255,255,255,.06);color:var(--S);font-size:15px;font-family:'JetBrains Mono',monospace;outline:none;letter-spacing:.05em"
+            onkeydown="if(event.key==='Enter')kmSuivreCommande()">
+          <button onclick="kmSuivreCommande()"
+            style="padding:14px 24px;border-radius:var(--rl);background:var(--O);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif;white-space:nowrap">Suivre</button>
+        </div>
+        <!-- Recherche par téléphone -->
+        <div style="font-size:12px;color:var(--Mu);margin-bottom:6px;text-align:center">ou</div>
+        <div style="display:flex;gap:10px;margin-bottom:20px">
+          <input id="track-tel" placeholder="Votre numéro de téléphone" maxlength="20"
+            style="flex:1;padding:12px 16px;border-radius:var(--rl);border:1.5px solid var(--B);background:rgba(255,255,255,.04);color:var(--S);font-size:14px;font-family:Outfit,sans-serif;outline:none"
+            onkeydown="if(event.key==='Enter')kmSuivreParTel()">
+          <button onclick="kmSuivreParTel()"
+            style="padding:12px 20px;border-radius:var(--rl);background:rgba(255,255,255,.08);color:var(--S);border:1.5px solid var(--B);font-size:13px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif;white-space:nowrap">Mes commandes</button>
+        </div>
+        <div id="track-result" style="min-height:80px"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════
+     PAGE COMMENT ÇA MARCHE
+═══════════════════════════════════ -->
+<div class="page" id="page-how">
+
+<style>
+#page-how{background:#07100C}
+.how-s{padding:3rem 1.5rem;max-width:900px;margin:0 auto}
+.how-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:.6rem}
+.how-h1 em{font-style:normal;background:linear-gradient(135deg,#C49A3C,#E8C060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.how-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--G);margin-bottom:.8rem;font-weight:700}
+.how-lead{font-size:15px;color:rgba(255,255,255,.5);line-height:1.8;margin-bottom:2.5rem;max-width:600px}
+.how-block{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;margin-bottom:20px}
+.how-block-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:8px}
+.how-block-sub{font-size:13px;color:rgba(255,255,255,.5);line-height:1.8;margin-bottom:16px}
+.how-step{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
+.how-step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;flex-shrink:0}
+.how-step-body{flex:1}
+.how-step-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.how-step-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6}
+.how-prod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0}
+.how-prod-card{background:rgba(196,154,60,.08);border:1px solid rgba(196,154,60,.2);border-radius:14px;padding:16px;text-align:center}
+.how-prod-ico{font-size:2rem;margin-bottom:8px}
+.how-prod-nm{font-size:14px;font-weight:700;color:var(--G);margin-bottom:4px}
+.how-prod-dest{font-size:12px;color:rgba(255,255,255,.4)}
+.how-proto{background:rgba(45,90,27,.12);border:1px solid rgba(45,90,27,.3);border-radius:14px;padding:16px;margin-top:14px}
+.how-proto-title{font-size:13px;font-weight:700;color:var(--G);margin-bottom:8px}
+.how-proto-step{font-size:12.5px;color:rgba(255,255,255,.5);margin-bottom:6px;padding-left:8px;border-left:2px solid rgba(45,90,27,.4);line-height:1.6}
+.how-tabs-simple{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
+.how-tab-s{padding:10px 20px;border-radius:12px;border:1.5px solid rgba(255,255,255,.12);background:transparent;font-family:Outfit,sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;transition:all .2s}
+.how-tab-s.on{border-color:rgba(45,90,27,.6);background:rgba(45,90,27,.2);color:#fff}
+.how-section{display:none}.how-section.on{display:block}
+</style>
+
+<div style="background:linear-gradient(180deg,#060D04 0%,#0A160A 100%);padding:4rem 1.5rem 2rem">
+  <div style="max-width:900px;margin:0 auto;text-align:center">
+    <div class="how-tag">Kassan'Mou · Guide pratique</div>
+    <h1 class="how-h1">Comment ça <em>marche</em> ?</h1>
+    <p class="how-lead">Marketplace locale, export international, réseau Points Focaux — tout ce que vous devez savoir pour utiliser Kassan'Mou.</p>
+    <div class="how-tabs-simple" style="justify-content:center">
+      <button class="how-tab-s on" onclick="switchHowSection('acheter')">🛒 Acheter</button>
+      <button class="how-tab-s" onclick="switchHowSection('vendre')">📦 Vendre</button>
+      <button class="how-tab-s" onclick="switchHowSection('exporter')">🌍 Exporter</button>
+      <button class="how-tab-s" onclick="switchHowSection('focal')">🤝 Point Focal</button>
+    </div>
+  </div>
+</div>
+
+<div class="how-s">
+
+  <!-- ACHETER -->
+  <div class="how-section on" id="how-acheter">
+    <div class="how-block">
+      <div class="how-block-title">🛒 Comment acheter sur Kassan'Mou</div>
+      <div class="how-block-sub">En moins de 3 minutes, commandez un produit local livré à Niamey.</div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(45,90,27,.3);color:var(--G)">1</div><div class="how-step-body"><div class="how-step-title">Choisissez votre produit</div><div class="how-step-desc">Parcourez la marketplace, filtrez par catégorie, cliquez sur le produit qui vous intéresse pour voir la fiche complète avec photos et prix.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(45,90,27,.3);color:var(--G)">2</div><div class="how-step-body"><div class="how-step-title">Passez commande</div><div class="how-step-desc">Cliquez "Commander", entrez votre nom et votre numéro WhatsApp, choisissez votre mode de paiement : Amana, Nita ou Cash au livreur.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(45,90,27,.3);color:var(--G)">3</div><div class="how-step-body"><div class="how-step-title">Recevez votre livreur</div><div class="how-step-desc">Un livreur Kassan'Mou est automatiquement assigné. Vous recevez son nom et son numéro directement. Contactez-le pour l'heure et le lieu de livraison.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(45,90,27,.3);color:var(--G)">4</div><div class="how-step-body"><div class="how-step-title">Confirmez sur WhatsApp</div><div class="how-step-desc">Cliquez le bouton WhatsApp pour envoyer votre commande à l'équipe. Frais de livraison Niamey : 1 000 FCFA.</div></div></div>
+    </div>
+  </div>
+
+  <!-- VENDRE -->
+  <div class="how-section" id="how-vendre">
+    <div class="how-block">
+      <div class="how-block-title">📦 Comment vendre sur Kassan'Mou</div>
+      <div class="how-block-sub">Publiez votre produit en quelques minutes et touchez des acheteurs locaux et internationaux.</div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(200,75,47,.2);color:var(--T)">1</div><div class="how-step-body"><div class="how-step-title">Soumettez votre produit</div><div class="how-step-desc">Cliquez "Vendre / Acheter" → "Vendre un produit". Remplissez : type de vendeur, catégorie, nom, prix, quantité, région, description et ajoutez vos photos.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(200,75,47,.2);color:var(--T)">2</div><div class="how-step-body"><div class="how-step-title">Choisissez votre formule</div><div class="how-step-desc"><strong>Standard — 5 000 FCFA / an :</strong> votre produit est en ligne 1 an jusqu'à épuisement du stock.<br><strong>Vedette — 15 000 FCFA / an :</strong> en ligne 1 an + mis en avant dans le marché avec badge prioritaire.<br><strong>Accompagnement — Sur devis :</strong> nous créons une page dédiée (type site vitrine) pour votre produit ou boutique.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(200,75,47,.2);color:var(--T)">3</div><div class="how-step-body"><div class="how-step-title">Validation sous 48h</div><div class="how-step-desc">Notre équipe vérifie votre dossier. Vous recevez un email et WhatsApp de confirmation avec votre code de validation unique KM-XXXXXX.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(200,75,47,.2);color:var(--T)">4</div><div class="how-step-body"><div class="how-step-title">Votre produit est en ligne</div><div class="how-step-desc">Après paiement et validation, votre annonce apparaît immédiatement sur la marketplace. Les acheteurs vous contactent directement via WhatsApp.</div></div></div>
+    </div>
+  </div>
+
+  <!-- EXPORTER -->
+  <div class="how-section" id="how-exporter">
+    <div class="how-block">
+      <div class="how-block-title">🌍 Exporter vos produits avec Kassan'Mou</div>
+      <div class="how-block-sub">Le Niger produit des richesses exceptionnelles. Kassan'Mou vous connecte aux acheteurs internationaux.</div>
+
+      <div class="how-block-title" style="font-size:1.1rem;margin-top:8px;margin-bottom:12px">Produits phares à l'export</div>
+      <div class="how-prod-grid">
+        <div class="how-prod-card"><div class="how-prod-ico">🌻</div><div class="how-prod-nm">Sésame</div><div class="how-prod-dest">→ Inde · Chine · Europe</div></div>
+        <div class="how-prod-card"><div class="how-prod-ico">🐂</div><div class="how-prod-nm">Cornes de bœufs</div><div class="how-prod-dest">→ Vietnam · Asie du Sud-Est</div></div>
+        <div class="how-prod-card"><div class="how-prod-ico">🌶️</div><div class="how-prod-nm">Tattassey (Paprika)</div><div class="how-prod-dest">→ Europe · Moyen-Orient</div></div>
+        <div class="how-prod-card"><div class="how-prod-ico">🌿</div><div class="how-prod-nm">Gomme arabique</div><div class="how-prod-dest">→ Europe · Industrie agroalim.</div></div>
+      </div>
+
+      <div class="how-block-title" style="font-size:1.1rem;margin-top:20px;margin-bottom:12px">Protocole d'exportation Kassan'Mou</div>
+
+      <div class="how-proto">
+        <div class="how-proto-title">📋 Pour les produits phares (sésame, cornes, paprika, gomme arabique)</div>
+        <div class="how-proto-step">1. Soumettez votre demande d'export via le formulaire (section Export sur la marketplace)</div>
+        <div class="how-proto-step">2. Notre équipe vous contacte sous 48h pour évaluer votre capacité de production</div>
+        <div class="how-proto-step">3. Contrôle qualité par une structure compétente agréée (certifications Bio EU, Fair Trade, ISO 22000)</div>
+        <div class="how-proto-step">4. Signature d'un protocole d'accord Kassan\'Mou — Commission claire et transparente</div>
+        <div class="how-proto-step">5. Mise en relation directe avec l'acheteur international qualifié</div>
+        <div class="how-proto-step">6. Suivi de l'export et accompagnement documentation (certificats, douane, logistique)</div>
+      </div>
+
+      <div class="how-proto" style="background:rgba(200,75,47,.08);border-color:rgba(200,75,47,.25);margin-top:12px">
+        <div class="how-proto-title" style="color:var(--T)">📦 Pour les autres produits exportables</div>
+        <div class="how-proto-step">1. Publiez votre produit sur la marketplace en cochant "Export international"</div>
+        <div class="how-proto-step">2. Indiquez votre volume disponible, votre capacité de production et vos certifications</div>
+        <div class="how-proto-step">3. Kassan'Mou vérifie la conformité et le potentiel d'export</div>
+        <div class="how-proto-step">4. Protocole d'accord signé avant toute mise en relation internationale</div>
+        <div class="how-proto-step">5. Votre produit est présenté aux acheteurs B2B internationaux de notre réseau</div>
+      </div>
+
+      <div style="margin-top:16px;text-align:center">
+        <button onclick="openModal('export-b2b')" style="padding:14px 28px;border-radius:12px;background:linear-gradient(135deg,#C49A3C,#E8C060);color:#1A0E00;border:none;font-family:Outfit,sans-serif;font-size:14px;font-weight:700;cursor:pointer">🌍 Soumettre une demande d'export</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POINT FOCAL -->
+  <div class="how-section" id="how-focal">
+    <div class="how-block">
+      <div class="how-block-title">🤝 Devenir Point Focal Kassan'Mou</div>
+      <div class="how-block-sub">Un Point Focal est un représentant local de Kassan'Mou dans une région ou un pays. Vous facilitez les connexions — vous ne vendez pas vous-même.</div>
+
+      <div class="how-step"><div class="how-step-num" style="background:rgba(196,154,60,.15);color:var(--G)">1</div><div class="how-step-body"><div class="how-step-title">Votre rôle</div><div class="how-step-desc">Identifier des producteurs locaux avec des produits de qualité. Les aider à publier sur Kassan'Mou. Faciliter la mise en relation avec les acheteurs. Accompagner les démarches d'export dans votre zone.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(196,154,60,.15);color:var(--G)">2</div><div class="how-step-body"><div class="how-step-title">Vos avantages</div><div class="how-step-desc">Commission négociée et signée contractuellement — marge compétitive garantie, discutée lors de l'entretien de sélection. Contrat officiel. Formation aux outils Kassan'Mou. Badge "Point Focal" sur la plateforme.</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(196,154,60,.15);color:var(--G)">3</div><div class="how-step-body"><div class="how-step-title">Ce que nous recherchons</div><div class="how-step-desc">Personnes avec un réseau local solide dans l'agriculture, le commerce ou les exportations. Connaissance du tissu économique local. Bonne maîtrise de WhatsApp et du téléphone. Zones prioritaires : toutes les régions du Niger + diaspora (Europe, Asie).</div></div></div>
+      <div class="how-step"><div class="how-step-num" style="background:rgba(196,154,60,.15);color:var(--G)">4</div><div class="how-step-body"><div class="how-step-title">Candidater</div><div class="how-step-desc">Soumettez votre candidature ci-dessous. Notre équipe vous contacte sous 72h pour un entretien WhatsApp. Aucun investissement requis.</div></div></div>
+
+      <div style="margin-top:16px;text-align:center">
+        <button onclick="openModal('focal')" style="padding:14px 28px;border-radius:12px;background:linear-gradient(135deg,#2D5A1B,#4A7A35);color:#fff;border:none;font-family:Outfit,sans-serif;font-size:14px;font-weight:700;cursor:pointer">🤝 Candidater comme Point Focal</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
 
 <!-- ═══════════════════════════════════
      PAGE CONTACT
@@ -7667,7 +7852,7 @@ function wire(){
 
   // Nav desktop
   g('logo-svg').addEventListener('click',function(){goTo('home');});
-  ['home','marketplace','focal','tracking','livraison','how','about','contact','banituri','marche'].forEach(function(p){
+  ['home','marketplace','focal','tracking','livraison','how','about','contact'].forEach(function(p){
     var b=g('nl-'+p);if(b)b.addEventListener('click',function(){goTo(p);});
     var bm=g('mn-'+p);if(bm)bm.addEventListener('click',function(){goTo(p);});
   });
@@ -7711,9 +7896,7 @@ function wire(){
   var bvsm2=g('btn-see-mkt-2');if(bvsm2)bvsm2.addEventListener('click',function(){goTo('marketplace');});
   var bvsm3=g('btn-see-mkt-3');if(bvsm3)bvsm3.addEventListener('click',function(){goTo('marketplace');});
   var bvsm4=g('btn-see-mkt-4');if(bvsm4)bvsm4.addEventListener('click',function(){goTo('marketplace');});
-  // Banituri & Marche links from home
-  var bban=g('btn-home-banituri');if(bban)bban.addEventListener('click',function(){goTo('banituri');});
-  var bms=g('btn-home-marche');if(bms)bms.addEventListener('click',function(){goTo('marche');});
+
   var bcs2=g('btn-cta-sell-2');if(bcs2)bcs2.addEventListener('click',function(){openModal('sell');});
   var bcs3=g('btn-cta-sell-3');if(bcs3)bcs3.addEventListener('click',function(){openModal('sell');});
   var bex2=g('btn-export-2');if(bex2)bex2.addEventListener('click',function(){openModal('export-b2b');});
@@ -7777,11 +7960,16 @@ function wire(){
   Object.keys(ftLinks).forEach(function(id){
     var b=g(id);if(b)b.addEventListener('click',function(){goTo(ftLinks[id]);});
   });
-  // Banituri modal close
-  var bmc=document.getElementById('ban-modal-close');
-  if(bmc) bmc.addEventListener('click', kmCloseBanituri);
-  var bmo=document.getElementById('ban-modal-overlay');
-  if(bmo) bmo.addEventListener('click', function(e){ if(e.target===bmo) kmCloseBanituri(); });
+  // Banituri boutique overlay
+  var bbb = document.getElementById('btn-entrer-boutique-ban');
+  if(bbb) bbb.addEventListener('click', kmOpenBoutiqueBanituri);
+  var bbk = document.getElementById('ban-boutique-back');
+  if(bbk) bbk.addEventListener('click', kmCloseBoutiqueBanituri);
+  // Banituri prod detail close
+  var bpc = document.getElementById('ban-prod-close');
+  if(bpc) bpc.addEventListener('click', kmCloseBanProd);
+  var bpo = document.getElementById('ban-prod-overlay');
+  if(bpo) bpo.addEventListener('click', function(e){ if(e.target===bpo) kmCloseBanProd(); });
   // Scroll nav shadow
   window.addEventListener('scroll',function(){g('nav').classList.toggle('sh',window.scrollY>8);if(mOpen)closeMN();},{passive:true});
   document.addEventListener('click',function(e){if(mOpen&&!g('mnav').contains(e.target)&&!g('burger-btn').contains(e.target))closeMN();});
@@ -9050,18 +9238,8 @@ function renderLivreursPage(){
 /* Patch goTo : render premium + livraison au changement de page */
 var _origGoTo = goTo;
 goTo = function(page){
-  if(page==='banituri'){ 
-    document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
-    var pg=document.getElementById('page-banituri');if(pg){pg.classList.add('on');window.scrollTo(0,0);}
-    kmRenderBanituri();
-    return;
-  }
-  if(page==='marche'){
-    document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
-    var pgm=document.getElementById('page-marche');if(pgm){pgm.classList.add('on');window.scrollTo(0,0);}
-    kmRenderMarche();
-    return;
-  }
+  if(page==='marketplace'){ setTimeout(kmInitMarketplaceSections, 50); }
+
   _origGoTo(page);
   if(page === 'marketplace'){ renderFeaturedStrip(); renderProdsPremium(); }
 };
@@ -9789,6 +9967,190 @@ document.addEventListener('DOMContentLoaded', function(){
 /* ══════════════════════════════════════════
    BANITURI — Catalogue statique v61
 ══════════════════════════════════════════ */
+
+/* ════════════════════════════════════════
+   BANITURI BOUTIQUE — marketplace integration v61c
+════════════════════════════════════════ */
+
+function kmPrixFormat(p){ return p.toLocaleString('fr-FR') + ' FCFA'; }
+
+/* ── Carrousel aperçu (marketplace) ── */
+function kmRenderBanCarousel() {
+  var track = document.getElementById('ban-carousel-track');
+  if (!track) return;
+  var h = '';
+  KM_BANITURI_PRODUITS.forEach(function(p) {
+    h += '<div class="ban-carousel-card" data-banid="' + p.id + '">';
+    h += '<div class="ban-carousel-img" style="background:linear-gradient(135deg,' + p.couleur + ',#0a1206)">';
+    h += p.emoji;
+    h += '<div class="ban-carousel-prix">' + kmPrixFormat(p.prix) + '</div>';
+    h += '</div>';
+    h += '<div class="ban-carousel-body">';
+    h += '<div class="ban-carousel-name">' + p.nom + '</div>';
+    h += '<div class="ban-carousel-cat">' + p.categorie.substring(0,30) + '</div>';
+    h += '</div></div>';
+  });
+  track.innerHTML = h;
+
+  /* Drag scroll */
+  var isDown = false, startX, scrollLeft;
+  track.addEventListener('mousedown', function(e) { isDown=true; track.classList.add('grabbing'); startX=e.pageX-track.offsetLeft; scrollLeft=track.scrollLeft; });
+  track.addEventListener('mouseleave', function() { isDown=false; track.classList.remove('grabbing'); });
+  track.addEventListener('mouseup', function() { isDown=false; track.classList.remove('grabbing'); });
+  track.addEventListener('mousemove', function(e) { if(!isDown) return; e.preventDefault(); var x=e.pageX-track.offsetLeft; track.scrollLeft=scrollLeft-(x-startX); });
+
+  /* Click → open boutique */
+  track.addEventListener('click', function(e) {
+    var card = e.target.closest('.ban-carousel-card');
+    if (card) { kmOpenBoutiqueBanituri(); setTimeout(function(){ kmScrollToBanProd(card.dataset.banid); }, 300); }
+  });
+}
+
+/* ── Ouvrir la boutique complète ── */
+function kmOpenBoutiqueBanituri() {
+  var ov = document.getElementById('ban-boutique-overlay');
+  if (!ov) return;
+  ov.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  kmRenderBqGrid();
+}
+
+function kmCloseBoutiqueBanituri() {
+  var ov = document.getElementById('ban-boutique-overlay');
+  if (ov) ov.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+/* ── Grille produits dans la boutique ── */
+function kmRenderBqGrid() {
+  var grid = document.getElementById('ban-bq-grid');
+  if (!grid) return;
+  var h = '';
+  KM_BANITURI_PRODUITS.forEach(function(p) {
+    h += '<div class="ban-bq-card" id="bqcard-' + p.id + '" data-banid="' + p.id + '">';
+    h += '<div class="ban-bq-card-top" style="background:linear-gradient(135deg,' + p.couleur + ',#0a1206)">';
+    h += p.emoji;
+    h += '<div class="ban-bq-card-badge-excl">⭐ Exclusif</div>';
+    h += '<div class="ban-bq-card-prix">' + kmPrixFormat(p.prix) + '</div>';
+    h += '</div>';
+    h += '<div class="ban-bq-card-body">';
+    h += '<div class="ban-bq-card-name">' + p.nom + '</div>';
+    h += '<div class="ban-bq-card-cat">' + p.categorie + '</div>';
+    h += '<div class="ban-bq-card-desc">' + p.description.substring(0,90) + (p.description.length>90?'…':'') + '</div>';
+    h += '<div class="ban-bq-card-tags">';
+    h += '<span class="ban-bq-tag">' + p.presentation + '</span>';
+    h += '<span class="ban-bq-tag">⏳ ' + p.duree + '</span>';
+    h += '<span class="ban-bq-tag">🌿 100% naturel</span>';
+    h += '</div>';
+    h += '<button class="ban-bq-card-btn" data-banid="' + p.id + '">Voir détails & posologie →</button>';
+    h += '</div></div>';
+  });
+  grid.innerHTML = h;
+  grid.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-banid]');
+    if (btn) kmOpenBanProd(btn.dataset.banid);
+  });
+}
+
+function kmScrollToBanProd(id) {
+  var el = document.getElementById('bqcard-' + id);
+  var scroll = document.getElementById('ban-boutique-scroll');
+  if (el && scroll) scroll.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+}
+
+/* ── Détail produit (sheet overlay) ── */
+function kmOpenBanProd(id) {
+  var p = KM_BANITURI_PRODUITS.filter(function(x){ return x.id===id; })[0];
+  if (!p) return;
+  var poso = p.posologie.replace(/\n/g,'<br>');
+  var c = document.getElementById('ban-prod-content');
+  if (!c) return;
+  c.innerHTML =
+    '<div class="ban-prod-head">' +
+    '<div class="ban-prod-emoji">' + p.emoji + '</div>' +
+    '<div class="ban-prod-name">' + p.nom + '</div>' +
+    '<div class="ban-prod-cat">' + p.categorie + '</div>' +
+    '<div class="ban-prod-desc">' + p.description + '</div>' +
+    '</div>' +
+    '<div class="ban-prod-prix-row">' +
+    '<span class="ban-prod-prix-lbl">Prix</span>' +
+    '<span class="ban-prod-prix-val">' + kmPrixFormat(p.prix) + '</span>' +
+    '</div>' +
+    '<div class="ban-prod-posologie">' +
+    '<div class="ban-prod-poso-title">🧪 Posologie & Mode d\'emploi</div>' +
+    '<div class="ban-prod-poso-text">' + poso + '</div>' +
+    '</div>' +
+    '<div class="ban-prod-specs">' +
+    '<div class="ban-prod-spec"><div class="ban-prod-spec-lbl">Présentation</div><div class="ban-prod-spec-val">' + p.presentation + '</div></div>' +
+    '<div class="ban-prod-spec"><div class="ban-prod-spec-lbl">Conservation</div><div class="ban-prod-spec-val">' + p.conservation + '</div></div>' +
+    '<div class="ban-prod-spec"><div class="ban-prod-spec-lbl">Durée de conservation</div><div class="ban-prod-spec-val">' + p.duree + '</div></div>' +
+    '<div class="ban-prod-spec"><div class="ban-prod-spec-lbl">Naturalité</div><div class="ban-prod-spec-val">100% naturel</div></div>' +
+    '</div>' +
+    '<div class="ban-prod-actions">' +
+    '<button class="ban-prod-order" id="banprod-order-' + p.id + '">🛒 Commander — ' + kmPrixFormat(p.prix) + '</button>' +
+    '<a href="https://businessbridge227-lab.github.io/banituri/" target="_blank" rel="noopener" class="ban-prod-site">🌐 Site</a>' +
+    '</div>';
+  var ob = document.getElementById('banprod-order-' + p.id);
+  if (ob) ob.addEventListener('click', function() {
+    var msg = 'Bonjour KassanMou 🌿\nJe souhaite commander :\n- ' + p.nom + ' (' + p.categorie + ')\n- ' + p.presentation + '\n- Prix : ' + kmPrixFormat(p.prix) + '\nMerci !';
+    window.open('https://wa.me/' + KM_PHONE_RAW + '?text=' + encodeURIComponent(msg), '_blank');
+  });
+  var ov = document.getElementById('ban-prod-overlay');
+  if (ov) ov.classList.add('show');
+}
+
+function kmCloseBanProd() {
+  var ov = document.getElementById('ban-prod-overlay');
+  if (ov) ov.classList.remove('show');
+}
+
+/* ── Marché de la semaine (marketplace) ── */
+function kmRenderMsMkt() {
+  var body = document.getElementById('ms-mkt-body');
+  var cd = document.getElementById('ms-mkt-countdown');
+  if (!body) return;
+  if (!KM_MARCHE_ACTIF) {
+    if (cd) cd.textContent = 'Prochain marché bientôt';
+    body.innerHTML =
+      '<div class="ms-mkt-empty">' +
+      '<div class="ms-mkt-empty-ico">🛒</div>' +
+      '<div class="ms-mkt-empty-txt">Aucun marché actif cette semaine</div>' +
+      '<div class="ms-mkt-empty-sub">Le prochain marché hebdomadaire sera annoncé bientôt.<br>Revenez chaque lundi !</div>' +
+      '</div>';
+    return;
+  }
+  var m = KM_MARCHE_ACTIF;
+  var now = new Date(), fin = new Date(m.dateFin + 'T23:59:59');
+  var diff = fin - now;
+  if (cd) cd.textContent = diff > 0 ? 'Termine dans ' + Math.floor(diff/86400000) + 'j ' + Math.floor((diff%86400000)/3600000) + 'h' : 'Terminé';
+  var vHtml = '';
+  if (m.vendeurs && m.vendeurs.length) {
+    vHtml = '<div class="ms-mkt-vendeurs">';
+    m.vendeurs.forEach(function(v) {
+      vHtml += '<div class="ms-mkt-vendeur"><div class="ms-mkt-vendeur-ico">' + (v.emoji||'🛒') + '</div><div><div class="ms-mkt-vendeur-name">' + v.nom + '</div><div class="ms-mkt-vendeur-prod">' + v.produit + '</div></div></div>';
+    });
+    vHtml += '</div>';
+  }
+  var waMsg = 'Bonjour KassanMou, je suis intéressé(e) par le marché de la semaine : ' + m.titre + '. Merci.';
+  body.innerHTML =
+    '<div class="ms-mkt-active">' +
+    '<div class="ms-mkt-active-title">' + m.titre + '</div>' +
+    '<div class="ms-mkt-active-desc">' + m.description + '</div>' +
+    vHtml +
+    '<button class="ms-mkt-btn" id="ms-mkt-order">Commander sur WhatsApp →</button>' +
+    '</div>';
+  var ob = document.getElementById('ms-mkt-order');
+  if (ob) ob.addEventListener('click', function() {
+    window.open('https://wa.me/' + KM_PHONE_RAW + '?text=' + encodeURIComponent(waMsg), '_blank');
+  });
+}
+
+/* ── Init marketplace → appeler au chargement de la page marketplace ── */
+function kmInitMarketplaceSections() {
+  kmRenderBanCarousel();
+  kmRenderMsMkt();
+}
+
 /* Structure boutique — extensible pour d'autres partenaires */
 var KM_BOUTIQUES = [
   {
@@ -10141,6 +10503,52 @@ function kmRenderMarche() {
 });
 
 </script>
+
+
+<!-- ════════════════════════════════════
+     BANITURI BOUTIQUE OVERLAY
+════════════════════════════════════ -->
+<div class="ban-boutique-overlay" id="ban-boutique-overlay">
+  <div class="ban-boutique-topbar">
+    <button class="ban-boutique-back" id="ban-boutique-back">←</button>
+    <div class="ban-boutique-topbar-name">🌿 Banituri</div>
+    <div class="ban-boutique-topbar-badge">Partenaire Exclusif</div>
+  </div>
+  <div class="ban-boutique-scroll" id="ban-boutique-scroll">
+    <!-- Hero boutique -->
+    <div class="ban-bq-hero">
+      <div class="ban-bq-logo">🌿</div>
+      <div class="ban-bq-name">Banituri</div>
+      <div class="ban-bq-slogan">Coopérative d'Herboristerie du Niger<br>Plantes médicinales 100% naturelles · Testées · Expérimentées</div>
+      <div class="ban-bq-stats">
+        <div class="ban-bq-stat"><span class="ban-bq-stat-n">9</span><span class="ban-bq-stat-l">Produits</span></div>
+        <div class="ban-bq-stat"><span class="ban-bq-stat-n">100%</span><span class="ban-bq-stat-l">Naturels</span></div>
+        <div class="ban-bq-stat"><span class="ban-bq-stat-n">2 000</span><span class="ban-bq-stat-l">FCFA</span></div>
+        <div class="ban-bq-stat"><span class="ban-bq-stat-n">3 ans</span><span class="ban-bq-stat-l">Conservation</span></div>
+      </div>
+    </div>
+    <!-- Grille produits -->
+    <div class="ban-bq-grid" id="ban-bq-grid"></div>
+    <!-- Footer boutique -->
+    <div style="text-align:center;padding:24px 20px 40px;border-top:1px solid rgba(196,154,60,.08)">
+      <div style="font-size:13px;color:rgba(240,237,230,.35);margin-bottom:12px">Produits disponibles exclusivement sur Kassan'Mou</div>
+      <a href="https://businessbridge227-lab.github.io/banituri/" target="_blank" rel="noopener" style="color:rgba(196,154,60,.6);font-size:12px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(196,154,60,.15);padding:8px 16px;border-radius:20px">
+        🌐 Visiter le site officiel Banituri
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     BANITURI PRODUCT DETAIL OVERLAY
+════════════════════════════════════ -->
+<div class="ban-prod-overlay" id="ban-prod-overlay">
+  <div class="ban-prod-sheet" style="position:relative">
+    <button class="ban-prod-close" id="ban-prod-close">✕</button>
+    <div class="ban-prod-handle"></div>
+    <div id="ban-prod-content"></div>
+  </div>
+</div>
 
 <div id="detail-overlay" class="detail-overlay" role="dialog" aria-modal="true"><div class="detail-sheet"><div class="detail-handle"></div><div id="detail-content" class="detail-content"></div></div></div>
 <div id="km-toast" class="toast" role="alert" aria-live="polite"></div>
