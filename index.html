@@ -6835,7 +6835,7 @@ async function kmExportCSV(table){
     if(table==='commissions'){
       r = await kmDB.from('commissions').select('*,vendeurs(nom,email,telephone)');
     } else if(table==='commandes'){
-      r = await kmDB.from('commandes').select('*,produits(nom)');
+      r = await kmDB.from('commandes').select('*');
     } else {
       r = await kmDB.from(table).select('*');
     }
@@ -8537,13 +8537,15 @@ function kmOpenBanProd(id) {
 function kmOpenBanOrder(p) {
   /* Construire un objet produit compatible avec le flux commande marketplace */
   var prodCompat = {
-    id: p.id,
+    id: null,                          /* pas un UUID — on n'insère pas l'id Banituri */
     nom: p.nom,
     prix: p.prix,
     zone: 'Niamey',
-    vendeur_id: 'banituri',
+    vendeur: 'Banituri',               /* champ utilisé par renderDetailStep3 */
     vendeur_nom: 'Banituri',
-    photos: p.image_url ? [p.image_url] : [],
+    vendeur_id: null,                  /* null = pas de vendeur Supabase */
+    photos: [],                        /* pas de photos inline dans le message WA */
+    photo_display: p.image_url || '',  /* URL gardée pour affichage seulement */
     categorie: p.categorie,
     description: p.description,
     unite: 'sachet',
@@ -9734,8 +9736,8 @@ function renderDetailStep3(p, client){
     ? livreursDispos[Math.floor(Math.random() * livreursDispos.length)]
     : DB_PREMIUM.livreurs[0];
 
-  /* URL photo produit si disponible */
-  var photoUrl = kmGetPhoto(p.photos);
+  /* URL photo produit si disponible (pas pour Banituri — évite les URLs brutes dans WA) */
+  var photoUrl = (p.is_banituri || !p.photos || p.photos.length === 0) ? null : kmGetPhoto(p.photos);
 
   /* ══════════════════════════════════════════
      MESSAGE WHATSAPP KASSAN'MOU (équipe)
@@ -9825,7 +9827,7 @@ function renderDetailStep3(p, client){
   sendEmailAuto({
     refCommande: ref, produit: p.nom,
     prix: p.prix.toLocaleString('fr-FR') + ' FCFA / ' + p.unite,
-    vendeur: p.vendeur, nomClient: client.nom, contactClient: client.tel,
+    vendeur: p.vendeur || p.vendeur_nom || 'Banituri', nomClient: client.nom, contactClient: client.tel,
     modePaiement: payName, email: '', photosUrls: photoUrl ? [photoUrl] : []
   }, 'commande');
 
@@ -9834,7 +9836,7 @@ function renderDetailStep3(p, client){
     reference:    ref,
     produitNom:   p.nom || '',
     produitId:    p.id  || null,
-    vendeurNom:   p.vendeur || '',
+    vendeurNom:   p.vendeur || p.vendeur_nom || '',
     nom:          client.nom,
     telephone:    client.tel,
     whatsapp:     client.tel,
@@ -10426,7 +10428,10 @@ async function kmSaveCommande(d) {
     if(d.whatsapp||d.telephone) payload.acheteur_whatsapp = d.whatsapp||d.telephone;
     if(d.prixUnitaire) payload.prix_unitaire = parseFloat(d.prixUnitaire)||0;
     if(d.fraisLivraison) payload.frais_livraison = parseFloat(d.fraisLivraison)||0;
-    if(d.produitId) payload.produit_id = d.produitId;
+    /* produit_id seulement si c'est un vrai UUID (pas un id Banituri type 'ban-4') */
+    if(d.produitId && typeof d.produitId === 'string' && d.produitId.length === 36 && d.produitId.indexOf('-') === 8) {
+      payload.produit_id = d.produitId;
+    }
     console.log('[KM-CMD] Payload:', JSON.stringify(payload));
     var res = await kmDB.from('commandes').insert(payload).select().single();
     if (res.error) {
