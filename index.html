@@ -13,7 +13,7 @@
 <meta name="description" content="Kassan\'Mou — Pont commercial international. Mise en relation producteurs locaux & acheteurs internationaux. Export Niger vers l'Inde, le Vietnam, l'Europe. Marketplace B2B premium.">
 <link rel="canonical" href="https://www.kassanmou.net">
 <meta name="theme-color" content="#0F1F0A">
-<title>Kassan\'Mou v55 — Marketplace Niger · Export B2B International</title>
+<title>Kassan'Mou — Marketplace Niger · Export B2B International</title>
 
 <!-- ═══ PWA — Manifest & Icons ═══ -->
 <link rel="manifest" href="/manifest.json">
@@ -2423,6 +2423,9 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 @media(max-width:640px){#trois-portes{grid-template-columns:1fr !important}}
 @media(min-width:641px) and (max-width:900px){#trois-portes{grid-template-columns:1fr 1fr !important}}
 </style>
+  <!-- Banituri images preload -->
+  <link rel="preload" as="image" href="https://nifnobbeictkbprsixxe.supabase.co/storage/v1/object/public/produits-photos/banituri/ban-gastryl.png">
+  <link rel="preload" as="image" href="https://nifnobbeictkbprsixxe.supabase.co/storage/v1/object/public/produits-photos/banituri/ban-cicatryl.png">
 </head>
 <body>
 
@@ -8152,7 +8155,7 @@ function kmRenderBanCarousel() {
     h += '<div class="ban-carousel-card" data-banid="' + p.id + '">';
     h += '<div class="ban-carousel-img" style="background:linear-gradient(135deg,' + p.couleur + ',#0a1206)">';
     if (p.image_url) {
-      h += '<img src="' + p.image_url + '" alt="' + p.nom + '" style="width:100%;height:100%;object-fit:cover;border-radius:0">';
+      h += '<img src="' + p.image_url + '" alt="' + p.nom + '" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:0">';
     } else {
       h += '<span style="font-size:52px">' + p.emoji + '</span>';
     }
@@ -8207,7 +8210,7 @@ function kmRenderBqGrid() {
     h += '<div class="ban-bq-card" id="bqcard-' + p.id + '" data-banid="' + p.id + '">';
     h += '<div class="ban-bq-card-top" style="background:linear-gradient(135deg,' + p.couleur + ',#0a1206)">';
     if (p.image_url) {
-      h += '<img src="' + p.image_url + '" alt="' + p.nom + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">';
+      h += '<img src="' + p.image_url + '" alt="' + p.nom + '" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">';
       h += '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.6) 100%)"></div>';
     } else {
       h += '<span style="font-size:60px;position:relative;z-index:1">' + p.emoji + '</span>';
