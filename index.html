@@ -2803,17 +2803,25 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 .ban-mkt-site{color:rgba(196,154,60,.8);font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px;border:1px solid rgba(196,154,60,.2);padding:8px 14px;border-radius:20px}
 .ban-mkt-site:hover{color:#C49A3C;border-color:rgba(196,154,60,.4)}
 /* Carrousel */
-.ban-carousel-wrap{position:relative;padding:24px 0 8px;overflow:hidden}
-.ban-carousel-track{display:flex;gap:16px;padding:0 20px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;cursor:grab}
+.ban-carousel-wrap{position:relative;padding:20px 0 16px;overflow:hidden}
+.ban-carousel-wrap::before,.ban-carousel-wrap::after{content:'';position:absolute;top:0;bottom:0;width:60px;z-index:2;pointer-events:none}
+.ban-carousel-wrap::before{left:0;background:linear-gradient(to right,#080D04,transparent)}
+.ban-carousel-wrap::after{right:0;background:linear-gradient(to left,#080D04,transparent)}
+.ban-carousel-track{display:flex;gap:14px;padding:4px 24px 8px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;cursor:grab;transition:transform .1s}
 .ban-carousel-track::-webkit-scrollbar{display:none}
 .ban-carousel-track.grabbing{cursor:grabbing}
-.ban-carousel-card{flex:0 0 200px;scroll-snap-align:start;background:linear-gradient(145deg,#0e1e0b,#131f0f);border:1px solid rgba(196,154,60,.15);border-radius:16px;overflow:hidden;transition:transform .2s,border-color .2s;cursor:pointer;position:relative}
-.ban-carousel-card:hover{transform:translateY(-4px);border-color:rgba(196,154,60,.4)}
-.ban-carousel-img{height:140px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative}
-.ban-carousel-prix{position:absolute;bottom:6px;right:8px;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:12px}
-.ban-carousel-body{padding:12px}
-.ban-carousel-name{font-size:13px;font-weight:800;color:#C49A3C;margin-bottom:3px;font-family:'Outfit',sans-serif}
-.ban-carousel-cat{font-size:10px;color:rgba(240,237,230,.4);text-transform:uppercase;letter-spacing:.8px}
+.ban-carousel-track.is-paused{/* paused via JS */}
+.ban-carousel-card{flex:0 0 190px;scroll-snap-align:start;background:linear-gradient(145deg,#112010,#162515);border:1px solid rgba(196,154,60,.18);border-radius:16px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;cursor:pointer;position:relative;box-shadow:0 2px 12px rgba(0,0,0,.35)}
+.ban-carousel-card:hover{transform:translateY(-5px) scale(1.02);border-color:rgba(196,154,60,.5);box-shadow:0 10px 28px rgba(0,0,0,.5)}
+.ban-carousel-img{height:150px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;overflow:hidden}
+.ban-carousel-prix{position:absolute;bottom:8px;right:8px;background:linear-gradient(135deg,#C8612F,#a04525);color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:12px;z-index:1}
+.ban-carousel-body{padding:12px 12px 14px}
+.ban-carousel-name{font-size:13px;font-weight:800;color:#D4AA4C;margin-bottom:3px;font-family:'Outfit',sans-serif;line-height:1.2}
+.ban-carousel-cat{font-size:10px;color:rgba(240,237,230,.45);text-transform:uppercase;letter-spacing:.8px;line-height:1.4}
+/* Dots indicateurs */
+.ban-carousel-dots{display:flex;justify-content:center;gap:5px;padding:6px 0 4px}
+.ban-carousel-dot{width:6px;height:6px;border-radius:50%;background:rgba(196,154,60,.2);transition:all .3s;cursor:pointer}
+.ban-carousel-dot.active{background:#C49A3C;width:18px;border-radius:3px}
 /* Marché de la semaine dans marketplace */
 .ms-mkt-section{background:linear-gradient(135deg,#0a0906,#140e08);border-top:1px solid rgba(200,97,47,.12);border-bottom:1px solid rgba(200,97,47,.12);padding:24px 20px}
 .ms-mkt-inner{max-width:1160px;margin:0 auto}
@@ -2947,11 +2955,12 @@ select.adm-input option{background:#0F1F0A;color:#fff}
         <div style="font-size:80px;opacity:.15;flex-shrink:0;display:none" class="ban-mkt-deco" aria-hidden="true">🌿</div>
       </div>
     </div>
-    <!-- Carrousel aperçu produits -->
+    <!-- Carrousel auto-défilant -->
     <div class="ban-carousel-wrap">
       <div class="ban-carousel-track" id="ban-carousel-track">
         <!-- Généré par JS -->
       </div>
+      <div class="ban-carousel-dots" id="ban-carousel-dots"></div>
     </div>
   </div>
 
@@ -8162,37 +8171,150 @@ function kmPrixFormat(p){ return p.toLocaleString('fr-FR') + ' FCFA'; }
 /* ── Carrousel aperçu (marketplace) ── */
 function kmRenderBanCarousel() {
   var track = document.getElementById('ban-carousel-track');
+  var dotsWrap = document.getElementById('ban-carousel-dots');
   if (!track) return;
+
+  /* ── Clone nodes to wipe all accumulated event listeners ── */
+  var freshTrack = track.cloneNode(false);
+  track.parentNode.replaceChild(freshTrack, track);
+  track = freshTrack;
+
+  if (dotsWrap) {
+    var freshDots = dotsWrap.cloneNode(false);
+    dotsWrap.parentNode.replaceChild(freshDots, dotsWrap);
+    dotsWrap = freshDots;
+  }
+
+  /* ── Build cards (9 produits + copies pour boucle infinie) ── */
+  var prods = KM_BANITURI_PRODUITS;
+  /* Duplicate for seamless loop: original + copy */
+  var allProds = prods.concat(prods);
   var h = '';
-  KM_BANITURI_PRODUITS.forEach(function(p) {
-    h += '<div class="ban-carousel-card" data-banid="' + p.id + '">';
+  allProds.forEach(function(p, i) {
+    h += '<div class="ban-carousel-card" data-banid="' + p.id + '" data-idx="' + (i % prods.length) + '">';
     h += '<div class="ban-carousel-img" style="background:linear-gradient(135deg,' + p.couleur + ',#0a1206)">';
     if (p.image_url) {
       h += '<img src="' + p.image_url + '" alt="' + p.nom + '" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:0">';
     } else {
-      h += '<span style="font-size:52px">' + p.emoji + '</span>';
+      h += '<span style="font-size:52px;position:relative;z-index:1">' + p.emoji + '</span>';
     }
     h += '<div class="ban-carousel-prix">' + kmPrixFormat(p.prix) + '</div>';
     h += '</div>';
     h += '<div class="ban-carousel-body">';
     h += '<div class="ban-carousel-name">' + p.nom + '</div>';
-    h += '<div class="ban-carousel-cat">' + p.categorie.substring(0,30) + '</div>';
+    h += '<div class="ban-carousel-cat">' + p.categorie.substring(0,28) + '</div>';
     h += '</div></div>';
   });
   track.innerHTML = h;
 
-  /* Drag scroll */
-  var isDown = false, startX, scrollLeft;
-  track.addEventListener('mousedown', function(e) { isDown=true; track.classList.add('grabbing'); startX=e.pageX-track.offsetLeft; scrollLeft=track.scrollLeft; });
-  track.addEventListener('mouseleave', function() { isDown=false; track.classList.remove('grabbing'); });
-  track.addEventListener('mouseup', function() { isDown=false; track.classList.remove('grabbing'); });
-  track.addEventListener('mousemove', function(e) { if(!isDown) return; e.preventDefault(); var x=e.pageX-track.offsetLeft; track.scrollLeft=scrollLeft-(x-startX); });
+  /* ── Dots ── */
+  if (dotsWrap) {
+    var dh = '';
+    prods.forEach(function(_, i) { dh += '<div class="ban-carousel-dot' + (i===0?' active':'') + '" data-dot="'+i+'"></div>'; });
+    dotsWrap.innerHTML = dh;
+    dotsWrap.addEventListener('click', function(e) {
+      var dot = e.target.closest('[data-dot]');
+      if (dot) { _banCarouselGoTo(parseInt(dot.dataset.dot)); }
+    });
+  }
 
-  /* Click sur carrousel → ouvre la fiche produit directement */
-  track.addEventListener('click', function(e) {
-    var card = e.target.closest('.ban-carousel-card');
-    if (card) { kmOpenBanProd(card.dataset.banid); }
+  /* ── Auto-scroll engine ── */
+  var cardW = 190 + 14; /* card width + gap */
+  var paused = false;
+  var _autoTimer = null;
+  var _currentIdx = 0;
+
+  function _banCarouselGoTo(idx) {
+    _currentIdx = idx;
+    track.scrollTo({ left: idx * cardW, behavior: 'smooth' });
+    /* Update dots */
+    var dots = dotsWrap ? dotsWrap.querySelectorAll('.ban-carousel-dot') : [];
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === idx % prods.length); });
+  }
+
+  var _startAuto = function(){};
+  var _stopAuto  = function(){};
+  var _resetAuto = function(){};
+
+  function _banCarouselNext() {
+    if (paused) return;
+    _currentIdx++;
+    /* Seamless loop: when we reach the copy section, reset silently */
+    if (_currentIdx >= prods.length) {
+      /* Scroll to copy without animation, then back to start */
+      track.scrollTo({ left: _currentIdx * cardW, behavior: 'smooth' });
+      setTimeout(function() {
+        track.style.scrollBehavior = 'auto';
+        _currentIdx = _currentIdx % prods.length;
+        track.scrollLeft = _currentIdx * cardW;
+        track.style.scrollBehavior = '';
+      }, 350);
+    } else {
+      track.scrollTo({ left: _currentIdx * cardW, behavior: 'smooth' });
+    }
+    /* Update dots */
+    var dots = dotsWrap ? dotsWrap.querySelectorAll('.ban-carousel-dot') : [];
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === _currentIdx % prods.length); });
+  }
+
+  function _startAuto() {
+    _autoTimer = setInterval(_banCarouselNext, 2800);
+  }
+  function _stopAuto() { clearInterval(_autoTimer); }
+  function _resetAuto() { _stopAuto(); _startAuto(); }
+
+  /* ── Expose timer globally to prevent leaks on re-navigation ── */
+  if (window._kmBanCarouselTimer) { clearInterval(window._kmBanCarouselTimer); window._kmBanCarouselTimer = null; }
+  if (window._kmBanVisHandler) { document.removeEventListener('visibilitychange', window._kmBanVisHandler); window._kmBanVisHandler = null; }
+
+  _startAuto = function() { window._kmBanCarouselTimer = setInterval(_banCarouselNext, 2800); };
+  _stopAuto  = function() { clearInterval(window._kmBanCarouselTimer); window._kmBanCarouselTimer = null; };
+  _resetAuto = function() { _stopAuto(); _startAuto(); };
+
+  /* Start auto-scroll */
+  _startAuto();
+
+  /* ── Pause on hover / touch ── */
+  track.addEventListener('mouseenter', function() { paused = true; });
+  track.addEventListener('mouseleave', function() { paused = false; });
+  track.addEventListener('touchstart', function() { paused = true; }, {passive:true});
+  track.addEventListener('touchend', function() { setTimeout(function(){ paused = false; }, 2000); }, {passive:true});
+
+  /* ── Drag to scroll (PC) ── */
+  var isDown = false, startX, scrollLeft, didDrag = false;
+  track.addEventListener('mousedown', function(e) {
+    isDown = true; didDrag = false;
+    track.classList.add('grabbing');
+    startX = e.pageX - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+    paused = true;
   });
+  track.addEventListener('mouseleave', function() { isDown = false; track.classList.remove('grabbing'); });
+  track.addEventListener('mouseup', function() {
+    isDown = false; track.classList.remove('grabbing');
+    setTimeout(function(){ paused = false; _resetAuto(); }, 2500);
+  });
+  track.addEventListener('mousemove', function(e) {
+    if (!isDown) return;
+    e.preventDefault();
+    didDrag = true;
+    var x = e.pageX - track.offsetLeft;
+    track.scrollLeft = scrollLeft - (x - startX);
+    _currentIdx = Math.round(track.scrollLeft / cardW) % prods.length;
+  });
+
+  /* ── Click → open product (only if not dragging) ── */
+  track.addEventListener('click', function(e) {
+    if (didDrag) { didDrag = false; return; }
+    var card = e.target.closest('.ban-carousel-card');
+    if (card) kmOpenBanProd(card.dataset.banid);
+  });
+
+  /* ── Stop auto when marketplace page is hidden (named, removable) ── */
+  window._kmBanVisHandler = function() {
+    if (document.hidden) _stopAuto(); else if (!paused) _startAuto();
+  };
+  document.addEventListener('visibilitychange', window._kmBanVisHandler);
 }
 
 /* ── Ouvrir la boutique complète ── */
