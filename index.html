@@ -8502,11 +8502,10 @@ function kmOpenBanProd(id) {
     });
   }
 
-  /* Wire commander */
+  /* Wire commander — flux commande complet */
   var ob = document.getElementById('banprod-order-'+p.id);
   if (ob) ob.addEventListener('click', function() {
-    var msg = 'Bonjour KassanMou 🌿\nCommande Banituri :\n- '+p.nom+' ('+p.categorie+')\n- '+p.presentation+'\n- Prix : '+p.prix.toLocaleString('fr-FR')+' FCFA\nMerci !';
-    window.open('https://wa.me/'+KM_PHONE_RAW+'?text='+encodeURIComponent(msg),'_blank');
+    kmOpenBanOrder(p);
   });
 
   /* Wire stars */
@@ -8531,6 +8530,36 @@ function kmOpenBanProd(id) {
   var ov = document.getElementById('ban-prod-overlay');
   if (ov) ov.classList.add('show');
 }
+/* ══════════════════════════════════════════
+   BANITURI — Flux commande complet v62h
+   Réutilise renderDetailStep2 de la marketplace
+══════════════════════════════════════════ */
+function kmOpenBanOrder(p) {
+  /* Construire un objet produit compatible avec le flux commande marketplace */
+  var prodCompat = {
+    id: p.id,
+    nom: p.nom,
+    prix: p.prix,
+    zone: 'Niamey',
+    vendeur_id: 'banituri',
+    vendeur_nom: 'Banituri',
+    photos: p.image_url ? [p.image_url] : [],
+    categorie: p.categorie,
+    description: p.description,
+    unite: 'sachet',
+    stock: p.stock !== false,
+    is_banituri: true
+  };
+  /* Fermer la fiche produit Banituri */
+  var banOv = document.getElementById('ban-prod-overlay');
+  if (banOv) banOv.classList.remove('show');
+  /* Ouvrir le flux commande standard */
+  _orderProduct = prodCompat;
+  renderDetailStep2(prodCompat);
+  g('detail-overlay').classList.add('show');
+}
+
+
 function kmCloseBanProd() {
   var ov = document.getElementById('ban-prod-overlay');
   if (ov) ov.classList.remove('show');
@@ -9697,6 +9726,7 @@ function renderDetailStep3(p, client){
   var _livraisonInfo = kmGetFraisLivraison(p.zone||'Niamey', client.ville||'Niamey');
   var _typeLivr = _livraisonInfo ? _livraisonInfo.type : 'local';
   var _fraisLivr = _livraisonInfo ? (_livraisonInfo.prix||1000) : 1000;
+  var _delaiLivr = _livraisonInfo ? (_livraisonInfo.delai||'24-48h') : '24-48h';
 
   /* Choisir un livreur disponible automatiquement */
   var livreursDispos = DB_PREMIUM.livreurs.filter(function(l){ return l.statut === 'dispo'; });
