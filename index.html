@@ -5868,7 +5868,7 @@ async function dashTousProduits(){
       '</div>'+
       '<span class="'+(stClass[p.statut]||'adm-st-attente')+'" style="flex-shrink:0">'+(sL[p.statut]||p.statut)+'</span>'+
       '<div style="display:flex;gap:4px;margin-left:6px;flex-shrink:0">'+
-        '<button class="adm-btn" data-id="'+p.id+'" data-nom="'+encodeURIComponent(p.nom||'')+'" data-prix="'+p.prix+'" data-unite="'+encodeURIComponent(p.unite||'kg')+'" data-statut="'+p.statut+'" data-cat="'+encodeURIComponent(p.categorie||'')+'" title="Modifier" style="padding:7px 10px;font-size:14px;background:rgba(196,154,60,.15);border:1px solid rgba(196,154,60,.3)" class="adm-btn tp-edit">✏️</button>'+
+        '<button class="adm-btn tp-edit" data-id="'+p.id+'" data-nom="'+encodeURIComponent(p.nom||'')+'" data-prix="'+p.prix+'" data-unite="'+encodeURIComponent(p.unite||'kg')+'" data-statut="'+p.statut+'" data-cat="'+encodeURIComponent(p.categorie||'')+'" title="Modifier" style="padding:7px 10px;font-size:14px;background:rgba(196,154,60,.15);border:1px solid rgba(196,154,60,.3)">✏️</button>'+
         '<button class="adm-btn adm-btn-g tp-val" data-id="'+p.id+'" data-code="'+p.code_validation+'" title="Valider" style="padding:7px 10px;font-size:14px">✅</button>'+
         '<button class="adm-btn adm-btn-r tp-del" data-id="'+p.id+'" title="Supprimer" style="padding:7px 10px;font-size:14px">🗑️</button>'+
       '</div>'+
