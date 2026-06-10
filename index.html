@@ -5732,6 +5732,112 @@ async function dashEnAttente(){
 }
 
 /* ─── TOUS PRODUITS ─────────────────────────── */
+/* ─── EDIT PRODUIT ADMIN ─────────────────────────── */
+function kmEditProduitModal(d) {
+  var id = d.id;
+  var nom = decodeURIComponent(d.nom||'');
+  var prix = d.prix||'';
+  var unite = decodeURIComponent(d.unite||'kg');
+  var statut = d.statut||'en_attente';
+  var cat = decodeURIComponent(d.cat||'');
+
+  /* Build modal HTML */
+  var html =
+    '<div style="padding:20px;max-width:500px">' +
+    '<div style="font-family:Cormorant Garamond,serif;font-size:22px;font-weight:800;color:var(--G);margin-bottom:18px">✏️ Modifier le produit</div>' +
+    '<div style="display:grid;gap:12px">' +
+    '<div>' +
+    '<label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:5px">Nom du produit</label>' +
+    '<input id="edit-prod-nom" value="'+nom.replace(/"/g,'&quot;')+'" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:14px;font-family:Outfit,sans-serif;box-sizing:border-box">' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<div>' +
+    '<label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:5px">Prix (FCFA)</label>' +
+    '<input id="edit-prod-prix" type="number" value="'+prix+'" placeholder="Ex: 11000" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:14px;font-family:Outfit,sans-serif;box-sizing:border-box">' +
+    '</div>' +
+    '<div>' +
+    '<label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:5px">Unité</label>' +
+    '<select id="edit-prod-unite" style="width:100%;background:rgba(20,30,15,1);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:14px;font-family:Outfit,sans-serif;box-sizing:border-box">' +
+    ['kg','g','litre','ml','pièce','sachet','bouteille','boîte','paquet','unité'].map(function(u){
+      return '<option value="'+u+'"'+(u===unite?' selected':'')+'>'+u+'</option>';
+    }).join('') +
+    '</select>' +
+    '</div>' +
+    '</div>' +
+    '<div>' +
+    '<label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:5px">Statut</label>' +
+    '<select id="edit-prod-statut" style="width:100%;background:rgba(20,30,15,1);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:14px;font-family:Outfit,sans-serif;box-sizing:border-box">' +
+    '<option value="en_attente"'+(statut==='en_attente'?' selected':'')+'>⏳ En attente</option>' +
+    '<option value="validé"'+(statut==='validé'?' selected':'')+'>✅ Validé (en ligne)</option>' +
+    '<option value="refusé"'+(statut==='refusé'?' selected':'')+'>❌ Refusé</option>' +
+    '</select>' +
+    '</div>' +
+    '</div>' +
+    '<div id="edit-prod-msg" style="min-height:18px;font-size:12px;color:#5aaa7a;margin-top:8px;text-align:center"></div>' +
+    '<div style="display:flex;gap:10px;margin-top:16px">' +
+    '<button id="edit-prod-save" style="flex:1;background:linear-gradient(135deg,#2d6a4f,#1a5a3f);color:#fff;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:Outfit,sans-serif">💾 Enregistrer</button>' +
+    '<button id="edit-prod-cancel" style="flex:0 0 auto;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);padding:13px 18px;border-radius:10px;font-size:13px;cursor:pointer;font-family:Outfit,sans-serif">Annuler</button>' +
+    '</div>' +
+    '</div>';
+
+  /* Show in mveil modal */
+  var box = g('mbox');
+  var veil = g('mveil');
+  if (!box || !veil) return;
+  box.innerHTML = html;
+  veil.classList.add('show');
+
+  var saveBtn = document.getElementById('edit-prod-save');
+  var cancelBtn = document.getElementById('edit-prod-cancel');
+  var msgEl = document.getElementById('edit-prod-msg');
+
+  if (cancelBtn) cancelBtn.addEventListener('click', function() {
+    veil.classList.remove('show');
+  });
+  veil.addEventListener('click', function(e){ if(e.target===veil) veil.classList.remove('show'); }, {once:true});
+
+  if (saveBtn) saveBtn.addEventListener('click', async function() {
+    var newNom   = (document.getElementById('edit-prod-nom')||{}).value||'';
+    var newPrix  = parseFloat((document.getElementById('edit-prod-prix')||{}).value||'0');
+    var newUnite = (document.getElementById('edit-prod-unite')||{}).value||'kg';
+    var newStat  = (document.getElementById('edit-prod-statut')||{}).value||'en_attente';
+
+    if (!newNom.trim()) { msgEl.textContent='Le nom est requis.'; msgEl.style.color='#e05050'; return; }
+    if (isNaN(newPrix) || newPrix <= 0) { msgEl.textContent='Prix invalide (ex: 11000 sans point ni virgule).'; msgEl.style.color='#e05050'; return; }
+
+    saveBtn.textContent = 'Enregistrement...';
+    saveBtn.disabled = true;
+
+    try {
+      var upd = await kmDB.from('produits').update({
+        nom: newNom.trim(),
+        prix: newPrix,
+        unite: newUnite,
+        statut: newStat
+      }).eq('id', id);
+
+      if (upd.error) throw new Error(upd.error.message);
+
+      msgEl.textContent = '✅ Produit mis à jour avec succès !';
+      msgEl.style.color = '#5aaa7a';
+      saveBtn.textContent = '✅ Enregistré';
+
+      /* Refresh la liste après 1.2s */
+      setTimeout(function() {
+        veil.classList.remove('show');
+        renderDash('allprod');
+      }, 1200);
+
+    } catch(err) {
+      msgEl.textContent = 'Erreur : ' + err.message;
+      msgEl.style.color = '#e05050';
+      saveBtn.textContent = '💾 Enregistrer';
+      saveBtn.disabled = false;
+    }
+  });
+}
+
+
 async function dashTousProduits(){
   var body=g('dash-body'), prods=[];
   if(kmDB){
@@ -5762,6 +5868,7 @@ async function dashTousProduits(){
       '</div>'+
       '<span class="'+(stClass[p.statut]||'adm-st-attente')+'" style="flex-shrink:0">'+(sL[p.statut]||p.statut)+'</span>'+
       '<div style="display:flex;gap:4px;margin-left:6px;flex-shrink:0">'+
+        '<button class="adm-btn" data-id="'+p.id+'" data-nom="'+encodeURIComponent(p.nom||'')+'" data-prix="'+p.prix+'" data-unite="'+encodeURIComponent(p.unite||'kg')+'" data-statut="'+p.statut+'" data-cat="'+encodeURIComponent(p.categorie||'')+'" title="Modifier" style="padding:7px 10px;font-size:14px;background:rgba(196,154,60,.15);border:1px solid rgba(196,154,60,.3)" class="adm-btn tp-edit">✏️</button>'+
         '<button class="adm-btn adm-btn-g tp-val" data-id="'+p.id+'" data-code="'+p.code_validation+'" title="Valider" style="padding:7px 10px;font-size:14px">✅</button>'+
         '<button class="adm-btn adm-btn-r tp-del" data-id="'+p.id+'" title="Supprimer" style="padding:7px 10px;font-size:14px">🗑️</button>'+
       '</div>'+
@@ -5773,6 +5880,7 @@ async function dashTousProduits(){
   if(bap) bap.onclick=function(){ closeModal(); goTo('marketplace'); setTimeout(function(){ openModal('sell'); },300); };
   body.querySelectorAll('.tp-val').forEach(function(b){b.onclick=function(){doValiderProduit(b.dataset.id,b.dataset.code);};});
   body.querySelectorAll('.tp-del').forEach(function(b){b.onclick=function(){doSupprimerProduit(b.dataset.id);};});
+  body.querySelectorAll('.tp-edit').forEach(function(b){b.onclick=function(){kmEditProduitModal(b.dataset);};});
 }
 
 /* ─── LIVREURS ─────────────────────────────── */
@@ -8493,20 +8601,26 @@ function kmOpenBanProd(id) {
     }).join('') +
     '</div></div>';
 
-  /* Wire suggestions */
-  var suggStrip = document.getElementById('ban-prod-content');
-  if (suggStrip) {
-    suggStrip.addEventListener('click', function(e) {
+  /* Wire delegation on overlay (survit aux innerHTML rebuilds) */
+  var banProdOv = document.getElementById('ban-prod-overlay');
+  if (banProdOv && !banProdOv.dataset.wired) {
+    banProdOv.dataset.wired = '1';
+    banProdOv.addEventListener('click', function(e) {
+      /* Suggestions autres produits */
       var sugg = e.target.closest('[data-bansugg]');
-      if (sugg) kmOpenBanProd(sugg.dataset.bansugg);
+      if (sugg) { kmOpenBanProd(sugg.dataset.bansugg); return; }
+      /* Bouton commander */
+      var orderBtn = e.target.closest('[id^="banprod-order-"]');
+      if (orderBtn) {
+        var pid = orderBtn.id.replace('banprod-order-', '');
+        var prod = KM_BANITURI_PRODUITS.filter(function(x){ return x.id === pid; })[0];
+        if (prod) kmOpenBanOrder(prod);
+        return;
+      }
+      /* Fermer si clic sur fond */
+      if (e.target === banProdOv) kmCloseBanProd();
     });
   }
-
-  /* Wire commander — flux commande complet */
-  var ob = document.getElementById('banprod-order-'+p.id);
-  if (ob) ob.addEventListener('click', function() {
-    kmOpenBanOrder(p);
-  });
 
   /* Wire stars */
   var starRow = document.getElementById('ban-star-row');
@@ -8745,8 +8859,7 @@ function wire(){
   // Banituri prod detail close
   var bpc = document.getElementById('ban-prod-close');
   if(bpc) bpc.addEventListener('click', kmCloseBanProd);
-  var bpo = document.getElementById('ban-prod-overlay');
-  if(bpo) bpo.addEventListener('click', function(e){ if(e.target===bpo) kmCloseBanProd(); });
+  /* ban-prod-overlay click handled via delegation in kmOpenBanProd */
   // Scroll nav shadow
   window.addEventListener('scroll',function(){g('nav').classList.toggle('sh',window.scrollY>8);if(mOpen)closeMN();},{passive:true});
   document.addEventListener('click',function(e){if(mOpen&&!g('mnav').contains(e.target)&&!g('burger-btn').contains(e.target))closeMN();});
