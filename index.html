@@ -5839,7 +5839,14 @@ function kmEditProduitModal(d) {
 
 
 async function dashTousProduits(){
-  var body=g('dash-body'), prods=[];
+  /* Clone dash-body pour effacer les listeners accumulés — même pattern que carrousel */
+  var body = g('dash-body');
+  if (body) {
+    var freshBody = body.cloneNode(false);
+    body.parentNode.replaceChild(freshBody, body);
+    body = freshBody;
+  }
+  var prods=[];
   if(kmDB){
     try{
       var r=await kmDB.from('produits').select('id,nom,statut,categorie,prix,unite,code_validation,date_soumission,photos').order('date_soumission',{ascending:false});
@@ -5878,9 +5885,15 @@ async function dashTousProduits(){
   body.innerHTML=html;
   var bap=g('btn-add-prod');
   if(bap) bap.onclick=function(){ closeModal(); goTo('marketplace'); setTimeout(function(){ openModal('sell'); },300); };
-  body.querySelectorAll('.tp-val').forEach(function(b){b.onclick=function(){doValiderProduit(b.dataset.id,b.dataset.code);};});
-  body.querySelectorAll('.tp-del').forEach(function(b){b.onclick=function(){doSupprimerProduit(b.dataset.id);};});
-  body.querySelectorAll('.tp-edit').forEach(function(b){b.onclick=function(){kmEditProduitModal(b.dataset);};});
+  /* Event delegation — résistant aux re-renders */
+  body.addEventListener('click', function(e) {
+    var val  = e.target.closest('.tp-val');
+    var del  = e.target.closest('.tp-del');
+    var edit = e.target.closest('.tp-edit');
+    if (val)  { doValiderProduit(val.dataset.id, val.dataset.code); return; }
+    if (del)  { doSupprimerProduit(del.dataset.id); return; }
+    if (edit) { kmEditProduitModal(edit.dataset); return; }
+  });
 }
 
 /* ─── LIVREURS ─────────────────────────────── */
