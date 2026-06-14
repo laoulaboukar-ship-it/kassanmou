@@ -9893,7 +9893,7 @@ function renderDetailStep3(p, client){
   var isOnline = client.pay === 'cinetpay';
   var needBankInfo = client.pay === 'amana' || client.pay === 'nita';
 
-  /* v60 FIX — Calculer les variables de livraison manquantes */
+  /* v63c FIX — Calculer les variables de livraison manquantes */
   var _livraisonInfo = kmGetFraisLivraison(p.zone||'Niamey', client.ville||'Niamey');
   var _typeLivr = _livraisonInfo ? _livraisonInfo.type : 'local';
   var _fraisLivr = _livraisonInfo ? (_livraisonInfo.prix||1000) : 1000;
@@ -10856,7 +10856,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v60 — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v63c — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
