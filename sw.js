@@ -1,5 +1,5 @@
 /* Kassan'Mou SW v63c — www.kassanmou.net */
-var CACHE = 'km-v63c';
+var CACHE = 'km-v63e';
 var PRECACHE = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', function(e) {

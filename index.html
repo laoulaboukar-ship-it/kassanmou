@@ -2423,9 +2423,7 @@ select.adm-input option{background:#0F1F0A;color:#fff}
 @media(max-width:640px){#trois-portes{grid-template-columns:1fr !important}}
 @media(min-width:641px) and (max-width:900px){#trois-portes{grid-template-columns:1fr 1fr !important}}
 </style>
-  <!-- Banituri images preload -->
-  <link rel="preload" as="image" href="https://nifnobbeictkbprsixxe.supabase.co/storage/v1/object/public/produits-photos/banituri/ban-gastryl.png">
-  <link rel="preload" as="image" href="https://nifnobbeictkbprsixxe.supabase.co/storage/v1/object/public/produits-photos/banituri/ban-cicatryl.png">
+
 </head>
 <body>
 
@@ -9893,7 +9891,7 @@ function renderDetailStep3(p, client){
   var isOnline = client.pay === 'cinetpay';
   var needBankInfo = client.pay === 'amana' || client.pay === 'nita';
 
-  /* v63c FIX — Calculer les variables de livraison manquantes */
+  /* v60 FIX — Calculer les variables de livraison manquantes */
   var _livraisonInfo = kmGetFraisLivraison(p.zone||'Niamey', client.ville||'Niamey');
   var _typeLivr = _livraisonInfo ? _livraisonInfo.type : 'local';
   var _fraisLivr = _livraisonInfo ? (_livraisonInfo.prix||1000) : 1000;
@@ -10856,7 +10854,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v63c — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v60 — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
