@@ -1,5 +1,5 @@
-/* Kassan'Mou SW v63g — www.kassanmou.net */
-var CACHE = 'km-v63g';
+/* Kassan'Mou SW v63h — www.kassanmou.net */
+var CACHE = 'km-v63h';
 var PRECACHE = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', function(e) {
@@ -50,4 +50,4 @@ self.addEventListener('fetch', function(e) {
   );
 });
 
-console.log('[KM-SW] v63g actif — www.kassanmou.net');
+console.log('[KM-SW] v63h actif — www.kassanmou.net');

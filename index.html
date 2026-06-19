@@ -5783,16 +5783,16 @@ function kmEditProduitModal(d) {
   var veil = g('mveil');
   if (!box || !veil) return;
   box.innerHTML = html;
-  veil.classList.add('show');
+  veil.classList.add('on');
 
   var saveBtn = document.getElementById('edit-prod-save');
   var cancelBtn = document.getElementById('edit-prod-cancel');
   var msgEl = document.getElementById('edit-prod-msg');
 
   if (cancelBtn) cancelBtn.addEventListener('click', function() {
-    veil.classList.remove('show');
+    veil.classList.remove('on');
   });
-  veil.addEventListener('click', function(e){ if(e.target===veil) veil.classList.remove('show'); }, {once:true});
+  veil.addEventListener('click', function(e){ if(e.target===veil) veil.classList.remove('on'); }, {once:true});
 
   if (saveBtn) saveBtn.addEventListener('click', async function() {
     var newNom   = (document.getElementById('edit-prod-nom')||{}).value||'';
@@ -5822,7 +5822,7 @@ function kmEditProduitModal(d) {
 
       /* Refresh la liste après 1.2s */
       setTimeout(function() {
-        veil.classList.remove('show');
+        veil.classList.remove('on');
         renderDash('allprod');
       }, 1200);
 
