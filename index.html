@@ -10367,8 +10367,12 @@ async function kmLoadLivreurs(){
 async function kmLoadProduits() {
   if (!kmDB) return Promise.resolve();
   try {
+    /* SEC v63i — jointure publique vers vendeurs_public (vue sans téléphone/email)
+       au lieu de la table vendeurs directe, pour ne JAMAIS exposer le contact
+       du vendeur au visiteur (règle produit : toute transaction doit passer
+       par Kassan'Mou, sinon contournement de la commission) */
     var res = await kmDB.from('produits')
-      .select('*, vendeurs(nom,telephone,ville)')
+      .select('*, vendeurs_public(nom)')
       .eq('statut',String.fromCharCode(118,97,108,105,100,233))
       .order('date_validation',{ascending:false});
 
@@ -10412,13 +10416,13 @@ async function kmLoadProduits() {
           produit_frais:        p.produit_frais || false,
           /* v52 — partenaire convention */
           vendeur_id: p.vendeur_id || null,
-          is_phare:   (p.vendeurs && p.vendeurs.nom && p.vendeurs.nom.toLowerCase().includes('banituri')) || false,
-          taux_commission: (p.vendeurs && p.vendeurs.nom && p.vendeurs.nom.toLowerCase().includes('banituri')) ? 5 : 2,
+          is_phare:   (p.vendeurs_public && p.vendeurs_public.nom && p.vendeurs_public.nom.toLowerCase().includes('banituri')) || false,
+          taux_commission: (p.vendeurs_public && p.vendeurs_public.nom && p.vendeurs_public.nom.toLowerCase().includes('banituri')) ? 5 : 2,
           emoji:   emojiMap[c] || '📦',
           cat:     catMap[c] || 'alimentaire',
           catLbl:  lblMap[c] || 'Produit',
           nom:     p.nom || 'Produit',
-          vendeur: p.vendeurs ? p.vendeurs.nom : (p.ville || 'Niger'),
+          vendeur: p.vendeurs_public ? p.vendeurs_public.nom : (p.ville || 'Niger'),
           zone:    p.ville || p.region || 'Niger',
           prix:    parseFloat(String(p.prix).replace(/[^0-9.]/g,'')) || 0,
           unite:   (p.unite||'kg').replace(/^FCFA\s*\/\s*/i,'').replace(/^EUR\s*\/\s*/i,'').replace(/^USD\s*\/\s*/i,'').trim() || 'kg',
@@ -10427,7 +10431,6 @@ async function kmLoadProduits() {
           badge:   'v',
           neg:     false,
           desc:    p.description || '',
-          tel:     p.vendeurs ? p.vendeurs.telephone : '',
           code:    p.code_validation,
           photos:  p.photos || []
         });
@@ -10853,7 +10856,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v63e — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v64a — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
