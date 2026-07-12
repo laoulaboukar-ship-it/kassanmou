@@ -10548,7 +10548,14 @@ async function kmSaveProduit(d) {
 }
 
 async function kmSaveCommande(d) {
-  /* SEC v55 — Rate limiting commandes : 10 max / heure par session */
+  /* ═══════════════════════════════════════════════════════════
+     v64b — Commande traitée par Edge Function save-commande
+     Le serveur vérifie le prix, assigne le livreur, sauvegarde
+     tout en une seule opération atomique côté Supabase.
+     Fallback : insertion directe si la fonction est inaccessible.
+  ═══════════════════════════════════════════════════════════ */
+
+  /* SEC — Rate limiting côté client : 10 max / heure par session */
   var _rl=JSON.parse(sessionStorage.getItem('km_cmd_rl')||'{"ts":0,"nb":0}');
   var _now=Date.now();
   if(_now-_rl.ts > 3600000){ _rl={ts:_now,nb:0}; }
@@ -10560,7 +10567,6 @@ async function kmSaveCommande(d) {
       +'Merci de vérifier et de me débloquer.'+nl
       +'_Kassan\'Mou — Sécurité_';
     var waLimite='https://wa.me/22799851532?text='+encodeURIComponent(msgLimite);
-    /* Toast avec lien WA */
     var tBox=document.getElementById('km-toast');
     if(tBox){
       tBox.innerHTML='⚠️ Limite de 10 commandes/heure atteinte.<br>'
@@ -10573,45 +10579,80 @@ async function kmSaveCommande(d) {
     return null;
   }
   _rl.nb++; sessionStorage.setItem('km_cmd_rl',JSON.stringify(_rl));
-  if (!kmDB) {
-    console.error('[KM-CMD] Supabase non connecte - commande non sauvegardee');
-    toast('Commande WhatsApp OK mais non enregistrée (hors ligne)', false);
-    return null;
+
+  /* Cas Banituri ou produit sans UUID valide — on garde l'insertion directe
+     car l'Edge Function exige un produit_id réel dans la table produits */
+  var estUUIDvalide = d.produitId
+    && typeof d.produitId === 'string'
+    && d.produitId.length === 36
+    && d.produitId.indexOf('-') === 8;
+
+  if (!estUUIDvalide) {
+    console.log('[KM-CMD] produit_id non UUID — insertion directe (cas Banituri)');
+    if (!kmDB) return null;
+    try {
+      var payloadDirect = {
+        reference:          d.reference || ('KM-CMD-'+Date.now()),
+        acheteur_nom:       d.nom || d.acheteurNom || '',
+        acheteur_telephone: d.telephone || d.acheteurTel || '',
+        acheteur_whatsapp:  d.whatsapp || d.telephone || '',
+        acheteur_ville:     d.ville || d.acheteurVille || 'Niamey',
+        produit_nom:        d.produitNom || d.produit || '',
+        vendeur_nom:        d.vendeurNom || d.vendeur || '',
+        prix_unitaire:      parseFloat(d.prixUnitaire) || 0,
+        frais_livraison:    parseFloat(d.fraisLivraison) || 0,
+        montant_total:      parseFloat(d.montantTotal) || 0,
+        mode_paiement:      d.modePaiement || 'cash',
+        mode_livraison:     d.modeLivraison || 'domicile',
+        statut:             'en_attente',
+        notes:              d.notes || ''
+      };
+      var resDirect = await kmDB.from('commandes').insert(payloadDirect).select().single();
+      if (resDirect.error) {
+        console.error('[KM-CMD] Erreur insertion directe:', resDirect.error.message);
+        return null;
+      }
+      console.log('[KM-CMD] ✅ Commande directe sauvegardée:', resDirect.data.reference);
+      return resDirect.data;
+    } catch(e) { console.error('[KM-CMD] Exception directe:', e); return null; }
   }
+
+  /* Cas normal — produit UUID valide — on passe par l'Edge Function */
   try {
-    console.log('[KM-CMD] Tentative sauvegarde commande:', d.reference);
-    /* v44f: colonnes minimales garanties + fallbacks robustes */
-    var payload = {
-      reference:          d.reference || ('KM-CMD-'+Date.now()),
-      acheteur_nom:       d.nom || d.acheteurNom || '',
-      acheteur_telephone: d.telephone || d.acheteurTel || '',
-      acheteur_ville:     d.ville || d.acheteurVille || 'Niamey',
-      montant_total:      parseFloat(d.montantTotal) || parseFloat(d.prixUnitaire) || 0,
-      mode_paiement:      d.modePaiement || 'cash',
-      statut:             'en_attente',
-      notes:              d.notes || (d.produit ? 'Produit: '+d.produit : '')
-    };
-    /* Colonnes optionnelles — ajoutées seulement si elles existent */
-    if(d.produitNom||d.produit) payload.produit_nom = d.produitNom||d.produit;
-    if(d.vendeurNom||d.vendeur) payload.vendeur_nom = d.vendeurNom||d.vendeur;
-    if(d.whatsapp||d.telephone) payload.acheteur_whatsapp = d.whatsapp||d.telephone;
-    if(d.prixUnitaire) payload.prix_unitaire = parseFloat(d.prixUnitaire)||0;
-    if(d.fraisLivraison) payload.frais_livraison = parseFloat(d.fraisLivraison)||0;
-    /* produit_id seulement si c'est un vrai UUID (pas un id Banituri type 'ban-4') */
-    if(d.produitId && typeof d.produitId === 'string' && d.produitId.length === 36 && d.produitId.indexOf('-') === 8) {
-      payload.produit_id = d.produitId;
-    }
-    console.log('[KM-CMD] Payload:', JSON.stringify(payload));
-    var res = await kmDB.from('commandes').insert(payload).select().single();
-    if (res.error) {
-      console.error('[KM-CMD] ERREUR INSERT:', res.error.message, res.error.code, res.error.details);
-      toast('Commande WhatsApp OK · Erreur base: ' + res.error.message, false);
+    console.log('[KM-CMD] Appel Edge Function save-commande pour:', d.produitId);
+    var efRes = await fetch(KM_SUPABASE_URL+'/functions/v1/save-commande', {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        KM_SUPABASE_KEY,
+        'Authorization': 'Bearer '+KM_SUPABASE_KEY
+      },
+      body: JSON.stringify({
+        produit_id:         d.produitId,
+        produit_nom:        d.produitNom || d.produit || '',
+        vendeur_nom:        d.vendeurNom || d.vendeur || '',
+        acheteur_nom:       d.nom || d.acheteurNom || '',
+        acheteur_telephone: d.telephone || d.acheteurTel || '',
+        acheteur_whatsapp:  d.whatsapp || d.telephone || '',
+        acheteur_ville:     d.ville || d.acheteurVille || 'Niamey',
+        quantite:           parseInt(d.quantite) || 1,
+        mode_paiement:      d.modePaiement || 'cash',
+        mode_livraison:     d.modeLivraison || 'domicile',
+        notes:              d.notes || ''
+      })
+    });
+    var efData = await efRes.json();
+    if (!efRes.ok || !efData.success) {
+      console.error('[KM-CMD] Edge Function erreur:', efData.error || efRes.status);
+      toast('Commande WhatsApp OK · Erreur serveur: '+(efData.error||efRes.status), false);
       return null;
     }
-    console.log('[KM-CMD] ✅ Commande sauvegardee:', res.data.reference);
-    return res.data;
+    console.log('[KM-CMD] ✅ Commande Edge Function sauvegardée:', efData.reference,
+      '| Livreur:', efData.livreur ? efData.livreur.nom : 'aucun');
+    return efData.commande;
   } catch(e) {
-    console.error('[KM-CMD] Exception:', e);
+    console.error('[KM-CMD] Exception Edge Function:', e);
+    toast('Commande WhatsApp OK mais non enregistrée (erreur réseau)', false);
     return null;
   }
 }
@@ -10856,7 +10897,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v64a — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v64b — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
