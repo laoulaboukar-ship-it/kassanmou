@@ -6261,7 +6261,11 @@ async function formModifierLivreur(id){
    Prix : 5 000 FCFA ANNUEL jusqu'à épuisement du produit
 ══════════════════════════════════════════════════════════ */
 async function doValiderProduit(id,code){
-  /* SEC v44j : vérification admin côté client + session active */
+  /* ═══════════════════════════════════════════════════════════
+     v64c — Validation via Edge Function valider-produit
+     Tout se passe côté serveur : validation produit, commission,
+     création compte vendeur, notification — opération atomique.
+  ═══════════════════════════════════════════════════════════ */
   if(!kmDB){toast("Non connecté",true);return;}
   if(!kmIsAdmin || !kmSession){
     toast("Accès refusé — connexion admin requise.",true);
@@ -6269,68 +6273,54 @@ async function doValiderProduit(id,code){
     return;
   }
 
-  /* Étape 1 : Valider le produit */
-  var r=await kmDB.from('produits')
-    .update({statut:"validé", date_validation:new Date().toISOString()})
-    .eq('id',id);
-  if(r.error){toast("Erreur validation: "+r.error.message,true);return;}
+  toast("⏳ Validation en cours...");
 
-  var prodData=null, vendData=null;
-  try{
-    /* Étape 2 : Charger le produit et le vendeur */
-    var pR=await kmDB.from('produits').select('*').eq('id',id).single();
-    if(pR.data){
-      prodData=pR.data;
+  try {
+    var efRes = await fetch(KM_SUPABASE_URL+'/functions/v1/valider-produit', {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        KM_SUPABASE_KEY,
+        'Authorization': 'Bearer '+KM_SUPABASE_KEY
+      },
+      body: JSON.stringify({
+        produit_id: id,
+        admin_uid:  kmSession.user.id
+      })
+    });
 
-      /* Prix unique v44 : 5 000 FCFA annuel jusqu'à épuisement
-         Commission 2% standard — 5% pour partenaires convention (Banituri etc.) */
-      var PRIX_PUBLICATION = 5000;
-      /* v52 — taux dynamique selon vendeur */
-      var _vendNom = (prodData.vendeurs ? (prodData.vendeurs.nom||'') : '').toLowerCase();
-      var COMMISSION_RATE = _vendNom.includes('banituri') ? 0.05 : 0.02;
-      var _tauxPct = _vendNom.includes('banituri') ? 5 : 2;
-      var montantCommission = Math.round(PRIX_PUBLICATION * COMMISSION_RATE);
+    var efData = await efRes.json();
 
-      /* Créer la commission si elle n'existe pas déjà */
-      var commExist = await kmDB.from('commissions')
-        .select('id').eq('produit_id',id).maybeSingle();
-      if(!commExist.data){
-        await kmDB.from('commissions').insert({
-          vendeur_id:     prodData.vendeur_id,
-          produit_id:     id,
-          produit_nom:    prodData.nom||"Produit",
-          montant:        montantCommission,
-          montant_commission: montantCommission,
-          montant_vente:  PRIX_PUBLICATION,
-          taux:           _tauxPct,
-          taux_commission:_tauxPct,
-          base_calcul:    PRIX_PUBLICATION,
-          statut:         "due",
-          type:           "publication",
-          date_commission: new Date().toISOString()
-        });
-      }
-
-      /* Charger le vendeur */
-      if(prodData.vendeur_id){
-        var vR=await kmDB.from('vendeurs').select('*').eq('id',prodData.vendeur_id).single();
-        if(vR.data) vendData=vR.data;
-      }
+    if(!efRes.ok || !efData.success){
+      toast("Erreur validation: "+(efData.error||efRes.status), true);
+      console.error('[KM-VALID] Erreur Edge Function:', efData);
+      return;
     }
-  }catch(e2){console.warn('[KM-COMM-v44]',e2);}
 
-  /* Étape 3 : Création automatique compte Auth vendeur */
-  if(vendData && vendData.email && vendData.email.includes('@')){
-    await kmCreerCompteVendeur(vendData, prodData);
+    /* Succès — afficher le résultat et le bouton WhatsApp vendeur */
+    toast("✅ Produit validé ! Commission enregistrée."+(efData.compte_cree ? " Compte vendeur créé." : ""));
+    console.log('[KM-VALID] ✅ Validé:', efData.produit_nom,
+      '| Commission:', efData.commission, 'FCFA',
+      '| Compte créé:', efData.compte_cree);
+
+    /* Générer le bouton WhatsApp pour notifier le vendeur manuellement */
+    if(efData.vendeur_tel){
+      var msgWA = 'Bonjour, votre produit "'+efData.produit_nom+'" a été validé sur Kassan\'Mou ✅\n'
+        +'Vous pouvez maintenant recevoir des commandes.\n'
+        +(efData.compte_cree ? 'Votre compte vendeur a été créé. Email: '+efData.compte_email+'\nMot de passe temporaire: '+efData.compte_password+'\n' : '')
+        +'Connectez-vous sur https://www.kassanmou.net\n_Kassan\'Mou_';
+      var waUrl = 'https://wa.me/'+efData.vendeur_tel.replace(/[^0-9]/g,'')+
+        '?text='+encodeURIComponent(msgWA);
+      kmMontrerBoutonWA(waUrl, '📱 Notifier '+efData.vendeur_nom+' sur WhatsApp');
+    }
+
+    kmLoadProduits();
+    dashEnAttente();
+
+  } catch(e) {
+    console.error('[KM-VALID] Exception:', e);
+    toast("Erreur réseau — réessayez.", true);
   }
-
-  toast("✅ Produit validé ! Compte vendeur créé. Envoi notifications...");
-
-  /* Étape 4 : Notifier le vendeur */
-  if(prodData) await kmEnvoyerNotifValidation(prodData,vendData);
-
-  kmLoadProduits();
-  dashEnAttente();
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -10897,7 +10887,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v64b — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v64c — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
