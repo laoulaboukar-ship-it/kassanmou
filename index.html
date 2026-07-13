@@ -7709,6 +7709,17 @@ async function kmEnvoyerNotifValidation(prod,vendeur){
         date_exp:    "1 an — jusqu'à épuisement du produit"
       });
       toast("✅ Email de validation envoyé à "+email);
+      /* Tracer la notification email dans la table notifications */
+      fetch(KM_SUPABASE_URL+'/functions/v1/notifier', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','apikey':KM_SUPABASE_KEY,'Authorization':'Bearer '+KM_SUPABASE_KEY},
+        body: JSON.stringify({
+          destinataire_telephone: tel || '+22799851532',
+          canal: 'email',
+          type_notif: 'produit_valide_email',
+          message: 'Email envoyé à '+email+' — Produit "'+nomProd+'" validé'
+        })
+      }).catch(function(){});
     }catch(e){ console.warn('[KM-NOTIF-v44] email err:',e); }
   }
 
@@ -10887,7 +10898,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v64c — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v64d — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
