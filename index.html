@@ -3828,6 +3828,11 @@ var KM_PHONE_RAW     = '22799851532';       // ← CHANGER ICI
 var KM_PHONE_DISPLAY = '+227 99 85 15 32';  // ✅ v43 corrigé
 var _wap = KM_PHONE_RAW;
 
+/* ── Clé VAPID publique pour Push Notifications (v65b) ──
+   Privée dans l'Edge Function Supabase uniquement.
+   Pour regénérer : web-push generate-vapid-keys          */
+var KM_VAPID_PUBLIC = 'BNarhesJoxxD7HQjgvtS4SUzMLU9NjVEXX0biOFH-AGUybZKdX9VDQGQYQMUOjq5G6smMkJeMLIdx49cVuljODA';
+
 /* ── Envoi email automatique vers '+atob('a2Fzc2Fubm91QGdtYWlsLmNvbQ==')+' ── */
 function sendEmailAuto(data, type){
   try{
@@ -6748,6 +6753,7 @@ async function kmDoLogin() {
       renderDash('overview');
       goTo('dashboard');
       toast('✅ Bienvenue ! Centre de contrôle ouvert.');
+      kmDemanderPush();
       return;
 
     } catch(e) {
@@ -7236,7 +7242,7 @@ async function doVendeurLogin(){
     btn.disabled=false;btn.textContent='Acceder a mon espace';
     if(!res.error){
       var vR=await kmDB.from('vendeurs').select('*').eq('email',email).maybeSingle();
-      if(vR.data){kmVendeurSession=vR.data;closeModal();goTo('vendeur');renderVendeurDash('vendeur-overview');toast('Bienvenue '+kmVendeurSession.nom+' !');}
+      if(vR.data){kmVendeurSession=vR.data;closeModal();goTo('vendeur');renderVendeurDash('vendeur-overview');toast('Bienvenue '+kmVendeurSession.nom+' !');kmDemanderPush();}
       else{kmVlStatus('Compte non reconnu comme vendeur.','error');}
       return;
     }
@@ -10923,14 +10929,16 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  console.log('[KM] ✅ Kassan\'Mou v65a — Opérationnel. Toutes les fonctions initialisées.');
+  console.log('[KM] ✅ Kassan\'Mou v65b — Opérationnel. Toutes les fonctions initialisées.');
 
   /* ═══ PWA — SERVICE WORKER ═══ */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js?v=60')
+      navigator.serviceWorker.register('/sw.js?v=65b')
         .then(function(reg) {
-          console.log('[KM-PWA] SW enregistré. Scope:', reg.scope);
+          console.log('[KM-PWA] SW v65b enregistré. Scope:', reg.scope);
+
+          /* Détection mise à jour disponible */
           reg.addEventListener('updatefound', function() {
             var nw = reg.installing;
             nw.addEventListener('statechange', function() {
@@ -10939,12 +10947,98 @@ document.addEventListener('DOMContentLoaded', function(){
               }
             });
           });
+
+          /* ── Abonnement Push Notifications ──
+             Demandé après 3 secondes pour ne pas bloquer l'UX au chargement */
+          setTimeout(function() { kmInitPush(reg); }, 3000);
         })
         .catch(function(err) { console.warn('[KM-PWA] SW non enregistré:', err); });
     });
   }
 
-  /* ═══ PWA — BANNIÈRE INSTALLATION ANDROID ═══ */
+/* ══════════════════════════════════════════════════════════
+   v65b — PUSH NOTIFICATIONS PWA
+   Flux : demande permission → abonnement VAPID → sauvegarde
+   en base Supabase → Edge Function notifier envoie les pushs
+══════════════════════════════════════════════════════════ */
+function kmInitPush(swReg) {
+  /* Ne pas redemander si déjà refusé */
+  if (!('PushManager' in window)) return;
+  if (Notification.permission === 'denied') return;
+
+  /* Déjà abonné ? Vérifier et re-sauvegarder si besoin */
+  swReg.pushManager.getSubscription().then(function(existing) {
+    if (existing) {
+      kmSavePushSubscription(existing);
+      return;
+    }
+    /* Pas encore abonné — attendre une action utilisateur
+       pour ne pas déclencher la popup à froid */
+    window._kmSwReg = swReg;
+  });
+}
+
+/* Appelé après une action volontaire (login vendeur, commande...) */
+async function kmDemanderPush() {
+  if (!('PushManager' in window)) return;
+  if (Notification.permission === 'denied') return;
+
+  var swReg = window._kmSwReg;
+  if (!swReg) {
+    try { swReg = await navigator.serviceWorker.ready; } catch(e) { return; }
+  }
+
+  try {
+    var perm = await Notification.requestPermission();
+    if (perm !== 'granted') return;
+
+    /* Convertir la clé VAPID en Uint8Array */
+    var appKey = KM_VAPID_PUBLIC;
+    var padding = '='.repeat((4 - appKey.length % 4) % 4);
+    var base64 = (appKey + padding).replace(/-/g, '+').replace(/_/g, '/');
+    var rawData = window.atob(base64);
+    var outputArray = new Uint8Array(rawData.length);
+    for (var i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+
+    var sub = await swReg.pushManager.subscribe({
+      userVisibleOnly:      true,
+      applicationServerKey: outputArray
+    });
+
+    console.log('[KM-PUSH] ✅ Abonnement créé');
+    await kmSavePushSubscription(sub);
+    toast('🔔 Notifications activées !');
+
+  } catch(e) {
+    console.warn('[KM-PUSH] Erreur abonnement:', e);
+  }
+}
+
+/* Sauvegarder la subscription en base Supabase */
+async function kmSavePushSubscription(sub) {
+  if (!kmDB || !sub) return;
+  try {
+    var subJson = sub.toJSON();
+    /* Table push_subscriptions — créer si besoin (voir SQL ci-dessous) */
+    var userId = kmVendeurSession ? kmVendeurSession.id : null;
+    var role   = kmIsAdmin ? 'admin' : (kmVendeurSession ? 'vendeur' : 'acheteur');
+    await kmDB.from('push_subscriptions').upsert({
+      endpoint:   subJson.endpoint,
+      p256dh:     subJson.keys ? subJson.keys.p256dh : null,
+      auth:       subJson.keys ? subJson.keys.auth   : null,
+      vendeur_id: userId,
+      role:       role,
+      user_agent: navigator.userAgent.substring(0, 200),
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'endpoint' });
+    console.log('[KM-PUSH] Subscription sauvegardée en base');
+  } catch(e) {
+    console.warn('[KM-PUSH] Erreur sauvegarde subscription:', e);
+  }
+}
+
+/* ═══ PWA — BANNIÈRE INSTALLATION ANDROID ═══ */
+(function kmInstallBanner(){
   var _dip = null;
   try { _dip = localStorage.getItem('km-install-dismissed'); } catch(e){}
   var _skipBanner = _dip && (Date.now() - parseInt(_dip)) < 7*24*60*60*1000;
@@ -10978,6 +11072,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.body.classList.add('pwa-standalone');
     console.log('[KM-PWA] Lancé en mode application installée.');
   }
+})(); /* fin kmInstallBanner */
 
 
 
