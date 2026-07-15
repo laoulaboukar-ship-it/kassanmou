@@ -5209,6 +5209,14 @@ function submitProduct(modes){
     /* Envoyer l'email UNE SEULE FOIS ici, APRÈS l'upload photos */
     sendEmailAuto(prodData, 'produit');
     console.log('[KM-EMAIL v44f] Email admin envoyé avec', (prodData.photosUrls||[]).length, 'photo(s)');
+    /* Push notification à l'admin : nouveau produit à valider */
+    kmSendPush({
+      title: '📦 Nouveau produit soumis',
+      body:  '"'+(prodData.nom||'Produit')+'" de '+(prodData.nom||'un vendeur')+' attend votre validation.',
+      url:   'https://www.kassanmou.net/?page=dashboard',
+      tag:   'nouveau-produit',
+      role:  'admin'
+    });
   }).catch(function(e){
     window._kmSaveInProgress = false;
     uploadedPhotos = [];
@@ -6223,6 +6231,17 @@ async function doValiderProduit(id,code){
     console.log('[KM-VALID] ✅ Validé:', efData.produit_nom,
       '| Commission:', efData.commission, 'FCFA',
       '| Compte créé:', efData.compte_cree);
+
+    /* Push notification au vendeur (si abonné) */
+    if(efData.vendeur_id){
+      kmSendPush({
+        title:      '✅ Produit en ligne !',
+        body:       '"'+efData.produit_nom+'" est maintenant visible sur la marketplace.',
+        url:        'https://www.kassanmou.net/?page=vendeur',
+        tag:        'produit-valide',
+        vendeur_id: efData.vendeur_id
+      });
+    }
 
     /* Générer le bouton WhatsApp pour notifier le vendeur manuellement */
     if(efData.vendeur_tel){
@@ -10681,12 +10700,79 @@ async function kmSaveCommande(d) {
     }
     console.log('[KM-CMD] ✅ Commande Edge Function sauvegardée:', efData.reference,
       '| Livreur:', efData.livreur ? efData.livreur.nom : 'aucun');
+
+    /* Push à l'admin : nouvelle commande reçue */
+    kmSendPush({
+      title: '🛒 Nouvelle commande !',
+      body:  'Réf '+efData.reference+' — '+(efData.commande ? efData.commande.produit_nom||'' : '')+' reçue.',
+      url:   'https://www.kassanmou.net/?page=dashboard',
+      tag:   'nouvelle-commande',
+      role:  'admin'
+    });
+
+    /* Push au vendeur : quelqu'un a commandé son produit */
+    if(efData.commande && efData.commande.vendeur_id){
+      kmSendPush({
+        title:      '📦 Commande reçue !',
+        body:       'Quelqu\'un a commandé "'+( efData.commande.produit_nom||'votre produit')+'".',
+        url:        'https://www.kassanmou.net/?page=vendeur',
+        tag:        'commande-vendeur',
+        vendeur_id: efData.commande.vendeur_id
+      });
+    }
+
     return efData.commande;
   } catch(e) {
     console.error('[KM-CMD] Exception Edge Function:', e);
     toast('Commande WhatsApp OK mais non enregistrée (erreur réseau)', false);
     return null;
   }
+}
+
+/* ══════════════════════════════════════════════════════════
+   v65b — kmSendPush
+   Appelle l'Edge Function send-push depuis le frontend admin.
+   Ne fait rien si l'utilisateur n'est pas admin (sécurité).
+
+   options = {
+     title, body, url?, icon?, tag?,
+     role?       "admin"|"vendeur"|"acheteur"|"all"
+     vendeur_id? string  — envoyer à un vendeur précis
+   }
+══════════════════════════════════════════════════════════ */
+async function kmSendPush(options){
+  if(!kmDB) return;
+  /* Récupérer l'uid de la session en cours (admin ou vendeur connecté) */
+  var uid = null;
+  try{
+    var sess = await kmDB.auth.getSession();
+    uid = sess.data && sess.data.session ? sess.data.session.user.id : null;
+  }catch(e){ return; }
+  if(!uid) return; /* anonyme — pas de push serveur */
+
+  try{
+    fetch(KM_SUPABASE_URL+'/functions/v1/send-push', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'apikey':        KM_SUPABASE_KEY,
+        'Authorization': 'Bearer '+KM_SUPABASE_KEY
+      },
+      body: JSON.stringify({
+        title:      options.title      || 'Kassan\'Mou',
+        body:       options.body       || '',
+        url:        options.url        || 'https://www.kassanmou.net/',
+        icon:       options.icon       || '/icon-192.png',
+        tag:        options.tag        || 'km-push',
+        role:       options.role       || 'all',
+        vendeur_id: options.vendeur_id || null,
+        admin_uid:  uid
+      })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){ console.log('[KM-PUSH] Envoi:', d.sent,'pushs OK,', d.failed||0,'échoués'); })
+    .catch(function(e){ console.warn('[KM-PUSH] Erreur:', e); });
+  }catch(e){ console.warn('[KM-PUSH] Exception:', e); }
 }
 
 /* ═══════════════════════════════════════════════════════════
